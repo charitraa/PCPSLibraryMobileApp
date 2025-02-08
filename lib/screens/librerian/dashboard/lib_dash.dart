@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/resource/colors.dart';
+import 'package:library_management_sys/screens/librerian/history/history.dart';
 import 'package:library_management_sys/widgets/book/book_widget.dart';
+import 'package:library_management_sys/widgets/dashboard_card/dashboard_card.dart';
 
 class LibrerianDashboard extends StatefulWidget {
   const LibrerianDashboard({super.key});
@@ -50,6 +52,43 @@ class _LibrerianDashboardState extends State<LibrerianDashboard> {
             const SizedBox(
               height: 40,
             ),
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              width: size.width,
+              child: Wrap(
+                children: [
+                  DashboardCard(
+                      icon: Icons.history_sharp,
+                      name: 'History',
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                            const History(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeInOut;
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      })
+                ],
+              ),
+            ), const SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,23 +115,30 @@ class _LibrerianDashboardState extends State<LibrerianDashboard> {
                       bookImage: 'assets/images/book.png',
                       title: "My Type of book and well done",
                       author: "Author kenzie Mcnary"),
-                  SizedBox(width: 8,),
+                  SizedBox(
+                    width: 8,
+                  ),
                   BookWidget(
                       bookImage: 'assets/images/two.webp',
                       title: "A Million To One",
                       author: "Tony Fagoli"),
-                  SizedBox(width: 8,),
+                  SizedBox(
+                    width: 8,
+                  ),
                   BookWidget(
                       bookImage: 'assets/images/hide.webp',
                       title: "Hide and Seek",
                       author: "Olivia Wilson"),
-                  SizedBox(width: 8,),
+                  SizedBox(
+                    width: 8,
+                  ),
                   BookWidget(
                       bookImage: 'assets/images/one.webp',
                       title: "Walk Into The shadow",
                       author: "Author kenzie Mcnary"),
-                  SizedBox(width: 8,),
-
+                  SizedBox(
+                    width: 8,
+                  ),
                 ],
               ),
             )

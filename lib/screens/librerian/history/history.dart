@@ -6,14 +6,14 @@ import '../../../resource/colors.dart';
 import '../../../widgets/book/book_widget.dart';
 import '../../../widgets/explore/explore_header.dart';
 
-class AdminBrowseBooks extends StatefulWidget {
-  const AdminBrowseBooks({super.key});
+class History extends StatefulWidget {
+  const History({super.key});
 
   @override
-  State<AdminBrowseBooks> createState() => _BrowseBooksState();
+  State<History> createState() => _HistoryState();
 }
 
-class _BrowseBooksState extends State<AdminBrowseBooks> {
+class _HistoryState extends State<History> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   int index = 0;
@@ -22,6 +22,30 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       key: _scaffoldKey,
+      appBar: AppBar(
+        title: const Text(
+          "History",
+          style: TextStyle(fontFamily: 'poppins-black', color: Colors.black),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.primary),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          iconSize: 18,
+        ),
+        actions: const [
+          Image(
+            image: AssetImage('assets/images/pcpsLogo.png'),
+            width: 56,
+            height: 24,
+            fit: BoxFit.cover,
+          ),
+          SizedBox(
+            width: 18,
+          )
+        ],
+      ),
       drawer: Drawer(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +86,6 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
                 },
               ),
             ),
-
           ],
         ),
       ),
@@ -72,22 +95,6 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
           width: size.width,
           child: Column(
             children: [
-              const ExploreHeader(),
-              const SizedBox(
-                height: 5,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Browse books based on your interests',
-                    style: TextStyle(color: AppColors.primary),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -107,14 +114,16 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
                               color: AppColors.primary,
                               width: 1.0,
                             ),
-                            color: index == 0 ? AppColors.primary : Colors.white,
+                            color:
+                                index == 0 ? AppColors.primary : Colors.white,
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(
                             "All Books",
                             style: TextStyle(
-                                color:
-                                index == 0 ? Colors.white : AppColors.primary,
+                                color: index == 0
+                                    ? Colors.white
+                                    : AppColors.primary,
                                 fontSize: 12),
                           ),
                         ),
@@ -132,7 +141,8 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 5),
                           decoration: BoxDecoration(
-                            color: index == 1 ? AppColors.primary : Colors.white,
+                            color:
+                                index == 1 ? AppColors.primary : Colors.white,
                             borderRadius: BorderRadius.circular(5),
                             border: Border.all(
                               color: AppColors.primary,
@@ -140,10 +150,42 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
                             ),
                           ),
                           child: Text(
-                            "Top Rated",
+                            "This Week",
                             style: TextStyle(
-                                color:
-                                index == 1 ? Colors.white : AppColors.primary,
+                                color: index == 1
+                                    ? Colors.white
+                                    : AppColors.primary,
+                                fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            index = 3;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 5),
+                          decoration: BoxDecoration(
+                            color:
+                                index == 3 ? AppColors.primary : Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: AppColors.primary,
+                              width: 1.0,
+                            ),
+                          ),
+                          child: Text(
+                            "This Month",
+                            style: TextStyle(
+                                color: index == 3
+                                    ? Colors.white
+                                    : AppColors.primary,
                                 fontSize: 12),
                           ),
                         ),
@@ -151,10 +193,9 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
                     ],
                   ),
                   InkWell(
-                      onTap: () {
-                        _scaffoldKey.currentState?.openDrawer();
-                      },
-
+                    onTap: () {
+                      _scaffoldKey.currentState?.openDrawer();
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
@@ -165,7 +206,11 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
                           width: 1.0,
                         ),
                       ),
-                      child: const Icon(Icons.filter_alt_rounded,size: 15,color: Colors.white,),
+                      child: const Icon(
+                        Icons.filter_alt_rounded,
+                        size: 15,
+                        color: Colors.white,
+                      ),
                     ),
                   )
                 ],
@@ -173,60 +218,42 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
               const SizedBox(
                 height: 10,
               ),
-              CustomSearch(
-                  hintText: 'Search Books',
-                  outlinedColor: Colors.grey,
-                  focusedColor: AppColors.primary,
-                  height: 50,
-                  width: double.infinity,
-                  onChanged: (e) {}),
-              const SizedBox(
-                height: 15,
-              ),
-              const Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.only(bottom: 18),
-                  child: Wrap(
-                    spacing: 15,
-                    runSpacing: 15,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        spreadRadius: 0.5,
+                        blurRadius: 1,
+                        offset: const Offset(1, 2),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: AppColors.primary,
+                      width: 0.5,
+                    ),
+                  ),
+                  width: size.width,
+                  height: 70,
+                  child: Row(
                     children: [
-                      BookWidget(
-                          bookImage: 'assets/images/book.png',
-                          title: "My Type of book and well done",
-                          author: "Author kenzie Mcnary"),
-                      BookWidget(
-                          bookImage: 'assets/images/two.webp',
-                          title: "A Million To One",
-                          author: "Tony Fagoli"),
-                      BookWidget(
-                          bookImage: 'assets/images/hide.webp',
-                          title: "Hide and Seek",
-                          author: "Olivia Wilson"),
-                      BookWidget(
-                          bookImage: 'assets/images/one.webp',
-                          title: "Walk Into The shadow",
-                          author: "Author kenzie Mcnary"),
-                      BookWidget(
-                          bookImage: 'assets/images/book.png',
-                          title: "My Type of book and well done",
-                          author: "Author kenzie Mcnary"),
-                      BookWidget(
-                          bookImage: 'assets/images/two.webp',
-                          title: "A Million To One",
-                          author: "Tony Fagoli"),
-                      BookWidget(
-                          bookImage: 'assets/images/hide.webp',
-                          title: "Hide and Seek",
-                          author: "Olivia Wilson"),
-                      BookWidget(
-                          bookImage: 'assets/images/one.webp',
-                          title: "Walk Into The shadow",
-                          author: "Author kenzie Mcnary"),
+                      Container(
+                        height: 70,
+                        child: const Image(
+                          image: AssetImage('assets/images/book.png'),
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+
                     ],
                   ),
                 ),
-              ),
-
+              )
             ],
           ),
         ),

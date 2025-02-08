@@ -78,8 +78,11 @@ flutter:
     - family: poppins
       fonts:
         - asset: assets/fonts/Poppins/Poppins-Regular.ttf
-          weight: 400
-
+#          weight: 400
+    - family: poppins-black
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Medium.ttf
+          weight: 500
 
     - family: poppins-semi
       fonts:

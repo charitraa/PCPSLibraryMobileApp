@@ -11,6 +11,13 @@ class LibrarianNavBar extends StatefulWidget {
 
 class _LibrarianNavBarState extends State<LibrarianNavBar> {
   int _currentIndex = 0;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentIndex);
+  }
 
   final List<Widget> _pages = [
     const LibrerianDashboard(),
@@ -25,7 +32,15 @@ class _LibrarianNavBarState extends State<LibrarianNavBar> {
     final Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: _pages[_currentIndex],
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        children: _pages,
+      ),
       bottomNavigationBar: Container(
         width: size.width,
         height: 80,
@@ -59,9 +74,7 @@ class _LibrarianNavBarState extends State<LibrarianNavBar> {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    setState(() {
-                      _currentIndex = 2; // Navigate to the "Profile Page"
-                    });
+                    _navigateToPage(2);
                   },
                 ),
               ),
@@ -72,11 +85,11 @@ class _LibrarianNavBarState extends State<LibrarianNavBar> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildNavItem(Icons.dashboard,'Home', 0,),
-                  _buildNavItem(Icons.bookmark_remove_sharp,'Books', 1),
+                  _buildNavItem(Icons.dashboard, 'Home', 0),
+                  _buildNavItem(Icons.bookmark_remove_sharp, 'Books', 1),
                   const SizedBox(width: 48), // Space for the FAB
-                  _buildNavItem(Icons.my_library_books_sharp,'Issue', 2),
-                  _buildNavItem(Icons.settings,'Setting', 3),
+                  _buildNavItem(Icons.my_library_books_sharp, 'Issue', 2),
+                  _buildNavItem(Icons.settings, 'Setting', 3),
                 ],
               ),
             ),
@@ -86,7 +99,7 @@ class _LibrarianNavBarState extends State<LibrarianNavBar> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String name,int index) {
+  Widget _buildNavItem(IconData icon, String name, int index) {
     return InkWell(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -95,14 +108,21 @@ class _LibrarianNavBarState extends State<LibrarianNavBar> {
             icon,
             color: _currentIndex == index ? const Color(0xff393A8F) : Colors.grey,
           ),
-           Text(name,style: const TextStyle(fontSize: 10),)
+          Text(name, style: const TextStyle(fontSize: 10)),
         ],
       ),
-      onTap: () {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
+      onTap: () => _navigateToPage(index),
+    );
+  }
+
+  void _navigateToPage(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
     );
   }
 }
@@ -115,7 +135,7 @@ class BNBCustomPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     Path path = Path();
-    path.moveTo(0, 20); // Start
+    path.moveTo(0, 20);
     path.quadraticBezierTo(size.width * 0.20, 0, size.width * 0.35, 0);
     path.quadraticBezierTo(size.width * 0.40, 0, size.width * 0.40, 20);
     path.arcToPoint(Offset(size.width * 0.60, 20),

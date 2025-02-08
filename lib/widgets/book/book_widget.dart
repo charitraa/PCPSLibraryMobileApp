@@ -31,8 +31,8 @@ class _BookWidgetState extends State<BookWidget> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
-            spreadRadius: 1.6,
-            blurRadius: 2,
+            spreadRadius: 1,
+            blurRadius: 1.5,
             offset: const Offset(2, 4),
           ),
         ],
