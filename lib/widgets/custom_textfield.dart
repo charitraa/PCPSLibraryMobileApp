@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 class CustomTextfield extends StatefulWidget {
   final String text;
   final String hintText;
@@ -42,7 +41,6 @@ class _CustomTextfieldState extends State<CustomTextfield> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // height: 100,
       width: widget.width,
       child: SingleChildScrollView(
         child: Column(
@@ -64,7 +62,8 @@ class _CustomTextfieldState extends State<CustomTextfield> {
               controller: widget.textController,
               onChanged: widget.onChanged,
               keyboardType: widget.keyboardType,
-              style: const TextStyle(fontFamily: 'poppins', fontSize: 15),
+              style: const
+              TextStyle(fontFamily: 'poppins', fontSize: 15),
               decoration: InputDecoration(
                   helperText: widget.helper,
                   helperStyle: widget.helperStyle,
