@@ -25,176 +25,106 @@ class _WishlistState extends State<Wishlist> {
       appBar: AppBar(
         title: const Text(
           "Wishlist",
-          style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),
+          style: TextStyle(fontFamily: 'poppins-black', color: Colors.black),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppColors.primary, size: 20),
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.primary),
           onPressed: () {
             Navigator.pop(context);
           },
+          iconSize: 18,
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Image.asset(
-              'assets/images/pcpsLogo.png',
-              width: 60,
-              height: 28,
-              fit: BoxFit.cover,
-            ),
+        actions: const [
+          Image(
+            image: AssetImage('assets/images/pcpsLogo.png'),
+            width: 56,
+            height: 24,
+            fit: BoxFit.cover,
           ),
+          SizedBox(width: 18)
         ],
-      ),
-      drawer: Drawer(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.grey.shade200),
-              child: Center(
-                child: Image.asset(
-                  'assets/images/pcpsLogo.png',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Filter By',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: CustomGenre(
-                label: 'Filter by Genre',
-                wid: size.width,
-                onChanged: (value) {
-                  _scaffoldKey.currentState?.closeDrawer();
-                },
-              ),
-            ),
-          ],
-        ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      _scaffoldKey.currentState?.openDrawer();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
-                            blurRadius: 5,
-                            spreadRadius: 1,
+          padding: const EdgeInsets.all(16.0),
+          child: ListView.builder(
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            'assets/images/book.png',
+                            width: 60,
+                            height: 90,
+                            fit: BoxFit.cover,
                           ),
-                        ],
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.filter_alt_rounded,
-                        size: 18,
-                        color: Colors.white,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Don't Look Back",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "By Isaac Nelson",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(Icons.delete, color: Colors.red.shade400),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(Icons.book, color: Colors.blue.shade600),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(height: 12),
-              _buildBookCard(size),
-            ],
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildFilterButton(String text, int filterIndex) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          index = filterIndex;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: index == filterIndex ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.primary, width: 1.0),
-          boxShadow: index == filterIndex
-              ? [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.4),
-              blurRadius: 4,
-              spreadRadius: 1,
-            ),
-          ]
-              : [],
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: index == filterIndex ? Colors.white : AppColors.primary,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBookCard(Size size) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 2,
-            spreadRadius: 0.5,
-            offset: const Offset(1, 2),
-          ),
-        ],
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.primary, width: 0.5),
-      ),
-      width: size.width,
-      height: 80,
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: Image.asset(
-              'assets/images/book.png',
-              height: 80,
-              width: 60,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(width: 10),
-          const Expanded(
-            child: Text(
-              "Book Title",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-          )
-        ],
       ),
     );
   }
