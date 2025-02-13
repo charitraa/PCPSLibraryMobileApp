@@ -20,6 +20,7 @@ class _CustomWidgetTestState extends State<CustomWidgetTest> {
             children: [
               BookWidget(bookImage: 'assets/images/book.png', title: 'tets', author: 'asa'),
               BookWidget(bookImage: 'assets/images/book.png', title: 'tets', author: 'asa'),
+              SearchBar()
 
             ],
           )

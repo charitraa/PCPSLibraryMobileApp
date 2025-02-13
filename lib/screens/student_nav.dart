@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/screens/librerian/browse_books/admin_browse.dart';
 import 'package:library_management_sys/screens/student/dashboard/student_dashboard.dart';
+import 'package:library_management_sys/screens/student/dashboard/wishlist.dart';
 
 class StudentNavBar extends StatefulWidget {
   const StudentNavBar({super.key});
@@ -23,7 +24,7 @@ class _StudentNavBarState extends State<StudentNavBar> {
     const StudentDashboard(),
     const Center(child: Text('Home Page')),
     const AdminBrowseBooks(),
-    const Center(child: Text('Profile Page')),
+    const Wishlist(),
     const Center(child: Text('Finale Page')),
   ];
 
