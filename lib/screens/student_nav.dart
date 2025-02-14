@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/screens/librerian/browse_books/admin_browse.dart';
+import 'package:library_management_sys/screens/student/browse_books/std_browse.dart';
 import 'package:library_management_sys/screens/student/dashboard/student_dashboard.dart';
 
 class StudentNavBar extends StatefulWidget {
@@ -22,7 +22,7 @@ class _StudentNavBarState extends State<StudentNavBar> {
   final List<Widget> _pages = [
     const StudentDashboard(),
     const Center(child: Text('Home Page')),
-    const AdminBrowseBooks(),
+    const StudentBrowseBooks(),
     const Center(child: Text('Profile Page')),
     const Center(child: Text('Finale Page')),
   ];
@@ -100,7 +100,7 @@ class _StudentNavBarState extends State<StudentNavBar> {
   }
 
   Widget _buildNavItem(IconData icon, String name, int index) {
-    return InkWell(
+    return GestureDetector(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
