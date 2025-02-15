@@ -16,7 +16,26 @@ class Wishlist extends StatefulWidget {
 class _WishlistState extends State<Wishlist> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  int index = 0;
+  final List<Map<String, dynamic>> books = [
+    {
+      "title": "Don't Look Back",
+      "author": "Isaac Nelson",
+      "image": "assets/images/book.png",
+      "rating": 5,
+      "genre": "Drama",
+      "available": true
+    },
+    {
+      "title": "The Silent Patient",
+      "author": "Alex Michaelides",
+      "image": "assets/images/book.png",
+      "rating": 4,
+      "genre": "Thriller",
+      "available": false
+    },
+
+  ];
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -48,8 +67,10 @@ class _WishlistState extends State<Wishlist> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListView.builder(
-            itemCount: 3, // Replace with your wishlist item count
+            itemCount: books.length,
             itemBuilder: (context, index) {
+              final book = books[index];
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Container(
@@ -73,7 +94,7 @@ class _WishlistState extends State<Wishlist> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.asset(
-                                'assets/images/book.png',
+                                book["image"],
                                 width: 60,
                                 height: 90,
                                 fit: BoxFit.cover,
@@ -86,9 +107,9 @@ class _WishlistState extends State<Wishlist> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    "Don't Look Back",
-                                    style: TextStyle(
+                                  Text(
+                                    book["title"],
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black,
@@ -96,7 +117,7 @@ class _WishlistState extends State<Wishlist> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    "By Isaac Nelson",
+                                    "By ${book["author"]}",
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey.shade600,
@@ -104,7 +125,11 @@ class _WishlistState extends State<Wishlist> {
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
-                                    children: List.generate(5, (index) => const Icon(Icons.star, color: Colors.amber, size: 16)),
+                                    // 🔹 Uses dynamic rating
+                                    children: List.generate(
+                                      book["rating"],
+                                          (index) => const Icon(Icons.star, color: Colors.amber, size: 16),
+                                    ),
                                   ),
                                   const SizedBox(height: 4),
                                   Row(
@@ -115,16 +140,16 @@ class _WishlistState extends State<Wishlist> {
                                           color: Colors.red.shade400,
                                           borderRadius: BorderRadius.circular(5),
                                         ),
-                                        child: const Text(
-                                          "Drama",
-                                          style: TextStyle(color: Colors.white, fontSize: 12),
+                                        child: Text(
+                                          book["genre"],
+                                          style: const TextStyle(color: Colors.white, fontSize: 12),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        "Available",
+                                        book["available"] ? "Available" : "Not Available",
                                         style: TextStyle(
-                                          color: Colors.green.shade700,
+                                          color: book["available"] ? Colors.green.shade700 : Colors.red.shade700,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -170,4 +195,3 @@ class _WishlistState extends State<Wishlist> {
     );
   }
 }
-
