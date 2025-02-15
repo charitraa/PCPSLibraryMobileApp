@@ -87,9 +87,9 @@ class _StudentNavBarState extends State<StudentNavBar> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildNavItem(Icons.dashboard, 'Home', 0),
-                  _buildNavItem(Icons.shopping_bag_outlined, 'Wishlist', 3),
+                  _buildNavItem(Icons.shopping_bag_outlined, 'Wishlist', 1),
                   const SizedBox(width: 48), // Space for the FAB
-                  _buildNavItem(Icons.bookmark_remove_sharp, 'My Books', 1),
+                  _buildNavItem(Icons.bookmark_remove_sharp, 'My Books', 3),
                   _buildNavItem(Icons.settings, 'Setting', 4),
                 ],
               ),

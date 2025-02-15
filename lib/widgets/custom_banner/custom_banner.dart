@@ -22,15 +22,24 @@ class _CustomBannerState extends State<CustomBanner> {
       padding: const EdgeInsets.all(0),
       color: AppColors.primary,
       width: double.infinity,
-      height: 280,
+      height: 240,
       child: Stack(
         children: [
-          // const Image(
-          //   image: AssetImage('assets/logobg.jpeg'),
-          //   fit: BoxFit.cover,
-          //   width: double.infinity,
-          //   height: double.infinity,
-          // ),
+
+          Positioned(
+            top: 50,
+            right: 20,
+            child: Container(
+              width: 120,
+              height:40,
+              child: const Image(
+                image: AssetImage('assets/images/pcps_bg.png'),
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
+          ),
           Positioned(
             bottom: 50,
             left: 20,

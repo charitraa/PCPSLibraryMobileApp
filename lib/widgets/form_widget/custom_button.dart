@@ -11,7 +11,7 @@ class CustomButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onPressed,
-    this.buttonColor = const Color(0xFF4B6F39),  this.width, // Default color
+    this.buttonColor = const Color(0xFF393A8F),  this.width, // Default color
 
   });
 
@@ -34,7 +34,7 @@ class CustomButton extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(
-          fontSize: 24,
+          fontSize: 18,
           color:Colors.white,
           fontFamily: 'poppins',
           fontWeight: FontWeight.w400,

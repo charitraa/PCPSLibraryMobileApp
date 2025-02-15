@@ -16,6 +16,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+
         body: SafeArea(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -30,7 +31,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     const CircleAvatar(
                       foregroundImage: AssetImage('assets/images/one.webp'),
                     ),
-const SizedBox(width: 5,),
+                    const SizedBox(
+                      width: 5,
+                    ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -42,9 +45,8 @@ const SizedBox(width: 5,),
                         Text(
                           "Minal Pariyar",
                           style: TextStyle(
-                            color: AppColors.secondary,
-                            fontFamily: 'poppins-black'
-                          ),
+                              color: AppColors.secondary,
+                              fontFamily: 'poppins-black'),
                         )
                       ],
                     ),
@@ -53,7 +55,9 @@ const SizedBox(width: 5,),
                 const Row(
                   children: [
                     Icon(Icons.notifications),
-                    SizedBox(width: 4,),
+                    SizedBox(
+                      width: 4,
+                    ),
                     Image(
                       image: AssetImage('assets/images/pcpsLogo.png'),
                       width: 60,
@@ -64,31 +68,30 @@ const SizedBox(width: 5,),
                 )
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [Text(
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+              Text(
                 "Explore",
                 style: TextStyle(
                     fontSize: 43,
                     color: AppColors.primary,
                     fontFamily: 'poppins-black'),
-              ),]
-            ),
+              ),
+            ]),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Text(
+                Text(
                   'Most Popular',
-                  style: TextStyle(fontSize: 15,fontFamily: 'poppins-black',color: AppColors.primary),
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontFamily: 'poppins-black',
+                      color: AppColors.primary),
                 ),
                 InkWell(
                   onTap: () {},
-                  child: Icon(
-                    Icons.arrow_forward_ios_sharp,
-                    size: 18,
-                      color: AppColors.primary
-                  ),
+                  child: Icon(Icons.arrow_forward_ios_sharp,
+                      size: 18, color: AppColors.primary),
                 )
               ],
             ),
@@ -128,22 +131,24 @@ const SizedBox(width: 5,),
                 ],
               ),
             ),
-            const SizedBox(height: 5,),
+            const SizedBox(
+              height: 5,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'E-library',
-                  style: TextStyle(fontSize: 15,fontFamily: 'poppins-black',color: AppColors.primary),
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontFamily: 'poppins-black',
+                      color: AppColors.primary),
                 ),
                 InkWell(
                   onTap: () {},
-                  child: Icon(
-                      Icons.arrow_forward_ios_sharp,
-                      size: 18,
-                      color: AppColors.primary
-                  ),
+                  child: Icon(Icons.arrow_forward_ios_sharp,
+                      size: 18, color: AppColors.primary),
                 )
               ],
             ),
