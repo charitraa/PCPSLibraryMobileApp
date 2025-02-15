@@ -65,11 +65,11 @@ class _LoginpageState extends State<Loginpage> {
                                 ),
                               );
                             },
-                            child: Text(
+                            child: const Text(
                               'Forgot Password?',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontFamily: 'Poppins',
+                                fontFamily: 'poppins',
                                 fontSize: 14,
                               ),
                             ),

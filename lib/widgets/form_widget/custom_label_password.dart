@@ -95,7 +95,7 @@ class _PasswordTextfieldState extends State<PasswordTextfield> {
                   isPasswordVisible
                       ? Icons.visibility_off
                       : Icons.visibility,
-                  color: Colors.grey,
+                  color: Colors.black,
                 ),
                 onPressed: () {
                   setState(() {
