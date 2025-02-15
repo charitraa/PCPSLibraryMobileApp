@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/custom_widget_test.dart';
 import 'package:library_management_sys/screens/auth/flashingpage.dart';
+import 'package:library_management_sys/screens/auth/loginpage.dart';
 import 'package:library_management_sys/screens/lib_nav.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Flashingpage(),
+      home: const Loginpage(),
     );
   }
 }

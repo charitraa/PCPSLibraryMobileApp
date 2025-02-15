@@ -23,12 +23,12 @@ class _CustomBannerState extends State<CustomBanner> {
       height: 220,
       child: Stack(
         children: [
-          const Image(
-            image: AssetImage('assets/logobg.jpeg'),
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-          ),
+          // const Image(
+          //   image: AssetImage('assets/logobg.jpeg'),
+          //   fit: BoxFit.cover,
+          //   width: double.infinity,
+          //   height: double.infinity,
+          // ),
           Positioned(
             bottom: 50,
             left: 20,
