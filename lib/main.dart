@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/custom_widget_test.dart';
 import 'package:library_management_sys/screens/auth/login_page.dart';
-import 'package:library_management_sys/screens/lib_nav.dart';
-import 'package:library_management_sys/screens/student_nav.dart';
 
 void main() {
   runApp(const MyApp());

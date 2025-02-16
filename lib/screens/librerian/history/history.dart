@@ -3,8 +3,6 @@ import 'package:library_management_sys/widgets/custom_search.dart';
 import 'package:library_management_sys/widgets/dropdowns/drop_down.dart';
 
 import '../../../resource/colors.dart';
-import '../../../widgets/book/book_widget.dart';
-import '../../../widgets/explore/explore_header.dart';
 
 class History extends StatefulWidget {
   const History({super.key});
@@ -221,7 +219,7 @@ class _HistoryState extends State<History> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  padding: EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
@@ -242,14 +240,13 @@ class _HistoryState extends State<History> {
                   height: 70,
                   child: Row(
                     children: [
-                      Container(
+                      SizedBox(
                         height: 70,
                         child: const Image(
                           image: AssetImage('assets/images/book.png'),
                           fit: BoxFit.contain,
                         ),
                       ),
-
                     ],
                   ),
                 ),

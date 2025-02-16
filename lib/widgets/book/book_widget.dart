@@ -24,7 +24,7 @@ class _BookWidgetState extends State<BookWidget> {
     return Container(
       width: 100,
       height: 180,
-      padding: EdgeInsets.all(5),
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),

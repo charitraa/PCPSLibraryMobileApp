@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/widgets/custom_search.dart';
-import 'package:library_management_sys/widgets/dropdowns/drop_down.dart';
 
 import '../../../resource/colors.dart';
-import '../../../widgets/book/book_widget.dart';
-import '../../../widgets/explore/explore_header.dart';
 
 class StdWishlist extends StatefulWidget {
   const StdWishlist({super.key});
@@ -80,7 +76,8 @@ class _WishlistState extends State<StdWishlist> {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -105,12 +102,14 @@ class _WishlistState extends State<StdWishlist> {
                                 children: [
                                   IconButton(
                                     onPressed: () {},
-                                    icon: Icon(Icons.delete, color: Colors.red.shade400),
+                                    icon: Icon(Icons.delete,
+                                        color: Colors.red.shade400),
                                   ),
                                   const SizedBox(width: 8),
                                   IconButton(
                                     onPressed: () {},
-                                    icon: Icon(Icons.book, color: Colors.blue.shade600),
+                                    icon: Icon(Icons.book,
+                                        color: Colors.blue.shade600),
                                   ),
                                 ],
                               )
