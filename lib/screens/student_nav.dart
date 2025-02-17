@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/screens/librerian/browse_books/admin_browse.dart';
 import 'package:library_management_sys/screens/student/dashboard/student_dashboard.dart';
-import 'package:library_management_sys/screens/student/dashboard/wishlist.dart';
+import 'package:library_management_sys/screens/student/wishlist/wishlist.dart';
 
 class StudentNavBar extends StatefulWidget {
   const StudentNavBar({super.key});
