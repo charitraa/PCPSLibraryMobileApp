@@ -5,6 +5,8 @@ import 'package:library_management_sys/screens/auth/login_page.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/screens/unauthorised_page.dart';
 
+import '../screens/student/in_app_notification/in_app_notification.dart';
+
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -21,6 +23,9 @@ class Routes {
       case RoutesName.student:
         return MaterialPageRoute(
             builder: (BuildContext context) => const StudentNavBar());
+      case RoutesName.notification:
+        return MaterialPageRoute(
+            builder: (BuildContext context) =>  NotificationPage());
       default:
         return MaterialPageRoute(
             builder: (BuildContext context) => const Flashingpage());
