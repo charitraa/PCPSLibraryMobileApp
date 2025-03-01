@@ -29,7 +29,7 @@ class AuthNetworkApiService{
       final session = response.headers['set-cookie']?.split(";")[0].split("=")[1];
       if (session != null) {
         UserModel user = UserModel(
-            role: responseBody['role'],
+            roleId: responseBody['roleId'],
             email: responseBody['email'],
             session: session);
         await UserViewModel().saveUser(user);

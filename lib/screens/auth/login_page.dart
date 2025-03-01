@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/resource/routes_name.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
+import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/widgets/form_widget/custom_button.dart';
 import 'package:library_management_sys/widgets/form_widget/custom_label_password.dart';
+import 'package:provider/provider.dart';
 import '../../resource/colors.dart';
+import '../../utils/utils.dart';
 import '../../widgets/custom_banner/custom_banner.dart';
 import '../../widgets/form_widget/custom_label_textfield.dart';
 
@@ -15,6 +18,7 @@ class Loginpage extends StatefulWidget {
 }
 
 class _LoginpageState extends State<Loginpage> {
+   String username='',password='';
   final String text1 = "Sign in";
   final String text2 = "Sign in to your account";
   @override
@@ -32,9 +36,25 @@ class _LoginpageState extends State<Loginpage> {
                   padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 20),
                   child: Column(
                     children: [
-                      CustomLabelTextfield(hintText: "StudentID", outlinedColor: Colors.black, focusedColor: AppColors.primary, width: size.width, text: "StudentID"),
+                      CustomLabelTextfield(
+                          hintText: "StudentID",
+                          onChanged: (value) {
+                            setState(() {
+                              username = value;
+                            });
+                          },
+                          outlinedColor: Colors.black,
+                          focusedColor: AppColors.primary,
+                          width: size.width,
+                          text: "StudentID"),
                     const SizedBox(height: 16,),
-                      PasswordTextfield(obscureText: true,hintText: "Password", outlinedColor: Colors.black, focusedColor: AppColors.primary, width: size.width, text: "Password"),
+                      PasswordTextfield(
+                          onChanged: (value) {
+                            setState(() {
+                              password = value;
+                            });
+                          },
+                          obscureText: true,hintText: "Password", outlinedColor: Colors.black, focusedColor: AppColors.primary, width: size.width, text: "Password"),
                       const SizedBox(
                         height: 8,
                       ),
@@ -80,7 +100,21 @@ class _LoginpageState extends State<Loginpage> {
                         ],
                       ),
                       const SizedBox(height: 20,),
-                      CustomButton(buttonColor:AppColors.primary,text: 'Login', onPressed: () {  },)
+                      CustomButton(
+                        onPressed: () async {
+                          if (username.isEmpty || username == '') {
+                            return Utils.flushBarErrorMessage(
+                                "Email is required", context);
+                          }
+                          if (password.isEmpty || password == '') {
+                            return Utils.flushBarErrorMessage(
+                                "Email is required", context);
+                          }
+                          await Provider.of<AuthViewModel>(context, listen: false).login(
+                              {"email": username, "password": password},
+                              context);
+                        },
+                        buttonColor:AppColors.primary,text: 'Login',)
                     ],
                   ),
                 ),

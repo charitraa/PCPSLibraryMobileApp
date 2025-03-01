@@ -1,13 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class BookWidget extends StatefulWidget {
   final String bookImage, title, author;
   const BookWidget(
       {super.key,
-      required this.bookImage,
-      required this.title,
-      required this.author});
+        required this.bookImage,
+        required this.title,
+        required this.author});
 
   @override
   State<BookWidget> createState() => _BookWidgetState();
@@ -43,35 +43,36 @@ class _BookWidgetState extends State<BookWidget> {
         children: [
           SizedBox(
             height: 120,
-            child: Image(
-              image: AssetImage(widget.bookImage),
+            child: CachedNetworkImage(
+              imageUrl: widget.bookImage,
               width: 120,
               fit: BoxFit.cover,
+              placeholder: (context, url) => Center(
+                child: CircularProgressIndicator(),
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
             ),
           ),
-          const SizedBox(
-            height: 2,
-          ),
+          const SizedBox(height: 2),
           Text(
             truncatedTitle,
             style: const TextStyle(
               fontSize: 11,
-              fontFamily: 'poppins',
+              fontFamily: 'Poppins',
               fontWeight: FontWeight.bold,
             ),
             maxLines: 2,
-            overflow: TextOverflow.ellipsis, // Handle overflow if needed
+            overflow: TextOverflow.ellipsis,
           ),
-          // Author Text
           Text(
             widget.author,
             style: const TextStyle(
               fontSize: 9,
-              fontFamily: 'poppins',
+              fontFamily: 'Poppins',
               fontWeight: FontWeight.bold,
             ),
             maxLines: 1,
-            overflow: TextOverflow.ellipsis, // Handle text overflow
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

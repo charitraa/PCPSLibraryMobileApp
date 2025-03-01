@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../view_model/books/book_view_model.dart';
 import '../../../widgets/custom_search.dart';
 import '../../../widgets/dropdowns/drop_down.dart';
 
@@ -17,18 +19,52 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   int index = 0;
+  late ScrollController _scrollController;
+  bool isLoad=false;
+  String message='';
+  _scrollListener(){
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      loadMore();
+    }
+    if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        message = "reach the top";
+      });
+    }
+  }
+  loadMore ()async{
+    setState(() {
+      isLoad=true;
+    });
+    try{
+      await Provider.of<BooksViewModel>(context, listen: false)
+          .loadMoreBooks(context);
+      setState(() {
+        isLoad=false;
+      });
+    }catch(e){
+      setState(() {
+        isLoad=false;
+      });
+    }
+  }
+  fetchBooks ()async{
+      await Provider.of<BooksViewModel>(context, listen: false)
+          .fetchBooksList(context);
+
+  }
+  @override
+  void initState() {
+    fetchBooks();
+    _scrollController=ScrollController();
+    _scrollController.addListener(_scrollListener);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> books = [
-      {'image': 'assets/images/book.png', 'title': "My Type of book and well done", 'author': "Author Kenzie Mcnary"},
-      {'image': 'assets/images/two.webp', 'title': "A Million To One", 'author': "Tony Fagoli"},
-      {'image': 'assets/images/hide.webp', 'title': "Hide and Seek", 'author': "Olivia Wilson"},
-      {'image': 'assets/images/one.webp', 'title': "Walk Into The Shadow", 'author': "Author Kenzie Mcnary"},
-      {'image': 'assets/images/book.png', 'title': "Another Book", 'author': "Kenzie Mcnary"},
-      {'image': 'assets/images/two.webp', 'title': "Best Seller", 'author': "Tony Fagoli"},
-      {'image': 'assets/images/hide.webp', 'title': "Thrilling Mystery", 'author': "Olivia Wilson"},
-      {'image': 'assets/images/one.webp', 'title': "Journey Beyond", 'author': "Kenzie Mcnary"},
-    ];
+
     final size = MediaQuery.of(context).size;
     return Scaffold(
       key: _scaffoldKey,
@@ -200,27 +236,45 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                     double itemHeight = 180;
                     double aspectRatio = itemWidth / itemHeight;
 
-                    return GridView.builder(
-                      padding: const EdgeInsets.only(bottom: 18),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 15,
-                        childAspectRatio: aspectRatio,
-                      ),
-                      itemCount: books.length,
-                      physics: const BouncingScrollPhysics(),
-                      itemBuilder: (context, i) {
-                        return BookWidget(
-                          bookImage: books[i]['image']!,
-                          title: books[i]['title']!,
-                          author: books[i]['author']!,
+                    return  Consumer<BooksViewModel>(
+                      builder: (context, value, child) {
+                        final books = value.booksList;
+                        if (books.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'No Books available.',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          );
+                        }
+
+                        return GridView.builder(
+                          padding: const EdgeInsets.only(bottom: 18),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 15,
+                            childAspectRatio: aspectRatio,
+                          ),
+                          itemCount: books.length,
+                          physics: const BouncingScrollPhysics(),
+                          controller: _scrollController,
+                          itemBuilder: (context, i) {
+                            return BookWidget(
+                              bookImage: books.,
+                              title: "sd",
+                              author:"sdf",
+                            );
+                          },
                         );
+
                       },
                     );
                   },
                 ),
               ),
+
+
 
 
 

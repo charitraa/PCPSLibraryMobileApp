@@ -9,7 +9,7 @@ class UserViewModel with ChangeNotifier {
     }
     final SharedPreferences sp = await SharedPreferences.getInstance();
     bool sessionSaved = await sp.setString('session', user.session.toString());
-    bool roleSaved = await sp.setString('role', user.role.toString());
+    bool roleSaved = await sp.setString('role', user.roleId.toString());
     bool emailSaved = await sp.setString('email', user.email.toString());
     if (kDebugMode) {
       print('Role saved: $roleSaved ${sp.getString('session')}');
@@ -26,7 +26,7 @@ class UserViewModel with ChangeNotifier {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     final String? session = sp.getString('session');
     final String? role = sp.getString('role');
-    return UserModel(session: session, role: role);
+    return UserModel(session: session, roleId: role);
   }
 
   Future<bool> remove() async {

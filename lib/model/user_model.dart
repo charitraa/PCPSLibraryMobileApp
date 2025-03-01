@@ -4,18 +4,20 @@ class UserModel {
   String? dob;
   String? address;
   String? contactNo;
+  String? universityId;
+  String? collegeId;
   String? profilePicUrl;
   String? accountCreationDate;
-  String? enrollMentYear;
+  String? enrollmentYear;
   String? gender;
   String? roleId;
-  String? role;
-  String? membershipId;
-  String? membership;
+  String? session;
   String? rollNumber;
   String? email;
   String? accountStatus;
-  String? session;
+  String? createdAt;
+  String? updatedAt;
+  String? deletedAt;
 
   UserModel(
       {this.userId,
@@ -23,18 +25,20 @@ class UserModel {
         this.dob,
         this.address,
         this.contactNo,
+        this.universityId,
+        this.collegeId,
         this.profilePicUrl,
         this.accountCreationDate,
-        this.enrollMentYear,
+        this.enrollmentYear,
         this.gender,
         this.roleId,
-        this.role,
-        this.membershipId,
-        this.membership,
+        this.session,
         this.rollNumber,
         this.email,
         this.accountStatus,
-        this.session});
+        this.createdAt,
+        this.updatedAt,
+        this.deletedAt});
 
   UserModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -42,18 +46,20 @@ class UserModel {
     dob = json['dob'];
     address = json['address'];
     contactNo = json['contactNo'];
+    universityId = json['universityId'];
+    collegeId = json['collegeId'];
     profilePicUrl = json['profilePicUrl'];
     accountCreationDate = json['accountCreationDate'];
-    enrollMentYear = json['enrollMentYear'];
+    enrollmentYear = json['enrollmentYear'];
     gender = json['gender'];
     roleId = json['roleId'];
-    role = json['role'];
-    membershipId = json['membershipId'];
-    membership = json['membership'];
+    session = json['session'];
     rollNumber = json['rollNumber'];
     email = json['email'];
     accountStatus = json['accountStatus'];
-    session = json['session'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    deletedAt = json['deletedAt'];
   }
 
   Map<String, dynamic> toJson() {
@@ -63,18 +69,20 @@ class UserModel {
     data['dob'] = this.dob;
     data['address'] = this.address;
     data['contactNo'] = this.contactNo;
+    data['universityId'] = this.universityId;
+    data['collegeId'] = this.collegeId;
     data['profilePicUrl'] = this.profilePicUrl;
     data['accountCreationDate'] = this.accountCreationDate;
-    data['enrollMentYear'] = this.enrollMentYear;
+    data['enrollmentYear'] = this.enrollmentYear;
     data['gender'] = this.gender;
     data['roleId'] = this.roleId;
-    data['role'] = this.role;
-    data['membershipId'] = this.membershipId;
-    data['membership'] = this.membership;
+    data['session'] = this.session;
     data['rollNumber'] = this.rollNumber;
     data['email'] = this.email;
     data['accountStatus'] = this.accountStatus;
-    data['session'] = this.session;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['deletedAt'] = this.deletedAt;
     return data;
   }
 }
