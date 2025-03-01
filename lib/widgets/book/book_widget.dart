@@ -47,7 +47,7 @@ class _BookWidgetState extends State<BookWidget> {
               imageUrl: widget.bookImage,
               width: 120,
               fit: BoxFit.cover,
-              placeholder: (context, url) => Center(
+              placeholder: (context, url) => const Center(
                 child: CircularProgressIndicator(),
               ),
               errorWidget: (context, url, error) => Icon(Icons.error),

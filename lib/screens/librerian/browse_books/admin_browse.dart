@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/widgets/custom_search.dart';
-import 'package:library_management_sys/widgets/dropdowns/drop_down.dart';
+import 'package:library_management_sys/widgets/dropdowns/custom_genres.dart';
 
 import '../../../resource/colors.dart';
 import '../../../widgets/book/book_widget.dart';
@@ -52,7 +52,7 @@ class _BrowseBooksState extends State<AdminBrowseBooks> {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: CustomGenre(
+              child: CustomGenres(
                 label: 'Filter by Genre',
                 wid: size.width,
                 onChanged: (value) {

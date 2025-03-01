@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/resource/colors.dart';
 import 'package:library_management_sys/widgets/book/book_widget.dart';
+import 'package:provider/provider.dart';
+
+import '../../../view_model/books/book_view_model.dart';
 
 class StudentDashboard extends StatefulWidget {
   const StudentDashboard({super.key});
@@ -10,7 +13,16 @@ class StudentDashboard extends StatefulWidget {
 }
 
 class _StudentDashboardState extends State<StudentDashboard> {
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchBooks();
+  }
+  fetchBooks() async {
+    await Provider.of<BooksViewModel>(context, listen: false)
+        .fetchBooksList(context);
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;

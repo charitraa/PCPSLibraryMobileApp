@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../resource/colors.dart';
+
 class CustomSearch extends StatefulWidget {
   final String hintText;
   final TextStyle? hintStyle;
@@ -11,6 +13,7 @@ class CustomSearch extends StatefulWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final ValueChanged<String> onChanged;
+  final VoidCallback? onTap;
 
   const CustomSearch(
       {super.key,
@@ -23,7 +26,7 @@ class CustomSearch extends StatefulWidget {
       this.keyboardType,
       required this.onChanged,
       this.hintStyle,
-      this.controller});
+      this.controller, this.onTap});
 
   @override
   State<CustomSearch> createState() => _CustomTextfieldState();
@@ -55,9 +58,24 @@ class _CustomTextfieldState extends State<CustomSearch> {
             Icons.list,
             color: Colors.grey,
           ),
-          suffixIcon: const Icon(
-            Icons.search,
-            color: Colors.grey,
+          suffixIcon:Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 6.0, vertical: 6),
+            child: GestureDetector(
+              onTap: widget.onTap,
+              child: Container(
+                width: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: const Icon(
+                  Icons.search,
+                  color: Colors.white, // Icon color
+                  size: 20,
+                ),
+              ),
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),

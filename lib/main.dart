@@ -8,6 +8,8 @@ import 'package:library_management_sys/screens/lib_nav.dart';
 import 'package:library_management_sys/screens/student/browse_books/review.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/screens/unauthorised_page.dart';
+import 'package:library_management_sys/view_model/attributes/attr_author_view_model.dart';
+import 'package:library_management_sys/view_model/attributes/attr_genre_view_model.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
@@ -28,6 +30,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => UserViewModel()),
         ChangeNotifierProvider(create: (_) => BooksViewModel()),
+        ChangeNotifierProvider(create: (_) => AttrAuthorViewModel()),
+        ChangeNotifierProvider(create: (_) => AttrGenreViewModel()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

@@ -1,9 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/constant/base_url.dart';
+import 'package:library_management_sys/widgets/book/book_skeleton.dart';
+import 'package:library_management_sys/widgets/dropdowns/custom_authors.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../view_model/books/book_view_model.dart';
 import '../../../widgets/custom_search.dart';
-import '../../../widgets/dropdowns/drop_down.dart';
-
+import '../../../widgets/dropdowns/custom_genres.dart';
 import '../../../resource/colors.dart';
 import '../../../widgets/book/book_widget.dart';
 import '../../../widgets/explore/explore_header.dart';
@@ -20,9 +25,9 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
 
   int index = 0;
   late ScrollController _scrollController;
-  bool isLoad=false;
-  String message='';
-  _scrollListener(){
+  bool isLoad = false;
+  String message = '';
+  _scrollListener() {
     if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       loadMore();
@@ -30,41 +35,42 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
     if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {
-        message = "reach the top";
+        message = "Reached the top";
       });
     }
   }
-  loadMore ()async{
+  loadMore() async {
     setState(() {
-      isLoad=true;
+      isLoad = true;
     });
-    try{
+    try {
       await Provider.of<BooksViewModel>(context, listen: false)
           .loadMoreBooks(context);
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error loading more books: $e");
+      }
+    } finally {
       setState(() {
-        isLoad=false;
-      });
-    }catch(e){
-      setState(() {
-        isLoad=false;
+        isLoad = false;
       });
     }
   }
-  fetchBooks ()async{
-      await Provider.of<BooksViewModel>(context, listen: false)
-          .fetchBooksList(context);
-
+  resetBooks() async {
+    await Provider.of<BooksViewModel>(context, listen: false)
+        .resetBookList(context);
   }
   @override
   void initState() {
-    fetchBooks();
-    _scrollController=ScrollController();
+    _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
     super.initState();
   }
+
+
+
   @override
   Widget build(BuildContext context) {
-
     final size = MediaQuery.of(context).size;
     return Scaffold(
       key: _scaffoldKey,
@@ -98,17 +104,25 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: CustomGenre(
+              child: CustomGenres(
                 label: 'Filter by Genre',
                 wid: size.width,
                 onChanged: (value) {
                   _scaffoldKey.currentState?.closeDrawer();
-                  // Provider.of<UserListViewModel>(context, listen: false)
-                  //     .setBloodGrp(value!, context);
                 },
               ),
             ),
 
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CustomAuthor(
+                label: 'Filter by Author',
+                wid: size.width,
+                onChanged: (value) {
+                  _scaffoldKey.currentState?.closeDrawer();
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -119,9 +133,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
           child: Column(
             children: [
               const ExploreHeader(),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -131,76 +143,30 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            index = 0;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 5),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.primary,
-                              width: 1.0,
-                            ),
-                            color: index == 0 ? AppColors.primary : Colors.white,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text(
-                            "All Books",
-                            style: TextStyle(
-                                color:
-                                index == 0 ? Colors.white : AppColors.primary,
-                                fontSize: 12),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            index = 1;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: index == 1 ? AppColors.primary : Colors.white,
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: AppColors.primary,
-                              width: 1.0,
-                            ),
-                          ),
-                          child: Text(
-                            "Top Rated",
-                            style: TextStyle(
-                                color:
-                                index == 1 ? Colors.white : AppColors.primary,
-                                fontSize: 12),
-                          ),
-                        ),
-                      )
+                      buildFilterButton("All Books", (){
+                        setState(() {
+                          index = 0;
+                        });
+                        resetBooks();
+                      },0),
+                      const SizedBox(width: 8),
+                      buildFilterButton("Top Rated", (){
+                        setState(() {
+                          index = 1;
+                        });
+                      },1),
                     ],
                   ),
                   InkWell(
                     onTap: () {
                       _scaffoldKey.currentState?.openDrawer();
                     },
-
                     child: Container(
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
@@ -211,34 +177,52 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                           width: 1.0,
                         ),
                       ),
-                      child: const Icon(Icons.filter_alt_rounded,size: 15,color: Colors.white,),
+                      child: const Icon(
+                        Icons.filter_alt_rounded,
+                        size: 15,
+                        color: Colors.white,
+                      ),
                     ),
                   )
                 ],
               ),
-              const SizedBox(
-                height: 10,
+              const SizedBox(height: 10),
+              Consumer<BooksViewModel>(
+                builder: (context, viewModel, child) {
+                  final TextEditingController _controller =
+                  TextEditingController(text: viewModel.searchValue);
+                  return  CustomSearch(
+                    controller: _controller,
+                    hintText: 'Search Books',
+                    outlinedColor: Colors.grey,
+                    focusedColor: AppColors.primary,
+                    height: 50,
+                    width: double.infinity,
+                    onChanged: (e) {},
+                    onTap: (){
+                      String searchValue = _controller.text;
+                      viewModel.setFilter(searchValue, context);
+                    },
+                  );
+                },
               ),
-              CustomSearch(
-                  hintText: 'Search Books',
-                  outlinedColor: Colors.grey,
-                  focusedColor: AppColors.primary,
-                  height: 50,
-                  width: double.infinity,
-                  onChanged: (e) {}),
-              const SizedBox(
-                height: 15,
-              ),
-              Expanded(
+
+              const SizedBox(height: 15),
+              Flexible(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     double itemWidth = (constraints.maxWidth - (10 * 2)) / 3;
                     double itemHeight = 180;
                     double aspectRatio = itemWidth / itemHeight;
 
-                    return  Consumer<BooksViewModel>(
+                    return Consumer<BooksViewModel>(
                       builder: (context, value, child) {
                         final books = value.booksList;
+
+                        if (value.isLoading) {
+                          return const BookSkeletonGrid();
+                        }
+
                         if (books.isEmpty) {
                           return const Center(
                             child: Text(
@@ -256,30 +240,55 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                             mainAxisSpacing: 15,
                             childAspectRatio: aspectRatio,
                           ),
-                          itemCount: books.length,
+                          itemCount: books.length + (isLoad ? 1 : 0),
                           physics: const BouncingScrollPhysics(),
                           controller: _scrollController,
-                          itemBuilder: (context, i) {
+                          itemBuilder: (context, index) {
+                            if (index == books.length) {
+                              return Center(
+                                child: LoadingAnimationWidget.twistingDots(
+                                  leftDotColor:  Colors.red,
+                                  rightDotColor:  AppColors.primary,
+                                  size: 40,
+                                ),
+                              );
+                            }
+                            final book = books[index];
+                            if (kDebugMode) {
+                              print("${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}");
+                            }
                             return BookWidget(
-                              bookImage: books.,
-                              title: "sd",
-                              author:"sdf",
+                              bookImage: "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
+                              title: book.title ?? '',
+                              author: "By ${book.bookAuthors[0].author.fullName}"??'',
                             );
                           },
                         );
-
                       },
                     );
                   },
                 ),
               ),
-
-
-
-
-
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildFilterButton(String title, VoidCallback onTap, int tabIndex) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        decoration: BoxDecoration(
+          color: index == tabIndex ? AppColors.primary : Colors.white,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: AppColors.primary, width: 1.0),
+        ),
+        child: Text(
+          title,
+          style: TextStyle(color: index == tabIndex ? Colors.white : AppColors.primary, fontSize: 12),
         ),
       ),
     );

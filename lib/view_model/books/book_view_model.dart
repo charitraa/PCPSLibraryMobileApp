@@ -60,7 +60,7 @@ class BooksViewModel with ChangeNotifier {
       _bookGenre = value;
       _publisher = '';
       _bookAuthor = '';
-      resetUserList(context);
+      resetBookList(context);
       notifyListeners();
     }
   }
@@ -71,7 +71,7 @@ class BooksViewModel with ChangeNotifier {
       _bookGenre = '';
       _publisher = '';
       _bookAuthor = value;
-      resetUserList(context);
+      resetBookList(context);
       notifyListeners();
     }
   }
@@ -82,14 +82,18 @@ class BooksViewModel with ChangeNotifier {
       _bookGenre = '';
       _publisher = value;
       _bookAuthor = '';
-      resetUserList(context);
+      resetBookList(context);
       notifyListeners();
     }
   }
-  Future<void> resetUserList(BuildContext context) async {
+  Future<void> resetBookList(BuildContext context) async {
     _booksList.clear();
     _currentPage = 1;
     _filter = '';
+    _bookGenre = '';
+    _publisher = '';
+    _bookAuthor = '';
+    _searchValue = '';
     _limit = 10;
     await fetchBooksList(context);
     notifyListeners();
@@ -130,7 +134,7 @@ class BooksViewModel with ChangeNotifier {
   Future<void> loadMoreBooks(BuildContext context) async {
     try {
       final Map<String,dynamic> response =
-      await _booksRepo.fetchBooks(_filter,_bookAuthor,_publisher,_bookGenre,1,_limit,context);
+      await _booksRepo.fetchBooks(_filter,_bookAuthor,_publisher,_bookGenre,_currentPage,_limit,context);
       if(_currentPage!=null){
         print("${response['next']}=$_currentPage");
         _booksList.addAll(response['booksList']);
@@ -140,7 +144,7 @@ class BooksViewModel with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       Utils.flushBarErrorMessage(
-          "Error fetching notifications: $error", context);
+          "Error fetching books: $error", context);
     }
   }
 
