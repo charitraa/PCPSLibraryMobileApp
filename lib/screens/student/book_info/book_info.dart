@@ -4,14 +4,45 @@ import 'package:library_management_sys/screens/student/book_info/review.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/widgets/book/book_info_column.dart';
 import 'package:library_management_sys/widgets/book/book_info_row.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/response/status.dart';
 import '../../../resource/colors.dart';
 
 class BookInfo extends StatefulWidget {
-  final String uid, bookName,author,subTitle,edition,year,publisher,pages,bookNo,classNo,series,genre,isbn,image, status;
-  const BookInfo({super.key, required this.bookName, required this.author, required this.edition, required this.year, required this.publisher, required this.pages, required this.bookNo, required this.classNo, required this.series, required this.genre, required this.isbn, required this.image, required this.status, required this.subTitle, required this.uid});
+  final String uid,
+      bookName,
+      author,
+      subTitle,
+      edition,
+      year,
+      publisher,
+      pages,
+      bookNo,
+      classNo,
+      series,
+      genre,
+      isbn,
+      image,
+      status;
+  const BookInfo(
+      {super.key,
+      required this.bookName,
+      required this.author,
+      required this.edition,
+      required this.year,
+      required this.publisher,
+      required this.pages,
+      required this.bookNo,
+      required this.classNo,
+      required this.series,
+      required this.genre,
+      required this.isbn,
+      required this.image,
+      required this.status,
+      required this.subTitle,
+      required this.uid});
 
   @override
   State<BookInfo> createState() => _BookInfoState();
@@ -24,14 +55,17 @@ class _BookInfoState extends State<BookInfo> {
     super.initState();
     getIndividualData();
   }
-  void getIndividualData()async{
+  bool isLoading = false;
+
+  void getIndividualData() async {
     await Provider.of<BooksViewModel>(context, listen: false)
         .getIndividualBooks(widget.uid, context);
   }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Scaffold(
+    return   Scaffold(
       appBar: AppBar(
         title: const Text(
           "Book Info",
@@ -56,7 +90,13 @@ class _BookInfoState extends State<BookInfo> {
           )
         ],
       ),
-      body: SafeArea(
+      body: isLoading ? Center(
+        child: LoadingAnimationWidget.twistingDots(
+          leftDotColor: Colors.red,
+          rightDotColor: AppColors.primary,
+          size: 40,
+        ),
+      ): SafeArea(
           child: Container(
         padding: const EdgeInsets.all(20),
         width: size.width,
@@ -77,8 +117,7 @@ class _BookInfoState extends State<BookInfo> {
                       borderRadius:
                           BorderRadius.circular(8), // Apply border radius here
                       child: CachedNetworkImage(
-                        imageUrl:
-                            widget.image,
+                        imageUrl: widget.image,
                         width: 200,
                         height: 290,
                         fit: BoxFit.contain,
@@ -95,10 +134,11 @@ class _BookInfoState extends State<BookInfo> {
               const SizedBox(
                 height: 18,
               ),
-               Text(
+              Text(
                 widget.bookName,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 8,
@@ -130,8 +170,8 @@ class _BookInfoState extends State<BookInfo> {
               const SizedBox(
                 height: 8,
               ),
-               Text(
-             widget.author,
+              Text(
+                widget.author,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 12,
@@ -149,7 +189,7 @@ class _BookInfoState extends State<BookInfo> {
                       border: Border.all(color: Colors.grey, width: 0.8),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child:  Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         BookInfoColumn(
@@ -190,7 +230,7 @@ class _BookInfoState extends State<BookInfo> {
                 child: Container(
                   width: size.width,
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child:  Column(
+                  child: Column(
                     children: [
                       Row(
                         children: [
@@ -202,18 +242,20 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 5,),
+                      const SizedBox(
+                        height: 5,
+                      ),
                       Row(
                         children: [
                           Flexible(
                             child: BookInfoRow(
-                              title: 'Sub Title',
-                              value: widget.subTitle
-                            ),
+                                title: 'Sub Title', value: widget.subTitle),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 5,),
+                      const SizedBox(
+                        height: 5,
+                      ),
                       Row(
                         children: [
                           Flexible(
@@ -223,7 +265,10 @@ class _BookInfoState extends State<BookInfo> {
                             ),
                           ),
                         ],
-                      ), SizedBox(height: 5,),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
                       Row(
                         children: [
                           Flexible(
@@ -234,7 +279,9 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 5,),
+                      SizedBox(
+                        height: 5,
+                      ),
                       Row(
                         children: [
                           Flexible(
@@ -245,7 +292,9 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 5,),
+                      SizedBox(
+                        height: 5,
+                      ),
                       Row(
                         children: [
                           Flexible(
@@ -256,18 +305,22 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 5,),
+                      SizedBox(
+                        height: 5,
+                      ),
                       Row(
                         children: [
                           Flexible(
                             child: BookInfoRow(
                               title: 'Publication Date',
-                              value:widget.year,
+                              value: widget.year,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 5,),
+                      SizedBox(
+                        height: 5,
+                      ),
                       Row(
                         children: [
                           Flexible(
@@ -278,7 +331,9 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 5,),
+                      const SizedBox(
+                        height: 5,
+                      ),
                       Row(
                         children: [
                           Flexible(
@@ -289,13 +344,25 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 5,),
+                      const SizedBox(
+                        height: 5,
+                      ),
                       Consumer<BooksViewModel>(
                         builder: (context, viewModel, child) {
-                          final user = viewModel.currentUser!;
+                          if (viewModel.booksData.status == Status.LOADING) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
 
-                          String totalBooks = user.total != null ? user.total.toString() : '';
-                          String available=user.available!=0?"${user.available} available": "All Reserved";
+                          // Ensure currentUser is not null before using it
+                          final user = viewModel.currentUser;
+                          if (user == null) {
+                            return const Center(child: Text("User data not available"));
+                          }
+
+                          String totalBooks = user.total.toString() ?? 'N/A';
+                          String available = (user.available != null && user.available != 0)
+                              ? "${user.available} available"
+                              : "All Reserved";
 
                           return Column(
                             children: [
@@ -309,7 +376,7 @@ class _BookInfoState extends State<BookInfo> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 5,),
+                              const SizedBox(height: 5),
                               Row(
                                 children: [
                                   Container(
@@ -323,7 +390,7 @@ class _BookInfoState extends State<BookInfo> {
                                       softWrap: true,
                                     ),
                                   ),
-                                  buildFilterButton(available,(){},Colors.green,12)
+                                  buildFilterButton(available, () {}, Colors.green, 12)
                                 ],
                               )
                             ],
@@ -331,16 +398,33 @@ class _BookInfoState extends State<BookInfo> {
                         },
                       ),
 
-
-                      const SizedBox(height: 15,),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-
-                          buildFilterButton("Reserve Book", () async{
-                           final check= Provider.of<BooksViewModel>(context, listen: false)
-                                .reserve(widget.uid, context);
-
+                          buildFilterButton("Reserve Book", () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            try {
+                              final check =await Provider.of<BooksViewModel>(context,
+                                      listen: false)
+                                  .reserve(widget.uid, context);
+                              if( check){
+                               await Provider.of<BooksViewModel>(context,
+                                    listen: false)
+                                    .getIndividualBooks(widget.uid, context);
+                              }
+                              setState(() {
+                                isLoading = false;
+                              });
+                            } catch (e) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            }
                           }, AppColors.primary, 13),
                           const SizedBox(width: 10),
                           Container(
@@ -352,17 +436,19 @@ class _BookInfoState extends State<BookInfo> {
                           buildFilterButton("Rate Now", () {
                             Navigator.of(context).push(
                               PageRouteBuilder(
-                                pageBuilder: (context, animation, secondaryAnimation) => AddReview(uid: widget.uid,),
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        AddReview(
+                                  uid: widget.uid,
+                                ),
                                 transitionsBuilder: (context, animation,
                                     secondaryAnimation, child) {
                                   const begin = Offset(1.0, 0.0);
                                   const end = Offset.zero;
                                   const curve = Curves.easeInOut;
-                                  var tween = Tween(
-                                      begin: begin, end: end)
+                                  var tween = Tween(begin: begin, end: end)
                                       .chain(CurveTween(curve: curve));
-                                  var offsetAnimation =
-                                  animation.drive(tween);
+                                  var offsetAnimation = animation.drive(tween);
                                   return SlideTransition(
                                     position: offsetAnimation,
                                     child: child,
@@ -373,7 +459,6 @@ class _BookInfoState extends State<BookInfo> {
                           }, Colors.red, 13),
                         ],
                       )
-
                     ],
                   ),
                 ),
@@ -384,20 +469,20 @@ class _BookInfoState extends State<BookInfo> {
       )),
     );
   }
-  Widget buildFilterButton(String title, VoidCallback onTap,Color color,double size ) {
+
+  Widget buildFilterButton(
+      String title, VoidCallback onTap, Color color, double size) {
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
         decoration: BoxDecoration(
-          color:color,
+          color: color,
           borderRadius: BorderRadius.circular(5),
         ),
         child: Text(
           title,
-          style:  TextStyle(
-              color: Colors.white,
-              fontSize: size),
+          style: TextStyle(color: Colors.white, fontSize: size),
         ),
       ),
     );

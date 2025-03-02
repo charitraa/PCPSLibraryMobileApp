@@ -63,7 +63,7 @@ class BooksViewModel with ChangeNotifier {
       _bookGenre = value;
       _publisher = '';
       _bookAuthor = '';
-      resetBookList(context);
+      fetchBooksList(context);
       notifyListeners();
     }
   }
@@ -75,7 +75,7 @@ class BooksViewModel with ChangeNotifier {
       _bookGenre = '';
       _publisher = '';
       _bookAuthor = value;
-      resetBookList(context);
+      fetchBooksList(context);
       notifyListeners();
     }
   }
@@ -87,7 +87,7 @@ class BooksViewModel with ChangeNotifier {
       _bookGenre = '';
       _publisher = value;
       _bookAuthor = '';
-      resetBookList(context);
+      fetchBooksList(context);
       notifyListeners();
     }
   }
@@ -175,7 +175,8 @@ class BooksViewModel with ChangeNotifier {
       if(user){
         Utils.flushBarSuccessMessage('You have successfully applied for reservation!!', context);
       }
-      return user;
+      print(user);
+      return true;
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);
       return false;

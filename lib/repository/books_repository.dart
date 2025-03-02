@@ -10,8 +10,7 @@ import 'package:library_management_sys/utils/utils.dart';
 class BooksRepository {
   final BaseApiServices _apiService = NetworkApiService();
 
-  Future<Map<String, dynamic>> fetchBooks(
-      String seed,
+  Future<Map<String, dynamic>> fetchBooks(String seed,
       String bookAuthor,
       String publisher,
       String bookGenres,
@@ -21,13 +20,16 @@ class BooksRepository {
     String url = '';
     if (bookAuthor.isNotEmpty) {
       url =
-          '${BookEndPoints.bookUrl}?seed=$seed&bookAuthor=$bookAuthor&page=$page&pageSize=$limit';
+      '${BookEndPoints
+          .bookUrl}?seed=$seed&bookAuthor=$bookAuthor&page=$page&pageSize=$limit';
     } else if (publisher.isNotEmpty) {
       url =
-          '${BookEndPoints.bookUrl}?seed=$seed&publisher=$publisher&page=$page&pageSize=$limit';
+      '${BookEndPoints
+          .bookUrl}?seed=$seed&publisher=$publisher&page=$page&pageSize=$limit';
     } else if (bookGenres.isNotEmpty) {
       url =
-          '${BookEndPoints.bookUrl}?seed=$seed&bookGenres=$bookGenres&page=$page&pageSize=$limit';
+      '${BookEndPoints
+          .bookUrl}?seed=$seed&bookGenres=$bookGenres&page=$page&pageSize=$limit';
     } else if (seed.isNotEmpty) {
       url = '${BookEndPoints.bookUrl}?seed=$seed&page=$page&pageSize=$limit';
     } else {
@@ -52,7 +54,9 @@ class BooksRepository {
       return Utils.flushBarErrorMessage(error.toString(), context);
     }
   }
-  Future<BookInfoModel> getIndividualBooks(String uid, BuildContext context) async {
+
+  Future<BookInfoModel> getIndividualBooks(String uid,
+      BuildContext context) async {
     try {
       dynamic response =
       await _apiService.getApiResponse("${BookEndPoints.bookUrl}/$uid");
@@ -67,35 +71,54 @@ class BooksRepository {
       throw e;
     }
   }
+
   Future<bool> reserveBook(String uid, BuildContext context) async {
     try {
+      print("${BookEndPoints.reserveUrl}/$uid");
+
       dynamic response =
       await _apiService.postUrlResponse("${BookEndPoints.reserveUrl}/$uid");
-      if (response['error'] != null && response['error'] == true) {
-        Utils.flushBarErrorMessage(
-            response['errorMessage'] ?? "Unknown error", context);
-        throw Exception(response['errorMessage'] ?? "Unknown error");
+
+      if (response == null) {
+        Utils.flushBarErrorMessage("Server did not respond", context);
+        return false;
       }
+
+      if (response['error'] != null) {
+        Utils.flushBarErrorMessage(
+            response['error'] ?? "Unknown error", context);
+        return false;
+      }
+      print(response);
       return true;
     } catch (e) {
-      Utils.flushBarErrorMessage(e.toString(), context);
-      throw e;
+      print("Error reserving book: $e");
+      Utils.flushBarErrorMessage(
+          "Failed to reserve book. Please try again.", context);
       return false;
     }
   }
-  Future<bool> rateBook(String uid,String rate, BuildContext context) async {
+
+  Future<bool> rateBook(String uid, String rate, BuildContext context) async {
     try {
       dynamic response =
-      await _apiService.postUrlResponse("${BookEndPoints.reserveUrl}/$uid/$rate");
-      if (response['error'] != null && response['error'] == true) {
+      await _apiService.postUrlResponse("${BookEndPoints.rateUrl}/$uid/$rate");
+
+      if (response == null) {
+        Utils.flushBarErrorMessage("Server did not respond", context);
+        return false;
+      }
+
+      if (response['error'] != null) {
         Utils.flushBarErrorMessage(
-            response['errorMessage'] ?? "Unknown error", context);
-        throw Exception(response['errorMessage'] ?? "Unknown error");
+            response['error'] ?? "Unknown error", context);
+        return false;
       }
       return true;
     } catch (e) {
-      Utils.flushBarErrorMessage(e.toString(), context);
-      throw e;
+      print("Error reserving book: $e");
+      Utils.flushBarErrorMessage(
+          "Failed to rate the book. Please try again.", context);
       return false;
     }
   }

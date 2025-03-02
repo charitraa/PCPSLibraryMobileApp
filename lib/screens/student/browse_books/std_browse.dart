@@ -276,16 +276,18 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                               );
                             }
                             final book = books[index];
-                            if (kDebugMode) {
-                              print(
-                                  "Image display : ${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}");
-                            }
+                            // if (kDebugMode) {
+                            //   print(
+                            //       "Image display : ${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}");
+                            // }
                             String authors = "By ";
                             List<String> authorNames =
                                 book.bookAuthors.map((bookAuthor) {
                               return bookAuthor.author.fullName ?? '';
                             }).toList();
                             authors += authorNames.join(", ");
+                            int score =0;
+
                             String genres = "";
                             List<String> genresMap =
                                 book.bookGenres.map((bookGenres) {

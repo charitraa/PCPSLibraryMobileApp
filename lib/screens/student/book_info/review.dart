@@ -94,48 +94,19 @@ class _AddReviewState extends State<AddReview> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
-                        'Write a Review',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: 'poppins',
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _reviewController,
-                        maxLines: 5,
-                        decoration: InputDecoration(
-                          hintText: 'Share your experience...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(color: Colors.green),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
                       Center(
                         child: CustomButton(
                           onPressed: () async {
-                            if (_rating == 0.0 ||
-                                _reviewController.text.isEmpty) {
+                            if (_rating == 0.0) {
                               Utils.flushBarErrorMessage(
-                                  'Please provide a rating and review.',
-                                  context);
-
+                                  'Please provide a rating.', context);
                               return;
                             } else {
                               final check = await Provider.of<BooksViewModel>(
                                       context,
                                       listen: false)
                                   .rateBook(
-                                      widget.uid,
-                                      _reviewController.text.toString(),
-                                      context);
+                                      widget.uid, _rating.toString(), context);
                               return;
                             }
                           },

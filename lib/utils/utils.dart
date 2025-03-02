@@ -15,7 +15,7 @@ class Utils {
       backgroundColor: Colors.red,
       title: 'Error',
       messageColor: Colors.black,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 4),
       icon: const Icon(
         Icons.error,
         size: 28.0,
