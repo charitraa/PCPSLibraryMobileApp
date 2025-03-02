@@ -3,11 +3,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class BookWidget extends StatefulWidget {
   final String bookImage, title, author;
+  final VoidCallback? onTap;
   const BookWidget(
       {super.key,
         required this.bookImage,
         required this.title,
-        required this.author});
+        required this.author,  this.onTap});
 
   @override
   State<BookWidget> createState() => _BookWidgetState();
@@ -21,60 +22,63 @@ class _BookWidgetState extends State<BookWidget> {
         ? "${titleWords.take(5).join(" ")}..."
         : widget.title;
 
-    return Container(
-      width: 100,
-      height: 180,
-      padding: EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 1.5,
-            offset: const Offset(2, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 120,
-            child: CachedNetworkImage(
-              imageUrl: widget.bookImage,
-              width: 120,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => const Center(
-                child: CircularProgressIndicator(),
+    return InkWell(
+      onTap: widget.onTap,
+      child: Container(
+        width: 100,
+        height: 200,
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1.5,
+              offset: const Offset(2, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 122,
+              child: CachedNetworkImage(
+                imageUrl: widget.bookImage,
+                width: 120,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            truncatedTitle,
-            style: const TextStyle(
-              fontSize: 11,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
+            const SizedBox(height: 2),
+            Text(
+              truncatedTitle,
+              style: const TextStyle(
+                fontSize: 11,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            widget.author,
-            style: const TextStyle(
-              fontSize: 9,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
+            Text(
+              widget.author,
+              style: const TextStyle(
+                fontSize: 9,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

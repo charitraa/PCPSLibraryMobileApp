@@ -1,9 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/resource/colors.dart';
+import 'package:library_management_sys/view_model/attributes/attr_author_view_model.dart';
+import 'package:library_management_sys/view_model/attributes/attr_genre_view_model.dart';
+import 'package:library_management_sys/view_model/attributes/attr_publisher_view_model.dart';
 import 'package:library_management_sys/widgets/book/book_widget.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
+import '../../../constant/base_url.dart';
 import '../../../view_model/books/book_view_model.dart';
+import '../../../widgets/book/book_skeleton.dart';
 
 class StudentDashboard extends StatefulWidget {
   const StudentDashboard({super.key});
@@ -22,6 +29,12 @@ class _StudentDashboardState extends State<StudentDashboard> {
   fetchBooks() async {
     await Provider.of<BooksViewModel>(context, listen: false)
         .fetchBooksList(context);
+    await Provider.of<AttrPublisherViewModel>(context, listen: false)
+        .fetchPublishersList(context);
+    await Provider.of<AttrGenreViewModel>(context, listen: false)
+        .fetchGenresList(context);
+    await Provider.of<AttrAuthorViewModel>(context, listen: false)
+        .fetchAuthorsList(context);
   }
   @override
   Widget build(BuildContext context) {
@@ -102,49 +115,55 @@ class _StudentDashboardState extends State<StudentDashboard> {
                         fontFamily: 'poppins-black',
                         color: AppColors.primary),
                   ),
-                  InkWell(
-                    onTap: () {},
-                    child: Icon(Icons.arrow_forward_ios_sharp,
-                        size: 18, color: AppColors.primary),
-                  )
+
                 ],
               ),
-              const SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  children: [
-                    BookWidget(
-                        bookImage: 'assets/images/book.png',
-                        title: "My Type of book and well done",
-                        author: "Author kenzie Mcnary"),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    BookWidget(
-                        bookImage: 'assets/images/two.webp',
-                        title: "A Million To One",
-                        author: "Tony Fagoli"),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    BookWidget(
-                        bookImage: 'assets/images/hide.webp',
-                        title: "Hide and Seek",
-                        author: "Olivia Wilson"),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    BookWidget(
-                        bookImage: 'assets/images/one.webp',
-                        title: "Walk Into The shadow",
-                        author: "Author kenzie Mcnary"),
-                    SizedBox(
-                      width: 8,
-                    ),
-                  ],
+              SizedBox(height: 10,),
+              SizedBox(
+                height: 200,
+                child: Consumer<BooksViewModel>(
+                  builder: (context, value, child) {
+                    final books = value.booksList;
+
+                    if (value.isLoading) {
+                      return const BookSkeletonGrid();
+                    }
+
+                    if (books.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No Books available.',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(bottom: 18),
+                      itemCount: 6,
+
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+
+                        final book = books[index];
+                        if (kDebugMode) {
+                          print("${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}");
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: BookWidget(
+                            bookImage: "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
+                            title: book.title ?? '',
+                            author: "By ${book.bookAuthors[0].author.fullName}"??'',
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
-              ),
+              )
+             ,
               const SizedBox(
                 height: 5,
               ),

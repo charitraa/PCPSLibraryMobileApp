@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:library_management_sys/data/network/BaseApiService.dart';
 import 'package:library_management_sys/data/network/NetworkApiService.dart';
 import 'package:library_management_sys/endpoints/attribute_endpoints.dart';
+import 'package:library_management_sys/model/Publisher_model.dart';
 import 'package:library_management_sys/model/author_model.dart';
 import 'package:library_management_sys/model/genre_model.dart';
 import 'package:library_management_sys/utils/utils.dart';
@@ -53,4 +54,27 @@ class AttributesRepository {
       return Utils.flushBarErrorMessage(error.toString(), context);
     }
   }
+
+  Future<Map<String, dynamic>> fetchPublisher(
+      String seed, int page, int limit, BuildContext context) async {
+    String url =
+        '${AttributeEndpoints.publisherUrl}?seed=$seed&page=$page&pageSize=$limit';
+    try {
+      if (kDebugMode) {
+        print(url);
+      }
+      dynamic response = await _apiService.getApiResponse(url);
+      List<Publisher> publisher = [];
+      if (response['data'] != null && response['data'] is List) {
+        publisher =
+            (response['data'] as List).map((e) => Publisher.fromJson(e)).toList();
+      }
+      final next = response['info']?['next'];
+
+      return {"publisher": publisher, "next": next};
+    } catch (error) {
+      return Utils.flushBarErrorMessage(error.toString(), context);
+    }
+  }
+
 }

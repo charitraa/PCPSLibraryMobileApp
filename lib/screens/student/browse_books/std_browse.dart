@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
+import 'package:library_management_sys/screens/student/book_info/book_info.dart';
+import 'package:library_management_sys/view_model/attributes/attr_genre_view_model.dart';
 import 'package:library_management_sys/widgets/book/book_skeleton.dart';
 import 'package:library_management_sys/widgets/dropdowns/custom_authors.dart';
+import 'package:library_management_sys/widgets/dropdowns/custom_publisher.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -28,17 +31,20 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
   bool isLoad = false;
   String message = '';
   _scrollListener() {
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       loadMore();
     }
-    if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
+    if (_scrollController.offset <=
+            _scrollController.position.minScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {
         message = "Reached the top";
       });
     }
   }
+
   loadMore() async {
     setState(() {
       isLoad = true;
@@ -46,28 +52,30 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
     try {
       await Provider.of<BooksViewModel>(context, listen: false)
           .loadMoreBooks(context);
+      setState(() {
+        isLoad = false;
+      });
     } catch (e) {
       if (kDebugMode) {
         print("Error loading more books: $e");
       }
-    } finally {
       setState(() {
         isLoad = false;
       });
     }
   }
+
   resetBooks() async {
     await Provider.of<BooksViewModel>(context, listen: false)
         .resetBookList(context);
   }
+
   @override
   void initState() {
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
     super.initState();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -108,17 +116,32 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                 label: 'Filter by Genre',
                 wid: size.width,
                 onChanged: (value) {
+                  Provider.of<BooksViewModel>(context, listen: false)
+                      .setBookGenreGrp(value!, context);
                   _scaffoldKey.currentState?.closeDrawer();
                 },
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: CustomAuthor(
                 label: 'Filter by Author',
                 wid: size.width,
                 onChanged: (value) {
+                  Provider.of<BooksViewModel>(context, listen: false)
+                      .setBookAuthor(value!, context);
+                  _scaffoldKey.currentState?.closeDrawer();
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CustomPublisher(
+                label: 'Filter by Publisher',
+                wid: size.width,
+                onChanged: (value) {
+                  Provider.of<BooksViewModel>(context, listen: false)
+                      .setPublisher(value!, context);
                   _scaffoldKey.currentState?.closeDrawer();
                 },
               ),
@@ -149,18 +172,18 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                 children: [
                   Row(
                     children: [
-                      buildFilterButton("All Books", (){
+                      buildFilterButton("All Books", () {
                         setState(() {
                           index = 0;
                         });
                         resetBooks();
-                      },0),
+                      }, 0),
                       const SizedBox(width: 8),
-                      buildFilterButton("Top Rated", (){
+                      buildFilterButton("Top Rated", () {
                         setState(() {
                           index = 1;
                         });
-                      },1),
+                      }, 1),
                     ],
                   ),
                   InkWell(
@@ -190,8 +213,8 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
               Consumer<BooksViewModel>(
                 builder: (context, viewModel, child) {
                   final TextEditingController _controller =
-                  TextEditingController(text: viewModel.searchValue);
-                  return  CustomSearch(
+                      TextEditingController(text: viewModel.searchValue);
+                  return CustomSearch(
                     controller: _controller,
                     hintText: 'Search Books',
                     outlinedColor: Colors.grey,
@@ -199,14 +222,13 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                     height: 50,
                     width: double.infinity,
                     onChanged: (e) {},
-                    onTap: (){
+                    onTap: () {
                       String searchValue = _controller.text;
                       viewModel.setFilter(searchValue, context);
                     },
                   );
                 },
               ),
-
               const SizedBox(height: 15),
               Flexible(
                 child: LayoutBuilder(
@@ -227,14 +249,16 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                           return const Center(
                             child: Text(
                               'No Books available.',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.grey),
                             ),
                           );
                         }
 
                         return GridView.builder(
                           padding: const EdgeInsets.only(bottom: 18),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 15,
@@ -247,21 +271,89 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                             if (index == books.length) {
                               return Center(
                                 child: LoadingAnimationWidget.twistingDots(
-                                  leftDotColor:  Colors.red,
-                                  rightDotColor:  AppColors.primary,
+                                  leftDotColor: Colors.red,
+                                  rightDotColor: AppColors.primary,
                                   size: 40,
                                 ),
                               );
                             }
                             final book = books[index];
                             if (kDebugMode) {
-                              print("${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}");
+                              print(
+                                  "Image display : ${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}");
                             }
+                            String authors = "By ";
+                            List<String> authorNames =
+                                book.bookAuthors.map((bookAuthor) {
+                              return bookAuthor.author.fullName ?? '';
+                            }).toList();
+                            authors += authorNames.join(", ");
+                            String genres = "";
+                            List<String> genresMap =
+                                book.bookGenres.map((bookGenres) {
+                              return bookGenres.genre.genre ?? '';
+                            }).toList();
+                            genres += genresMap.join(", ");
+
+                            String isbn = "";
+                            List<String> isbnMap = book.isbns.map((isbn) {
+                              return isbn.isbn ?? '';
+                            }).toList();
+                            isbn += isbnMap.join(", ");
                             return BookWidget(
-                              bookImage: "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
-                              title: book.title ?? '',
-                              author: "By ${book.bookAuthors[0].author.fullName}"??'',
-                            );
+                                bookImage:
+                                    "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
+                                title: book.title ?? '',
+                                author:
+                                    "By ${book.bookAuthors[0].author.fullName}" ??
+                                        '',
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    PageRouteBuilder(
+                                      pageBuilder: (context, animation, secondaryAnimation) => BookInfo(
+                                          uid: book.bookInfoId ?? '',
+                                          bookName: book.title ?? '',
+                                          author: authors??'',
+                                          edition: book.editionStatement ?? '',
+                                          year:
+                                              book.publicationYear.toString() ??
+                                                  '',
+                                          publisher:
+                                              book.publisher.publisherName ??
+                                                  '',
+                                          pages:
+                                              book.numberOfPages.toString() ??
+                                                  '',
+                                          bookNo:
+                                              book.bookNumber.toString() ?? '',
+                                          classNo:
+                                              book.classNumber.toString() ?? '',
+                                          series:
+                                              book.seriesStatement.toString() ??
+                                                  '',
+                                          genre: genres??'',
+                                          isbn: isbn??'',
+                                          image: "${BaseUrl.imageDisplay}/${book.coverPhoto}" ?? '',
+                                          status: '',
+                                          subTitle: book.subTitle??''),
+                                      transitionsBuilder: (context, animation,
+                                          secondaryAnimation, child) {
+                                        const begin = Offset(1.0, 0.0);
+                                        const end = Offset.zero;
+                                        const curve = Curves.easeInOut;
+                                        var tween = Tween(
+                                                begin: begin, end: end)
+                                            .chain(CurveTween(curve: curve));
+                                        var offsetAnimation =
+                                            animation.drive(tween);
+                                        return SlideTransition(
+                                          position: offsetAnimation,
+                                          child: child,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                });
                           },
                         );
                       },
@@ -288,7 +380,9 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
         ),
         child: Text(
           title,
-          style: TextStyle(color: index == tabIndex ? Colors.white : AppColors.primary, fontSize: 12),
+          style: TextStyle(
+              color: index == tabIndex ? Colors.white : AppColors.primary,
+              fontSize: 12),
         ),
       ),
     );

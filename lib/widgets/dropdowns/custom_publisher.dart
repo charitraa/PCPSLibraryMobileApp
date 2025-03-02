@@ -1,17 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/view_model/attributes/attr_genre_view_model.dart';
+import 'package:library_management_sys/view_model/attributes/attr_publisher_view_model.dart';
 import 'package:provider/provider.dart';
 
 import '../../resource/colors.dart';
 
-class CustomGenres extends StatefulWidget {
+class CustomPublisher extends StatefulWidget {
   final String label;
   final double wid;
   final TextEditingController? controller;
   final Function(String?) onChanged;
 
-  const CustomGenres({
+  const CustomPublisher({
     super.key,
     required this.label,
     required this.wid,
@@ -30,23 +30,25 @@ class CustomGenres extends StatefulWidget {
   );
 
   @override
-  State<CustomGenres> createState() => _DropDownFieldState();
+  State<CustomPublisher> createState() => _DropDownFieldState();
 }
 
-class _DropDownFieldState extends State<CustomGenres> {
-  String? selectedGenre;
+class _DropDownFieldState extends State<CustomPublisher> {
+  String? selectedpublisher;
   bool isLoad = false;
+
+
 
   Future<void> loadMore() async {
     if (isLoad) return; // Prevent multiple requests
     setState(() => isLoad = true);
 
     try {
-      await Provider.of<AttrGenreViewModel>(context, listen: false)
-          .loadMoreGenres(context);
+      await Provider.of<AttrPublisherViewModel>(context, listen: false)
+          .loadMorePublishers(context);
     } catch (e) {
       if (kDebugMode) {
-        print("Error loading more genres: $e");
+        print("Error loading more publishers: $e");
       }
     } finally {
       setState(() => isLoad = false);
@@ -55,16 +57,16 @@ class _DropDownFieldState extends State<CustomGenres> {
 
   @override
   Widget build(BuildContext context) {
-    final genreViewModel = context.watch<AttrGenreViewModel>();
-    final genres = genreViewModel.GenresList;
+    final publisherViewModel = context.watch<AttrPublisherViewModel>();
+    final publishers = publisherViewModel.publishersList;
 
-    if (genres.isEmpty) {
-      return const Center(child: Text('No genres available'));
+    if (publishers.isEmpty) {
+      return const Center(child: Text('No publishers available'));
     }
 
-    String? initialValue = selectedGenre ??
+    String? initialValue = selectedpublisher ??
         (widget.controller?.text.isNotEmpty == true &&
-            genres.any((g) => g.genreId == widget.controller?.text)
+            publishers.any((g) => g.publisherId == widget.controller?.text)
             ? widget.controller?.text
             : null);
 
@@ -82,10 +84,10 @@ class _DropDownFieldState extends State<CustomGenres> {
         const SizedBox(height: 5),
         Container(
           width: widget.wid,
-          child: genreViewModel.isLoading
+          child: publisherViewModel.isLoading
               ? const Center(child: CircularProgressIndicator())
-              : genres.isEmpty
-              ? const Center(child: Text('No genres available'))
+              : publishers.isEmpty
+              ? const Center(child: Text('No publishers available'))
               : DropdownButtonHideUnderline(
             child: ButtonTheme(
               alignedDropdown: true,
@@ -94,7 +96,7 @@ class _DropDownFieldState extends State<CustomGenres> {
                   if (scrollInfo.metrics.pixels ==
                       scrollInfo.metrics.maxScrollExtent &&
                       !isLoad) {
-                    loadMore(); // Load more genres when scrolled to the bottom
+                    loadMore(); // Load more publishers when scrolled to the bottom
                   }
                   return false;
                 },
@@ -117,13 +119,13 @@ class _DropDownFieldState extends State<CustomGenres> {
                     ),
                   ),
                   value: initialValue,
-                  hint: const Text('Select a genre'),
-                  items: genres.map((genre) {
+                  hint: const Text('Select a publisher'),
+                  items: publishers.map((publisher) {
                     return DropdownMenuItem<String>(
-                      value: genre.genreId,
+                      value: publisher.publisherId,
                       child: Text(
-                        genre.genre.split(' ').take(3).join(' ') +
-                            (genre.genre.split(' ').length > 2
+                        publisher.publisherName.split(' ').take(3).join(' ') +
+                            (publisher.publisherName.split(' ').length > 2
                                 ? '...'
                                 : ''),
                         style: const TextStyle(fontSize: 14),
@@ -132,7 +134,7 @@ class _DropDownFieldState extends State<CustomGenres> {
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(() {
-                      selectedGenre = newValue;
+                      selectedpublisher = newValue;
                     });
                     if (widget.controller != null) {
                       widget.controller!.text = newValue ?? '';

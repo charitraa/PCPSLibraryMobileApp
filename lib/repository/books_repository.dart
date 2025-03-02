@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:library_management_sys/data/network/BaseApiService.dart';
 import 'package:library_management_sys/data/network/NetworkApiService.dart';
 import 'package:library_management_sys/endpoints/book_endpoints.dart';
+import 'package:library_management_sys/model/book_info_model.dart';
 import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/utils/utils.dart';
 
@@ -49,6 +50,21 @@ class BooksRepository {
       return {"booksList": booksList, "next": next};
     } catch (error) {
       return Utils.flushBarErrorMessage(error.toString(), context);
+    }
+  }
+  Future<BookInfoModel> getIndividualBooks(String uid, BuildContext context) async {
+    try {
+      dynamic response =
+      await _apiService.getApiResponse("${BookEndPoints.bookUrl}/$uid");
+      if (response['error'] != null && response['error'] == true) {
+        Utils.flushBarErrorMessage(
+            response['errorMessage'] ?? "Unknown error", context);
+        throw Exception(response['errorMessage'] ?? "Unknown error");
+      }
+      return BookInfoModel.fromJson(response);
+    } catch (e) {
+      Utils.flushBarErrorMessage(e.toString(), context);
+      throw e;
     }
   }
 }
