@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/screens/student/book_info/review.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/widgets/book/book_info_column.dart';
 import 'package:library_management_sys/widgets/book/book_info_row.dart';
@@ -292,7 +293,7 @@ class _BookInfoState extends State<BookInfo> {
                       Consumer<BooksViewModel>(
                         builder: (context, viewModel, child) {
                           final user = viewModel.currentUser!;
-                          print(user.total);
+
                           String totalBooks = user.total != null ? user.total.toString() : '';
                           String available=user.available!=0?"${user.available} available": "All Reserved";
 
@@ -309,7 +310,6 @@ class _BookInfoState extends State<BookInfo> {
                                 ],
                               ),
                               const SizedBox(height: 5,),
-
                               Row(
                                 children: [
                                   Container(
@@ -337,7 +337,11 @@ class _BookInfoState extends State<BookInfo> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
 
-                          buildFilterButton("Reserve Book", () {}, AppColors.primary, 13),
+                          buildFilterButton("Reserve Book", () async{
+                           final check= Provider.of<BooksViewModel>(context, listen: false)
+                                .reserve(widget.uid, context);
+
+                          }, AppColors.primary, 13),
                           const SizedBox(width: 10),
                           Container(
                             width: 1,
@@ -345,8 +349,28 @@ class _BookInfoState extends State<BookInfo> {
                             color: Colors.grey,
                           ),
                           const SizedBox(width: 10),
-
-                          buildFilterButton("Rate Now", () {}, Colors.red, 13),
+                          buildFilterButton("Rate Now", () {
+                            Navigator.of(context).push(
+                              PageRouteBuilder(
+                                pageBuilder: (context, animation, secondaryAnimation) => AddReview(uid: widget.uid,),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  const begin = Offset(1.0, 0.0);
+                                  const end = Offset.zero;
+                                  const curve = Curves.easeInOut;
+                                  var tween = Tween(
+                                      begin: begin, end: end)
+                                      .chain(CurveTween(curve: curve));
+                                  var offsetAnimation =
+                                  animation.drive(tween);
+                                  return SlideTransition(
+                                    position: offsetAnimation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          }, Colors.red, 13),
                         ],
                       )
 

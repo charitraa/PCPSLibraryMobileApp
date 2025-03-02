@@ -154,6 +154,7 @@ class BooksViewModel with ChangeNotifier {
       Utils.flushBarErrorMessage("Error fetching books: $error", context);
     }
   }
+
   Future<void> getIndividualBooks(String uid, BuildContext context) async {
     setUser(ApiResponse.loading());
     try {
@@ -165,6 +166,31 @@ class BooksViewModel with ChangeNotifier {
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);
       setUser(ApiResponse.error(e.toString()));
+    }
+  }
+
+  Future<bool> reserve(String uid, BuildContext context) async {
+    try {
+      final user = await _booksRepo.reserveBook(uid, context);
+      if(user){
+        Utils.flushBarSuccessMessage('You have successfully applied for reservation!!', context);
+      }
+      return user;
+    } catch (e) {
+      Utils.flushBarErrorMessage("Error: $e", context);
+      return false;
+    }
+  }
+  Future<bool> rateBook(String uid,String rating, BuildContext context) async {
+    try {
+      final user = await _booksRepo.rateBook(uid, rating,context);
+      if(user){
+        Utils.flushBarSuccessMessage('Thanks for rating this book!!', context);
+      }
+      return user;
+    } catch (e) {
+      Utils.flushBarErrorMessage("Error: $e", context);
+      return false;
     }
   }
 }

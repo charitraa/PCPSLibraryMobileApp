@@ -84,4 +84,20 @@ class NetworkApiService extends BaseApiServices {
             'Error occured while communicating with server with status code ${response.statusCode.toString()}');
     }
   }
+
+  @override
+  Future postUrlResponse(String url)async {
+    final headers = await _getHeaders();
+
+    dynamic responseJson;
+    try {
+      Response response = await http
+          .post(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException("No internet Connection");
+    }
+    return responseJson;
+  }
 }

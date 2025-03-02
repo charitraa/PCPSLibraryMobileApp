@@ -6,7 +6,7 @@ import 'package:library_management_sys/screens/auth/flashing_page.dart';
 import 'package:library_management_sys/screens/auth/login_page.dart';
 import 'package:library_management_sys/screens/lib_nav.dart';
 import 'package:library_management_sys/screens/student/book_info/book_info.dart';
-import 'package:library_management_sys/screens/student/browse_books/review.dart';
+import 'package:library_management_sys/screens/student/book_info/review.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/screens/unauthorised_page.dart';
 import 'package:library_management_sys/view_model/attributes/attr_author_view_model.dart';
@@ -14,6 +14,7 @@ import 'package:library_management_sys/view_model/attributes/attr_genre_view_mod
 import 'package:library_management_sys/view_model/attributes/attr_publisher_view_model.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
+import 'package:library_management_sys/view_model/books/comment_view_model.dart';
 import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AttrAuthorViewModel()),
         ChangeNotifierProvider(create: (_) => AttrGenreViewModel()),
         ChangeNotifierProvider(create: (_) => AttrPublisherViewModel()),
-
+        ChangeNotifierProvider(create: (_) => CommentViewModel()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

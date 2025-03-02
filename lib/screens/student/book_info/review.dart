@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:library_management_sys/utils/utils.dart';
 import 'package:library_management_sys/widgets/form_widget/custom_button.dart';
+import 'package:provider/provider.dart';
 
 import '../../../resource/colors.dart';
+import '../../../view_model/books/book_view_model.dart';
 
 class AddReview extends StatefulWidget {
-  const AddReview({super.key});
+  final String uid;
+  const AddReview({super.key, required this.uid});
 
   @override
   State<AddReview> createState() => _AddReviewState();
@@ -49,14 +52,14 @@ class _AddReviewState extends State<AddReview> {
         ],
       ),
       body: SafeArea(
-
         child: Container(
           width: double.infinity,
           child: Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal:24.0,vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24.0, vertical: 5),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -120,12 +123,19 @@ class _AddReviewState extends State<AddReview> {
                           onPressed: () async {
                             if (_rating == 0.0 ||
                                 _reviewController.text.isEmpty) {
-                              // ScaffoldMessenger.of(context).showSnackBar(
-                              //   const SnackBar(
-                              //     content: Text('Please provide a rating and review.'),
-                              //   ),
-                              // );
-                              Utils.flushBarSuccessMessage('check', context);
+                              Utils.flushBarErrorMessage(
+                                  'Please provide a rating and review.',
+                                  context);
+
+                              return;
+                            } else {
+                              final check = await Provider.of<BooksViewModel>(
+                                      context,
+                                      listen: false)
+                                  .rateBook(
+                                      widget.uid,
+                                      _reviewController.text.toString(),
+                                      context);
                               return;
                             }
                           },

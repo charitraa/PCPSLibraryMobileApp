@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../../../constant/base_url.dart';
 import '../../../view_model/books/book_view_model.dart';
 import '../../../widgets/book/book_skeleton.dart';
+import '../book_info/book_info.dart';
 
 class StudentDashboard extends StatefulWidget {
   const StudentDashboard({super.key});
@@ -150,12 +151,77 @@ class _StudentDashboardState extends State<StudentDashboard> {
                         if (kDebugMode) {
                           print("${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}");
                         }
+                        String authors = "By ";
+                        List<String> authorNames =
+                        book.bookAuthors.map((bookAuthor) {
+                          return bookAuthor.author.fullName ?? '';
+                        }).toList();
+                        authors += authorNames.join(", ");
+                        String genres = "";
+                        List<String> genresMap =
+                        book.bookGenres.map((bookGenres) {
+                          return bookGenres.genre.genre ?? '';
+                        }).toList();
+                        genres += genresMap.join(", ");
+
+                        String isbn = "";
+                        List<String> isbnMap = book.isbns.map((isbn) {
+                          return isbn.isbn ?? '';
+                        }).toList();
+                        isbn += isbnMap.join(", ");
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5.0),
                           child: BookWidget(
                             bookImage: "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
                             title: book.title ?? '',
                             author: "By ${book.bookAuthors[0].author.fullName}"??'',
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation, secondaryAnimation) => BookInfo(
+                                        uid: book.bookInfoId ?? '',
+                                        bookName: book.title ?? '',
+                                        author: authors??'',
+                                        edition: book.editionStatement ?? '',
+                                        year:
+                                        book.publicationYear.toString() ??
+                                            '',
+                                        publisher:
+                                        book.publisher.publisherName ??
+                                            '',
+                                        pages:
+                                        book.numberOfPages.toString() ??
+                                            '',
+                                        bookNo:
+                                        book.bookNumber.toString() ?? '',
+                                        classNo:
+                                        book.classNumber.toString() ?? '',
+                                        series:
+                                        book.seriesStatement.toString() ??
+                                            '',
+                                        genre: genres??'',
+                                        isbn: isbn??'',
+                                        image: "${BaseUrl.imageDisplay}/${book.coverPhoto}" ?? '',
+                                        status: '',
+                                        subTitle: book.subTitle??''),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const begin = Offset(1.0, 0.0);
+                                      const end = Offset.zero;
+                                      const curve = Curves.easeInOut;
+                                      var tween = Tween(
+                                          begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
+                                      var offsetAnimation =
+                                      animation.drive(tween);
+                                      return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
                           ),
                         );
                       },
