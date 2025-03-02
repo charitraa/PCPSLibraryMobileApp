@@ -337,7 +337,7 @@ class _BookInfoState extends State<BookInfo> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
 
-                          buildFilterButton("Reserve Book", () {}, AppColors.primary, 14),
+                          buildFilterButton("Reserve Book", () {}, AppColors.primary, 13),
                           const SizedBox(width: 10),
                           Container(
                             width: 1,
@@ -346,7 +346,7 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                           const SizedBox(width: 10),
 
-                          buildFilterButton("Rate Now", () {}, Colors.red, 14),
+                          buildFilterButton("Rate Now", () {}, Colors.red, 13),
                         ],
                       )
 
