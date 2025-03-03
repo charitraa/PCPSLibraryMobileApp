@@ -21,11 +21,12 @@ class CommentsRepository {
       }
       dynamic response = await _apiService.getApiResponse(url);
       List<CommentModel> commentList = [];
-      if (response['data'] != null && response['data'] is List) {
-        commentList = (response['data'] as List)
+      if (response != null && response is List) {
+        commentList = (response)
             .map((e) => CommentModel.fromJson(e))
             .toList();
       }
+      print(response);
       final next = response['info']?['next'];
 
       return {"comments": commentList, "next": next};

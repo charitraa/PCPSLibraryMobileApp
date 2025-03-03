@@ -94,7 +94,7 @@ class BooksRepository {
     } catch (e) {
       print("Error reserving book: $e");
       Utils.flushBarErrorMessage(
-          "Failed to reserve book. Please try again.", context);
+          "Failed to reserve book. Please try again.  $e", context);
       return false;
     }
   }

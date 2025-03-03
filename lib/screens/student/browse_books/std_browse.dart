@@ -232,7 +232,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     double itemWidth = (constraints.maxWidth - (10 * 2)) / 3;
-                    double itemHeight = 180;
+                    double itemHeight = 190;
                     double aspectRatio = itemWidth / itemHeight;
 
                     return Consumer<BooksViewModel>(
@@ -286,7 +286,6 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                               return bookAuthor.author.fullName ?? '';
                             }).toList();
                             authors += authorNames.join(", ");
-                            int score =0;
 
                             String genres = "";
                             List<String> genresMap =
@@ -300,6 +299,8 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                               return isbn.isbn ?? '';
                             }).toList();
                             isbn += isbnMap.join(", ");
+
+
                             return BookWidget(
                                 bookImage:
                                     "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
@@ -313,7 +314,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                       pageBuilder: (context, animation, secondaryAnimation) => BookInfo(
                                           uid: book.bookInfoId ?? '',
                                           bookName: book.title ?? '',
-                                          author: authors??'',
+                                          author: authors ?? '',
                                           edition: book.editionStatement ?? '',
                                           year:
                                               book.publicationYear.toString() ??
@@ -331,11 +332,16 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                           series:
                                               book.seriesStatement.toString() ??
                                                   '',
-                                          genre: genres??'',
-                                          isbn: isbn??'',
-                                          image: "${BaseUrl.imageDisplay}/${book.coverPhoto}" ?? '',
+                                          score: book.score.isNotEmpty
+                                              ? (book.score[0]['score'] as int).toDouble()
+                                              : 0,
+                                          genre: genres ?? '',
+                                          isbn: isbn ?? '',
+                                          image:
+                                              "${BaseUrl.imageDisplay}/${book.coverPhoto}" ??
+                                                  '',
                                           status: '',
-                                          subTitle: book.subTitle??''),
+                                          subTitle: book.subTitle ?? ''),
                                       transitionsBuilder: (context, animation,
                                           secondaryAnimation, child) {
                                         const begin = Offset(1.0, 0.0);

@@ -26,7 +26,7 @@ class _BookWidgetState extends State<BookWidget> {
       onTap: widget.onTap,
       child: Container(
         width: 100,
-        height: 200,
+        height: 220,
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           color: Colors.white,

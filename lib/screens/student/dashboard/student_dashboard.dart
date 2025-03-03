@@ -148,9 +148,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       itemBuilder: (context, index) {
 
                         final book = books[index];
-                        if (kDebugMode) {
-                          print("${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}");
-                        }
+
                         String authors = "By ";
                         List<String> authorNames =
                         book.bookAuthors.map((bookAuthor) {
@@ -192,6 +190,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                         pages:
                                         book.numberOfPages.toString() ??
                                             '',
+                                        score: book.score.isNotEmpty
+                                            ? (book.score[0]['score'] as int).toDouble()
+                                            : 0,
                                         bookNo:
                                         book.bookNumber.toString() ?? '',
                                         classNo:
