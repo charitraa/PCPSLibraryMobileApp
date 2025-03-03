@@ -252,42 +252,42 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   )
                 ],
               ),
-              const SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  children: [
-                    BookWidget(
-                        bookImage: 'assets/images/book.png',
-                        title: "My Type of book and well done",
-                        author: "Author kenzie Mcnary"),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    BookWidget(
-                        bookImage: 'assets/images/two.webp',
-                        title: "A Million To One",
-                        author: "Tony Fagoli"),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    BookWidget(
-                        bookImage: 'assets/images/hide.webp',
-                        title: "Hide and Seek",
-                        author: "Olivia Wilson"),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    BookWidget(
-                        bookImage: 'assets/images/one.webp',
-                        title: "Walk Into The shadow",
-                        author: "Author kenzie Mcnary"),
-                    SizedBox(
-                      width: 8,
-                    ),
-                  ],
-                ),
-              )
+              // const SingleChildScrollView(
+              //   scrollDirection: Axis.horizontal,
+              //   padding: EdgeInsets.symmetric(vertical: 10),
+              //   child: Row(
+              //     children: [
+              //       BookWidget(
+              //           bookImage: 'assets/images/book.png',
+              //           title: "My Type of book and well done",
+              //           author: "Author kenzie Mcnary"),
+              //       SizedBox(
+              //         width: 8,
+              //       ),
+              //       BookWidget(
+              //           bookImage: 'assets/images/two.webp',
+              //           title: "A Million To One",
+              //           author: "Tony Fagoli"),
+              //       SizedBox(
+              //         width: 8,
+              //       ),
+              //       BookWidget(
+              //           bookImage: 'assets/images/hide.webp',
+              //           title: "Hide and Seek",
+              //           author: "Olivia Wilson"),
+              //       SizedBox(
+              //         width: 8,
+              //       ),
+              //       BookWidget(
+              //           bookImage: 'assets/images/one.webp',
+              //           title: "Walk Into The shadow",
+              //           author: "Author kenzie Mcnary"),
+              //       SizedBox(
+              //         width: 8,
+              //       ),
+              //     ],
+              //   ),
+              // )
             ],
           ),
         ),

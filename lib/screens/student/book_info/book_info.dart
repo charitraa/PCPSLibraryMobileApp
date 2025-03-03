@@ -72,7 +72,7 @@ class _BookInfoState extends State<BookInfo> {
     await Provider.of<BooksViewModel>(context, listen: false)
         .getIndividualBooks(widget.uid, context);
     await Provider.of<CommentViewModel>(context, listen: false)
-        .fetchComments(context);
+        .fetchComments(widget.uid,context);
   }
 
   @override
@@ -545,14 +545,15 @@ class _BookInfoState extends State<BookInfo> {
                         else
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               ...List.generate(
                                 widget.score!.toInt(),
                                 (index) =>
-                                    const Icon(Icons.star, color: Colors.amber),
+                                    const Icon(Icons.star, color: Colors.amber,size: 16),
                               ),
                               const SizedBox(
-                                width: 2,
+                                width: 5,
                               ),
                               Text(
                                 widget.score!.toString(),
@@ -604,7 +605,7 @@ class _BookInfoState extends State<BookInfo> {
                             if (check) {
                               await Provider.of<CommentViewModel>(context,
                                       listen: false)
-                                  .fetchComments(context);
+                                  .fetchComments( widget.uid,context);
                             }
                             setState(() {
                               isLoading = false;
@@ -624,9 +625,7 @@ class _BookInfoState extends State<BookInfo> {
                               const NeverScrollableScrollPhysics(),
                           shrinkWrap:
                               true,
-                          itemCount: viewModel.commentsList.isNotEmpty
-                              ? viewModel.commentsList.length
-                              : 1,
+                          itemCount: 2,
                           itemBuilder: (context, index) {
                             if (viewModel.isLoading) {
                               return const ReviewCardSkeleton();
@@ -645,17 +644,21 @@ class _BookInfoState extends State<BookInfo> {
                                 ),
                               );
                             }
-
                             final completionData =
                                 viewModel.commentsList[index];
-
+                            final commentData = viewModel.commentsList[index];
+                            int length=commentData.replies!.length;
                             return ReviewCard(
                               image: completionData.user?.profilePicUrl != null
                                   ? "${BaseUrl.imageDisplay}/${completionData.user?.profilePicUrl
                                   .toString()}"
                                   : '',
+                              rating: completionData.user!.ratings!.isNotEmpty
+                                  ? (completionData.user!.ratings![0].rating as int).toDouble()
+                                  : 0,
                               name: completionData.user?.fullName ?? '',
                               text: completionData.comment ?? '',
+                              length: length,
                             );
                           },
                         );
@@ -669,7 +672,7 @@ class _BookInfoState extends State<BookInfo> {
                             PageRouteBuilder(
                               pageBuilder:
                                   (context, animation, secondaryAnimation) =>
-                                      const Comments(),
+                                       Comments(uid: widget.uid,),
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
                                 const begin = Offset(1.0, 0.0);

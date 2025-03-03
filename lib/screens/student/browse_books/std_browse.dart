@@ -300,7 +300,6 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                             }).toList();
                             isbn += isbnMap.join(", ");
 
-
                             return BookWidget(
                                 bookImage:
                                     "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",

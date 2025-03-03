@@ -40,19 +40,19 @@ class CommentViewModel with ChangeNotifier {
     if (_filter != value) {
       _filter = value;
       _searchValue = value;
-      fetchComments(context);
+      // fetchComments(context);
       notifyListeners();
     }
   }
 
 
-  Future<void> fetchComments(BuildContext context) async {
+  Future<void> fetchComments(String uid,BuildContext context) async {
     if (_isLoading) return;
     setLoading(true);
     try {
       _currentPage = 1;
       _commentList.clear();
-      final Map<String, dynamic> response = await _commentsRepo.fetchComments(
+      final Map<String, dynamic> response = await _commentsRepo.fetchComments(uid,
           _filter, 1, _limit, context);
       print(response['comments']);
       _commentList.addAll(response['comments']);
@@ -67,9 +67,9 @@ class CommentViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> loadMore(BuildContext context) async {
+  Future<void> loadMore(String uid,BuildContext context) async {
     try {
-      final Map<String, dynamic> response = await _commentsRepo.fetchComments(_filter,
+      final Map<String, dynamic> response = await _commentsRepo.fetchComments(uid,_filter,
           _currentPage, _limit, context);
       if (_currentPage != null) {
         print("${response['next']}=$_currentPage");

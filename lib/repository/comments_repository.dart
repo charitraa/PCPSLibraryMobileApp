@@ -9,36 +9,38 @@ import 'package:library_management_sys/utils/utils.dart';
 class CommentsRepository {
   final BaseApiServices _apiService = NetworkApiService();
 
-  Future<Map<String, dynamic>> fetchComments(
-      String seed,
-      int page,
-      int limit,
-      BuildContext context) async {
-    String url = '${CommentEndpoints.comment}?seed=$seed&page=$page&pageSize=$limit';
+  Future<Map<String, dynamic>> fetchComments(String uid, String seed, int page,
+      int limit, BuildContext context) async {
+    String url =
+        '${CommentEndpoints.comment}/$uid?seed=$seed&page=$page&pageSize=$limit';
     try {
       if (kDebugMode) {
         print(url);
       }
       dynamic response = await _apiService.getApiResponse(url);
       List<CommentModel> commentList = [];
-      if (response != null && response is List) {
-        commentList = (response)
+      print(response['data']);
+      if (response['data'] != null && response['data'] is List) {
+        commentList = (response['data'] as List)
             .map((e) => CommentModel.fromJson(e))
             .toList();
       }
-      print(response);
-      final next = response['info']?['next'];
 
+      final next = response['info']?['next'] ?? '';
+
+      print(commentList);
       return {"comments": commentList, "next": next};
     } catch (error) {
+      print(error);
       return Utils.flushBarErrorMessage(error.toString(), context);
     }
   }
 
-  Future<bool> postComments(String uid, dynamic body,BuildContext context) async {
+  Future<bool> postComments(
+      String uid, dynamic body, BuildContext context) async {
     try {
-      dynamic response =
-      await _apiService.getPostApiResponse("${CommentEndpoints.comment}/$uid",body);
+      dynamic response = await _apiService.getPostApiResponse(
+          "${CommentEndpoints.comment}/$uid", body);
       if (response['error'] != null && response['error'] == true) {
         Utils.flushBarErrorMessage(
             response['errorMessage'] ?? "Unknown error", context);
@@ -52,10 +54,11 @@ class CommentsRepository {
     }
   }
 
-  Future<bool> replyComment(String uid, dynamic body,BuildContext context) async {
+  Future<bool> replyComment(
+      String uid, dynamic body, BuildContext context) async {
     try {
-      dynamic response =
-      await _apiService.getPostApiResponse("${CommentEndpoints.commentReply}/$uid",body);
+      dynamic response = await _apiService.getPostApiResponse(
+          "${CommentEndpoints.commentReply}/$uid", body);
       if (response['error'] != null && response['error'] == true) {
         Utils.flushBarErrorMessage(
             response['errorMessage'] ?? "Unknown error", context);
@@ -68,10 +71,12 @@ class CommentsRepository {
       return false;
     }
   }
-  Future<bool> updateComments(String uid, dynamic body,BuildContext context) async {
+
+  Future<bool> updateComments(
+      String uid, dynamic body, BuildContext context) async {
     try {
-      dynamic response =
-      await _apiService.getPostApiResponse("${CommentEndpoints.updateComment}/$uid",body);
+      dynamic response = await _apiService.getPostApiResponse(
+          "${CommentEndpoints.updateComment}/$uid", body);
       if (response['error'] != null && response['error'] == true) {
         Utils.flushBarErrorMessage(
             response['errorMessage'] ?? "Unknown error", context);
@@ -84,10 +89,11 @@ class CommentsRepository {
       return false;
     }
   }
-  Future<bool> deleteComment(String uid,BuildContext context) async {
+
+  Future<bool> deleteComment(String uid, BuildContext context) async {
     try {
-      dynamic response =
-      await _apiService.getDeleteApiResponse("${CommentEndpoints.deleteComment}/$uid");
+      dynamic response = await _apiService
+          .getDeleteApiResponse("${CommentEndpoints.deleteComment}/$uid");
       if (response['error'] != null && response['error'] == true) {
         Utils.flushBarErrorMessage(
             response['errorMessage'] ?? "Unknown error", context);

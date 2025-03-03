@@ -7,7 +7,7 @@ class CustomCommentField extends StatefulWidget {
   final bool? obscureText;
   final Color focusedColor;
   final double width;
-  final Icon? suffixicon;
+  final Widget? suffixicon;
   final String? helper;
   final TextStyle? helperStyle;
   final Icon? prefixicon;

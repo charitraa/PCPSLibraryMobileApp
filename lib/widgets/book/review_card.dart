@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 
 class ReviewCard extends StatefulWidget {
   final String? image, name, text;
-  const ReviewCard({super.key, required this.image, required this.name, required this.text});
+  final double? rating;
+  final int? length;
+  const ReviewCard({super.key, required this.image, required this.name, required this.text, this.rating, this.length});
 
   @override
   State<ReviewCard> createState() => _ReviewCardState();
@@ -38,6 +40,7 @@ class _ReviewCardState extends State<ReviewCard> {
               children: [
                 const SizedBox(height: 10),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                      Text(
                       widget.name??'',
@@ -47,16 +50,33 @@ class _ReviewCardState extends State<ReviewCard> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Icon(Icons.star,
-                        color: Colors.orange[700], size: 18),
-                    Icon(Icons.star,
-                        color: Colors.orange[700], size: 18),
-                    Icon(Icons.star,
-                        color: Colors.orange[700], size: 18),
-                    Icon(Icons.star,
-                        color: Colors.orange[700], size: 18),
-                    const Icon(Icons.star_half,
-                        color: Colors.orange, size: 18),
+                    if (widget.rating == null || widget.rating == 0)
+                      const Text(
+                        "No rating available",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      )
+                    else
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ...List.generate(
+                            widget.rating!.toInt(),
+                                (index) =>
+                            const Icon(Icons.star, color: Colors.amber,size: 14,),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            widget.rating!.toString(),
+                            style: const TextStyle(fontSize: 11,fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
                   ],
                 ),
                 const SizedBox(height: 5),
@@ -71,13 +91,16 @@ class _ReviewCardState extends State<ReviewCard> {
                   style: const TextStyle(fontSize: 12),
                 ),
                 const SizedBox(height: 10),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Icon(Icons.chat,
+                    Text("${widget.length.toString()} replies", style: const TextStyle(
+                        fontSize: 12, color: Colors.grey)),
+                    const SizedBox(width: 8,),
+                    const Icon(Icons.chat,
                         size: 16, color: Colors.grey),
-                    SizedBox(width: 5),
-                    Text(
+                    const SizedBox(width: 5),
+                    const Text(
                       "Reply",
                       style: TextStyle(
                           fontSize: 14, color: Colors.grey),

@@ -91,7 +91,7 @@ class User {
 class Ratings {
   String? bookInfoId;
   String? userId;
-  String? rating;
+  int? rating;
   String? createdAt;
   String? updatedAt;
   String? deletedAt; // Changed from Null to String?

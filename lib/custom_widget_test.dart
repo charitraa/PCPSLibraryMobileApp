@@ -18,8 +18,6 @@ class _CustomWidgetTestState extends State<CustomWidgetTest> {
           padding: EdgeInsets.all(28.0),
           child: Column(
             children: [
-              BookWidget(bookImage: 'assets/images/book.png', title: 'tets', author: 'asa'),
-              BookWidget(bookImage: 'assets/images/book.png', title: 'tets', author: 'asa'),
 
             ],
           )

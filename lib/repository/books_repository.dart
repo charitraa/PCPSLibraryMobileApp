@@ -47,7 +47,7 @@ class BooksRepository {
             .map((e) => BooksModel.fromJson(e))
             .toList();
       }
-      final next = response['info']?['next'];
+      final next = response['info']?['next']??'';
 
       return {"booksList": booksList, "next": next};
     } catch (error) {

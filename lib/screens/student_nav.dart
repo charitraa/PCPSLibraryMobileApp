@@ -22,7 +22,7 @@ class _StudentNavBarState extends State<StudentNavBar> {
 
   final List<Widget> _pages = [
     const StudentDashboard(),
-    const StdWishlist(),
+    const StudentBrowseBooks(),
     const StudentBrowseBooks(),
     const Center(child: Text('Profile Page')),
     const Center(child: Text('Finale Page')),
