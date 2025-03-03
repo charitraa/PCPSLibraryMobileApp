@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
 import 'package:library_management_sys/screens/student/book_info/comments.dart';
+import 'package:library_management_sys/screens/student/book_info/reply_comments.dart';
 import 'package:library_management_sys/screens/student/book_info/review.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/books/comment_view_model.dart';
@@ -72,7 +73,7 @@ class _BookInfoState extends State<BookInfo> {
     await Provider.of<BooksViewModel>(context, listen: false)
         .getIndividualBooks(widget.uid, context);
     await Provider.of<CommentViewModel>(context, listen: false)
-        .fetchComments(widget.uid,context);
+        .fetchComments(widget.uid, context);
   }
 
   @override
@@ -549,8 +550,8 @@ class _BookInfoState extends State<BookInfo> {
                             children: [
                               ...List.generate(
                                 widget.score!.toInt(),
-                                (index) =>
-                                    const Icon(Icons.star, color: Colors.amber,size: 16),
+                                (index) => const Icon(Icons.star,
+                                    color: Colors.amber, size: 16),
                               ),
                               const SizedBox(
                                 width: 5,
@@ -605,7 +606,7 @@ class _BookInfoState extends State<BookInfo> {
                             if (check) {
                               await Provider.of<CommentViewModel>(context,
                                       listen: false)
-                                  .fetchComments( widget.uid,context);
+                                  .fetchComments(widget.uid, context);
                             }
                             setState(() {
                               isLoading = false;
@@ -621,10 +622,8 @@ class _BookInfoState extends State<BookInfo> {
                     Consumer<CommentViewModel>(
                       builder: (context, viewModel, child) {
                         return ListView.builder(
-                          physics:
-                              const NeverScrollableScrollPhysics(),
-                          shrinkWrap:
-                              true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
                           itemCount: 2,
                           itemBuilder: (context, index) {
                             if (viewModel.isLoading) {
@@ -647,15 +646,56 @@ class _BookInfoState extends State<BookInfo> {
                             final completionData =
                                 viewModel.commentsList[index];
                             final commentData = viewModel.commentsList[index];
-                            int length=commentData.replies!.length;
+                            int length = commentData.replies!.length;
                             return ReviewCard(
                               image: completionData.user?.profilePicUrl != null
-                                  ? "${BaseUrl.imageDisplay}/${completionData.user?.profilePicUrl
-                                  .toString()}"
+                                  ? "${BaseUrl.imageDisplay}/${completionData.user?.profilePicUrl.toString()}"
                                   : '',
                               rating: completionData.user!.ratings!.isNotEmpty
-                                  ? (completionData.user!.ratings![0].rating as int).toDouble()
+                                  ? (completionData.user!.ratings![0].rating
+                                          as int)
+                                      .toDouble()
                                   : 0,
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        ReplyComments(
+                                          uid:widget.uid,
+                                      commentId:completionData.commentId??'' ,
+                                      name: completionData.user?.fullName ?? '',
+                                      image: completionData
+                                                  .user?.profilePicUrl !=
+                                              null
+                                          ? "${BaseUrl.imageDisplay}/${completionData.user?.profilePicUrl.toString()}"
+                                          : '',
+                                      rating: completionData
+                                              .user!.ratings!.isNotEmpty
+                                          ? (completionData.user!.ratings![0]
+                                                  .rating as int)
+                                              .toDouble()
+                                          : 0,
+                                      text: completionData.comment ?? '',
+                                      length: length,
+                                    ),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const begin = Offset(1.0, 0.0);
+                                      const end = Offset.zero;
+                                      const curve = Curves.easeInOut;
+                                      var tween = Tween(begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
+                                      var offsetAnimation =
+                                          animation.drive(tween);
+                                      return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
                               name: completionData.user?.fullName ?? '',
                               text: completionData.comment ?? '',
                               length: length,
@@ -672,7 +712,9 @@ class _BookInfoState extends State<BookInfo> {
                             PageRouteBuilder(
                               pageBuilder:
                                   (context, animation, secondaryAnimation) =>
-                                       Comments(uid: widget.uid,),
+                                      Comments(
+                                uid: widget.uid,
+                              ),
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
                                 const begin = Offset(1.0, 0.0);

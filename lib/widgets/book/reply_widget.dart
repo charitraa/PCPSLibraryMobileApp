@@ -2,18 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
 
-class ReviewCard extends StatefulWidget {
+class ReplyWidget extends StatefulWidget {
   final String? image, name, text;
   final double? rating;
   final VoidCallback? onTap;
   final int? length;
-  const ReviewCard({super.key, required this.image, required this.name, required this.text, this.rating, this.length,  this.onTap});
+  const ReplyWidget({super.key, required this.image, required this.name, required this.text, this.rating, this.length,  this.onTap});
 
   @override
-  State<ReviewCard> createState() => _ReviewCardState();
+  State<ReplyWidget> createState() => _ReplyWidgetState();
 }
 
-class _ReviewCardState extends State<ReviewCard> {
+class _ReplyWidgetState extends State<ReplyWidget> {
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class _ReviewCardState extends State<ReviewCard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                       Text(
+                      Text(
                         widget.name??'',
                         style: const TextStyle(
                           fontSize: 13,
@@ -89,8 +89,8 @@ class _ReviewCardState extends State<ReviewCard> {
                         fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 10),
-                   Text(
-                   widget.text??'',
+                  Text(
+                    widget.text??'',
                     style: const TextStyle(fontSize: 12),
                   ),
                   const SizedBox(height: 10),

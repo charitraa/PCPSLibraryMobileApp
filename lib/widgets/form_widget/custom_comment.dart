@@ -7,6 +7,7 @@ class CustomCommentField extends StatefulWidget {
   final bool? obscureText;
   final Color focusedColor;
   final double width;
+  final double? height;
   final Widget? suffixicon;
   final String? helper;
   final TextStyle? helperStyle;
@@ -35,7 +36,7 @@ class CustomCommentField extends StatefulWidget {
     this.helperStyle,
     this.suffixText,
     this.maxLines, // Initialize maxLines
-    this.minLines, // Initialize minLines
+    this.minLines, this.height, // Initialize minLines
   });
 
   @override
@@ -47,6 +48,7 @@ class _CustomCommentFieldState extends State<CustomCommentField> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width,
+      height: widget.height,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

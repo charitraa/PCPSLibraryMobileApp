@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/screens/student/book_info/reply_comments.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -197,6 +198,46 @@ class _CommentsState extends State<Comments> {
                                               as int)
                                           .toDouble()
                                       : 0,
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                        secondaryAnimation) =>
+                                        ReplyComments(
+                                          uid:widget.uid,
+                                          commentId:commentData.commentId??'' ,
+                                          name: commentData.user?.fullName ?? '',
+                                          image: commentData
+                                              .user?.profilePicUrl !=
+                                              null
+                                              ? "${BaseUrl.imageDisplay}/${commentData.user?.profilePicUrl.toString()}"
+                                              : '',
+                                          rating: commentData
+                                              .user!.ratings!.isNotEmpty
+                                              ? (commentData.user!.ratings![0]
+                                              .rating as int)
+                                              .toDouble()
+                                              : 0,
+                                          text: commentData.comment ?? '',
+                                          length: length,
+                                        ),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const begin = Offset(1.0, 0.0);
+                                      const end = Offset.zero;
+                                      const curve = Curves.easeInOut;
+                                      var tween = Tween(begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
+                                      var offsetAnimation =
+                                      animation.drive(tween);
+                                      return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
                               name: commentData.user?.fullName ?? '',
                               text: commentData.comment ?? '',
                               length: length,
