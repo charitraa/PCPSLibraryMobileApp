@@ -122,4 +122,54 @@ class BooksRepository {
       return false;
     }
   }
+
+  Future<Map<String, dynamic>> fetchReservation(String seed,
+
+      int page,
+      int limit,
+      BuildContext context) async {
+    String url  = '${BookEndPoints.bookUrl}?seed=$seed&page=$page&pageSize=$limit';
+
+    try {
+      if (kDebugMode) {
+        print(url);
+      }
+      dynamic response = await _apiService.getApiResponse(url);
+      List<BooksModel> reservations = [];
+      if (response['data'] != null && response['data'] is List) {
+        reservations = (response['data'] as List)
+            .map((e) => BooksModel.fromJson(e))
+            .toList();
+      }
+      final next = response['info']?['next'];
+      return {"reservations": reservations, "next": next};
+    } catch (error) {
+      return Utils.flushBarErrorMessage(
+          "Failed to rate the book. Please try again. ${error.toString()}", context);
+    }
+  }
+  Future<bool> cancelReservation(String uid, BuildContext context) async {
+    try {
+      dynamic response =
+      await _apiService.getDeleteApiResponse("${BookEndPoints.cancelReservation}/$uid");
+
+      if (response == null) {
+        Utils.flushBarErrorMessage("Server did not respond", context);
+        return false;
+      }
+
+      if (response['error'] != null) {
+        Utils.flushBarErrorMessage(
+            response['error'] ?? "Unknown error", context);
+        return false;
+      }
+      return true;
+    } catch (e) {
+      print("Error reserving book: $e");
+      Utils.flushBarErrorMessage(
+          "Failed to cancel reservation. Please try again.", context);
+      return false;
+    }
+  }
+
 }

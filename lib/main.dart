@@ -15,6 +15,7 @@ import 'package:library_management_sys/view_model/attributes/attr_publisher_view
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/books/comment_view_model.dart';
+import 'package:library_management_sys/view_model/reservations/reservation_view_model.dart';
 import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +38,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AttrGenreViewModel()),
         ChangeNotifierProvider(create: (_) => AttrPublisherViewModel()),
         ChangeNotifierProvider(create: (_) => CommentViewModel()),
+        ChangeNotifierProvider(create: (_) => ReservationViewModel()),
+
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
