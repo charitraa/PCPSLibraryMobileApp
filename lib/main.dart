@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/custom_widget_test.dart';
 import 'package:library_management_sys/resource/routes.dart';
 import 'package:library_management_sys/resource/routes_name.dart';
-import 'package:library_management_sys/screens/auth/flashing_page.dart';
-import 'package:library_management_sys/screens/auth/login_page.dart';
-import 'package:library_management_sys/screens/lib_nav.dart';
-import 'package:library_management_sys/screens/student/book_info/book_info.dart';
-import 'package:library_management_sys/screens/student/book_info/review.dart';
-import 'package:library_management_sys/screens/student_nav.dart';
-import 'package:library_management_sys/screens/unauthorised_page.dart';
+import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
 import 'package:library_management_sys/view_model/attributes/attr_author_view_model.dart';
 import 'package:library_management_sys/view_model/attributes/attr_genre_view_model.dart';
 import 'package:library_management_sys/view_model/attributes/attr_publisher_view_model.dart';
@@ -26,7 +19,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -51,6 +43,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: RoutesName.flash,
         onGenerateRoute: Routes.generateRoute,
+
       ),
     );
   }

@@ -151,7 +151,6 @@ class _CommentsState extends State<Comments> {
                   }
                 }, Colors.red, 13),
               ),
-              const SizedBox(height: 10),
               Expanded(
                 child: Consumer<CommentViewModel>(
                   builder: (context, viewModel, child) {
@@ -188,6 +187,7 @@ class _CommentsState extends State<Comments> {
                         int length=commentData.replies!.length;
                         return Column(
                           children: [
+                            SizedBox(height: 10,),
                             ReviewCard(
                               image: commentData.user?.profilePicUrl != null
                                   ? "${BaseUrl.imageDisplay}/${commentData.user!.profilePicUrl}"

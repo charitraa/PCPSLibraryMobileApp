@@ -174,6 +174,9 @@ class _BookInfoState extends State<BookInfo> {
                         await Provider.of<BooksViewModel>(context,
                                 listen: false)
                             .getIndividualBooks(widget.uid, context);
+                        await Provider.of<BooksViewModel>(context,
+                                listen: false)
+                            .fetchBooksList(context);
                       }
                     } catch (e) {
                       debugPrint(e.toString());
@@ -621,28 +624,29 @@ class _BookInfoState extends State<BookInfo> {
                     ),
                     Consumer<CommentViewModel>(
                       builder: (context, viewModel, child) {
+                        if (viewModel.isLoading) {
+                          return const ReviewCardSkeleton();
+                        } else if (viewModel.commentsList.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                'No reviews',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
                         return ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemCount: 2,
                           itemBuilder: (context, index) {
-                            if (viewModel.isLoading) {
-                              return const ReviewCardSkeleton();
-                            } else if (viewModel.commentsList.isEmpty) {
-                              return const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Text(
-                                    'No reviews',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
                             final completionData =
                                 viewModel.commentsList[index];
                             final commentData = viewModel.commentsList[index];
@@ -662,8 +666,8 @@ class _BookInfoState extends State<BookInfo> {
                                     pageBuilder: (context, animation,
                                             secondaryAnimation) =>
                                         ReplyComments(
-                                          uid:widget.uid,
-                                      commentId:completionData.commentId??'' ,
+                                      uid: widget.uid,
+                                      commentId: completionData.commentId ?? '',
                                       name: completionData.user?.fullName ?? '',
                                       image: completionData
                                                   .user?.profilePicUrl !=

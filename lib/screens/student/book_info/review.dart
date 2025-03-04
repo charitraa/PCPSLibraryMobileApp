@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:library_management_sys/utils/utils.dart';
 import 'package:library_management_sys/widgets/form_widget/custom_button.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../resource/colors.dart';
@@ -28,75 +29,100 @@ class _AddReviewState extends State<AddReview> {
 
   @override
   Widget build(BuildContext context) {
-    return  SafeArea(
-        child: Container(
-          width: double.infinity,
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24.0, vertical: 5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Rate the Book',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'poppins',
-                        ),
+    return SafeArea(
+      child: isLoading
+          ? Center(
+        child: LoadingAnimationWidget.twistingDots(
+          leftDotColor: Colors.red,
+          rightDotColor: AppColors.primary,
+          size: 40,
+        ),
+      )
+          : Container(
+        width: double.infinity,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24.0, vertical: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Rate the Book',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'poppins',
                       ),
-                      const SizedBox(height: 10),
-                      Center(
-                        child: RatingBar.builder(
-                          initialRating: _rating,
-                          minRating: 1,
-                          direction: Axis.horizontal,
-                          allowHalfRating: true,
-                          itemCount: 5,
-                          itemPadding:
-                              const EdgeInsets.symmetric(horizontal: 4.0),
-                          itemBuilder: (context, _) => const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                          ),
-                          onRatingUpdate: (rating) {
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: RatingBar.builder(
+                        initialRating: _rating,
+                        minRating: 1,
+                        direction: Axis.horizontal,
+                        allowHalfRating: true,
+                        itemCount: 5,
+                        itemPadding:
+                            const EdgeInsets.symmetric(horizontal: 4.0),
+                        itemBuilder: (context, _) => const Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (rating) {
+                          setState(() {
+                            _rating = rating;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: CustomButton(
+                        onPressed: () async {
+                          setState(() {
+                            isLoading=true;
+                          });
+                          if (_rating == 0.0) {
+                            Utils.flushBarErrorMessage(
+                                'Please provide a rating.', context);
                             setState(() {
-                              _rating = rating;
+                              isLoading=false;
                             });
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: CustomButton(
-                          onPressed: () async {
-                            if (_rating == 0.0) {
-                              Utils.flushBarErrorMessage(
-                                  'Please provide a rating.', context);
-                              return;
-                            } else {
-                              final check = await Provider.of<BooksViewModel>(
-                                      context,
+                            return;
+                          } else {
+                            final check = await Provider.of<BooksViewModel>(
+                                    context,
+                                    listen: false)
+                                .rateBook(
+                                    widget.uid, _rating.toString(), context);
+
+                            if (check) {
+                              await Provider.of<BooksViewModel>(context,
                                       listen: false)
-                                  .rateBook(
-                                      widget.uid, _rating.toString(), context);
-                              return;
+                                  .getIndividualBooks(widget.uid, context);
+                              await Provider.of<BooksViewModel>(context,
+                                      listen: false)
+                                  .fetchBooksList(context);
                             }
-                          },
-                          text: 'Submit Review',
-                        ),
+                            setState(() {
+                              isLoading=false;
+                            });
+                          }
+                        },
+                        text: 'Submit Review',
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }

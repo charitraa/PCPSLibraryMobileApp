@@ -5,6 +5,7 @@ import 'package:library_management_sys/data/network/NetworkApiService.dart';
 import 'package:library_management_sys/endpoints/book_endpoints.dart';
 import 'package:library_management_sys/model/book_info_model.dart';
 import 'package:library_management_sys/model/books_model.dart';
+import 'package:library_management_sys/model/reservation_model.dart';
 import 'package:library_management_sys/utils/utils.dart';
 
 class BooksRepository {
@@ -135,17 +136,18 @@ class BooksRepository {
         print(url);
       }
       dynamic response = await _apiService.getApiResponse(url);
-      List<BooksModel> reservations = [];
+
+      List<ReservationModel> reservations = [];
       if (response['data'] != null && response['data'] is List) {
         reservations = (response['data'] as List)
-            .map((e) => BooksModel.fromJson(e))
+            .map((e) => ReservationModel.fromJson(e))
             .toList();
       }
       final next = response['info']?['next'];
       return {"reservations": reservations, "next": next};
     } catch (error) {
       return Utils.flushBarErrorMessage(
-          "Failed to rate the book. Please try again. ${error.toString()}", context);
+          "Failed to get Reservation. Please try again. ${error.toString()}", context);
     }
   }
   Future<bool> cancelReservation(String uid, BuildContext context) async {

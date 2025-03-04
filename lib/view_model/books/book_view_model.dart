@@ -188,7 +188,7 @@ class BooksViewModel with ChangeNotifier {
       if(user){
         Utils.flushBarSuccessMessage('Thanks for rating this book!!', context);
       }
-      return user;
+      return true;
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);
       return false;

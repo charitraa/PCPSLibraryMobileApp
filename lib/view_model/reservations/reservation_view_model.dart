@@ -4,14 +4,15 @@ import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/repository/books_repository.dart';
 import '../../data/response/api_response.dart';
 import '../../model/book_info_model.dart';
+import '../../model/reservation_model.dart';
 import '../../utils/utils.dart';
 
 class ReservationViewModel with ChangeNotifier {
-  final List<BooksModel> _reservationList = [];
+  final List<ReservationModel> _reservationList = [];
   final BooksRepository _booksRepo = BooksRepository();
-  ApiResponse<BookInfoModel> booksData = ApiResponse.loading();
-  BookInfoModel? get currentUser => booksData.data;
-  void setUser(ApiResponse<BookInfoModel> response) {
+  ApiResponse<ReservationModel> booksData = ApiResponse.loading();
+  ReservationModel? get currentUser => booksData.data;
+  void setUser(ApiResponse<ReservationModel> response) {
     booksData = response;
     Future.microtask(() => notifyListeners());
   }
@@ -23,7 +24,7 @@ class ReservationViewModel with ChangeNotifier {
   int _limit = 10;
 
   bool get isLoading => _isLoading;
-  List<BooksModel> get reservationList => _reservationList;
+  List<ReservationModel> get reservationList => _reservationList;
   String get filter => _filter;
  
 
@@ -56,6 +57,7 @@ class ReservationViewModel with ChangeNotifier {
       final Map<String, dynamic> response = await _booksRepo.fetchReservation(
           _filter, 1, _limit, context);
       _reservationList.addAll(response['reservations']);
+      print(reservationList);
       if (response['next'] != null) {
         _currentPage++;
       }
