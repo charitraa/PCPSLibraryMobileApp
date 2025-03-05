@@ -4,6 +4,6 @@ class BookEndPoints{
   static var bookUrl="${BaseUrl.baseUrl}/books";
   static var reserveUrl="${BaseUrl.baseUrl}/bookflow/reservations";
   static var rateUrl="${BaseUrl.baseUrl}/ratings";
-  static var cancelReservation="${BaseUrl.baseUrl}/reservations/cancel";
+  static var cancelReservation="${BaseUrl.baseUrl}/bookflow/reservations/cancel";
 
 }

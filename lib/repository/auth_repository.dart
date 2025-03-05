@@ -38,4 +38,17 @@ class AuthRepository {
       return Utils.flushBarErrorMessage(e.toString(), context);
     }
   }
+  Future<dynamic> logout(BuildContext context) async {
+    try {
+      final response = await _baseService.getDeleteApiResponse(AuthEndPoints.logout);
+
+      if (response['status'] == 200) {
+        return ApiResponse.completed(response);
+      } else {
+        return ApiResponse.error(response['errorMessage'] ?? "Unknown error");
+      }
+    } catch (e) {
+      return ApiResponse.error(e.toString());
+    }
+  }
 }

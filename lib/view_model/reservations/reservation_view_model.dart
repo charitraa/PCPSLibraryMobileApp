@@ -19,14 +19,14 @@ class ReservationViewModel with ChangeNotifier {
 
   bool _isLoading = false;
   String _filter = '';
-
+  String _status = 'Pending';
   int _currentPage = 1;
   int _limit = 10;
 
   bool get isLoading => _isLoading;
   List<ReservationModel> get reservationList => _reservationList;
   String get filter => _filter;
- 
+  String get status => _filter;
 
   int get currentPage => _currentPage;
 
@@ -46,7 +46,13 @@ class ReservationViewModel with ChangeNotifier {
       notifyListeners();
     }
   }
-
+  void setStatus(String value, BuildContext context) {
+    if (_status != value) {
+      _status = value;
+      fetchReservation(context);
+      notifyListeners();
+    }
+  }
 
   Future<void> fetchReservation(BuildContext context) async {
     if (_isLoading) return;
@@ -55,9 +61,8 @@ class ReservationViewModel with ChangeNotifier {
       _currentPage = 1;
       _reservationList.clear();
       final Map<String, dynamic> response = await _booksRepo.fetchReservation(
-          _filter, 1, _limit, context);
+          _status,_filter, 1, _limit, context);
       _reservationList.addAll(response['reservations']);
-      print(reservationList);
       if (response['next'] != null) {
         _currentPage++;
       }
@@ -72,7 +77,7 @@ class ReservationViewModel with ChangeNotifier {
   Future<void> loadMoreBooks(BuildContext context) async {
     try {
       final Map<String, dynamic> response = await _booksRepo.fetchReservation(
-          _filter, _currentPage, _limit, context);
+          _status, _filter, _currentPage, _limit, context);
       _reservationList.addAll(response['reservations']);
       if (_currentPage != null) {
         _reservationList.addAll(response['reservations']);
@@ -85,7 +90,7 @@ class ReservationViewModel with ChangeNotifier {
     }
   }
 
-  Future<bool> deleteComment(String uid,BuildContext context) async {
+  Future<bool> cancel(String uid,BuildContext context) async {
     try {
       final user = await _booksRepo.cancelReservation(uid, context);
       if(user){
@@ -93,6 +98,7 @@ class ReservationViewModel with ChangeNotifier {
       }
       return user;
     } catch (e) {
+      print(e);
       Utils.flushBarErrorMessage("Error: $e", context);
       return false;
     }

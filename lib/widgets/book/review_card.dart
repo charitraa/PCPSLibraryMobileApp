@@ -2,12 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
 
+import '../../resource/colors.dart';
+
 class ReviewCard extends StatefulWidget {
-  final String? image, name, text;
+  final String? image, name, text,date;
   final double? rating;
   final VoidCallback? onTap;
   final int? length;
-  const ReviewCard({super.key, required this.image, required this.name, required this.text, this.rating, this.length,  this.onTap});
+  const ReviewCard({super.key, required this.image, required this.name, required this.text, this.rating, this.length,  this.onTap, this.date});
 
   @override
   State<ReviewCard> createState() => _ReviewCardState();
@@ -83,9 +85,9 @@ class _ReviewCardState extends State<ReviewCard> {
                     ],
                   ),
                   const SizedBox(height: 5),
-                  const Text(
-                    "June 5, 2019",
-                    style: TextStyle(
+                   Text(
+                   widget.date?? "",
+                    style: const TextStyle(
                         fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 10),
@@ -100,13 +102,13 @@ class _ReviewCardState extends State<ReviewCard> {
                       Text("${widget.length.toString()} replies", style: const TextStyle(
                           fontSize: 12, color: Colors.grey)),
                       const SizedBox(width: 8,),
-                      const Icon(Icons.chat,
-                          size: 16, color: Colors.grey),
+                       Icon(Icons.chat,
+                          size: 16, color:  AppColors.primary),
                       const SizedBox(width: 5),
-                      const Text(
+                       Text(
                         "Reply",
                         style: TextStyle(
-                            fontSize: 12, color: Colors.grey),
+                            fontSize: 12, color: AppColors.primary),
                       ),
                     ],
                   ),

@@ -41,9 +41,58 @@ class NetworkApiService extends BaseApiServices {
   }
 
   @override
-  Future getDeleteApiResponse(String url) {
-    throw UnimplementedError();
+  Future<dynamic> getDeleteApiResponse(String url) async {
+    dynamic responseJson;
+    try {
+      final headers = await _getHeaders();
+      final response = await http
+          .delete(
+        Uri.parse(url),
+        headers: headers,
+      )
+          .timeout(const Duration(seconds: 10));
+
+      if (kDebugMode) {
+        print('Response Status Code: ${response.statusCode}');
+      }
+
+      if (response.statusCode == 204 || response.body.isEmpty) {
+        if (kDebugMode) {
+          print('Empty response body with Status Code: ${response.statusCode}');
+        }
+        return {
+          'status': response.statusCode,
+          'message': 'No content returned from server',
+        };
+      }
+
+      final responseBody = jsonDecode(response.body);
+
+      if (kDebugMode) {
+        print('Response Body: $responseBody');
+      }
+
+      responseBody['status'] = response.statusCode;
+
+      if (responseBody.containsKey('error') && responseBody['error'] == true) {
+        if (kDebugMode) {
+          print('Response Body Error: ${responseBody['error']}');
+        }
+      }
+
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException("No Internet Connection");
+    } catch (e) {
+      if (kDebugMode) {
+        print("Exception: $e");
+      }
+      throw FetchDataException("Error During Communication!!$e");
+    }
+    return responseJson;
   }
+
+
 
   @override
   Future getPostApiResponse(String url, dynamic body) async {
@@ -86,7 +135,21 @@ class NetworkApiService extends BaseApiServices {
             'Error occured while communicating with server with status code ${response.statusCode.toString()}');
     }
   }
+  @override
+  Future putUrlResponse(String url) async {
+    final headers = await _getHeaders();
 
+    dynamic responseJson;
+    try {
+      Response response = await http
+          .put(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException("No internet Connection");
+    }
+    return responseJson;
+  }
   @override
   Future postUrlResponse(String url) async {
     final headers = await _getHeaders();

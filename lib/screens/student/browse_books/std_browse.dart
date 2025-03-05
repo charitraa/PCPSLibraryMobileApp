@@ -282,20 +282,20 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                             // }
                             String authors = "By ";
                             List<String> authorNames =
-                                book.bookAuthors.map((bookAuthor) {
-                              return bookAuthor.author.fullName ?? '';
+                                book.bookAuthors!.map((bookAuthor) {
+                              return bookAuthor.author!.fullName ?? '';
                             }).toList();
                             authors += authorNames.join(", ");
 
                             String genres = "";
-                            List<String> genresMap =
-                                book.bookGenres.map((bookGenres) {
-                              return bookGenres.genre.genre ?? '';
+                            List<String>? genresMap =
+                                book.bookGenres?.map((bookGenres) {
+                              return bookGenres.genre!.genre ?? '';
                             }).toList();
-                            genres += genresMap.join(", ");
+                            genres += genresMap!.join(", ");
 
                             String isbn = "";
-                            List<String> isbnMap = book.isbns.map((isbn) {
+                            List<String> isbnMap = book.isbns!.map((isbn) {
                               return isbn.isbn ?? '';
                             }).toList();
                             isbn += isbnMap.join(", ");
@@ -305,7 +305,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                     "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
                                 title: book.title ?? '',
                                 author:
-                                    "By ${book.bookAuthors[0].author.fullName}" ??
+                                    "By ${book.bookAuthors![0].author?.fullName}" ??
                                         '',
                                 onTap: () {
                                   Navigator.of(context).push(
@@ -319,7 +319,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                               book.publicationYear.toString() ??
                                                   '',
                                           publisher:
-                                              book.publisher.publisherName ??
+                                              book.publisher?.publisherName ??
                                                   '',
                                           pages:
                                               book.numberOfPages.toString() ??
@@ -331,8 +331,8 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                           series:
                                               book.seriesStatement.toString() ??
                                                   '',
-                                          score: book.score.isNotEmpty
-                                              ? (book.score[0]['score'] as int).toDouble()
+                                          score: book.score!.isNotEmpty
+                                              ? (book.score![0]['score'] as int).toDouble()
                                               : 0,
                                           genre: genres ?? '',
                                           isbn: isbn ?? '',

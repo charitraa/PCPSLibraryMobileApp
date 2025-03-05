@@ -122,8 +122,8 @@ class _DropDownFieldState extends State<CustomGenres> {
                     return DropdownMenuItem<String>(
                       value: genre.genreId,
                       child: Text(
-                        genre.genre.split(' ').take(3).join(' ') +
-                            (genre.genre.split(' ').length > 2
+                        genre.genre!.split(' ').take(3).join(' ') +
+                            (genre.genre!.split(' ').length > 2
                                 ? '...'
                                 : ''),
                         style: const TextStyle(fontSize: 14),

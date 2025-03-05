@@ -1,12 +1,12 @@
 class Isbn {
-  final String isbnId;
-  final String isbn;
-  final String bookInfoId;
+  final String? isbnId;
+  final String? isbn;
+  final String? bookInfoId;
 
   Isbn({
-    required this.isbnId,
-    required this.isbn,
-    required this.bookInfoId,
+     this.isbnId,
+     this.isbn,
+     this.bookInfoId,
   });
 
   factory Isbn.fromJson(Map<String, dynamic> json) {

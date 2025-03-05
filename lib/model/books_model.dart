@@ -1,56 +1,53 @@
 import 'dart:convert';
 
+import 'package:library_management_sys/model/author_model.dart';
+import 'package:library_management_sys/model/genre_model.dart';
+import 'package:library_management_sys/model/isbn_model.dart';
 import 'package:library_management_sys/model/publisher_model.dart';
 
-import 'author_model.dart';
-import 'genre_model.dart';
-import 'isbn_model.dart';
-
 class BooksModel {
-  final String bookInfoId;
-  final String classNumber;
-  final String bookNumber;
-  final String title;
-  final String subTitle;
-  final String editionStatement;
-  final int numberOfPages;
-  final int publicationYear;
-  final String seriesStatement;
-  final String addedDate;
-  final String coverPhoto;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
-  final String publisherId;
-  final Publisher publisher;
-  final List<dynamic> score;
-  final List<BookGenre> bookGenres;
-  final List<BookAuthor> bookAuthors;
-  final List<Isbn> isbns;
-  final List<Book> books;
+  final String? bookInfoId;
+  final String? classNumber;
+  final String? bookNumber;
+  final String? title;
+  final String? subTitle;
+  final String? editionStatement;
+  final int? numberOfPages;
+  final int? publicationYear;
+  final String? seriesStatement;
+  final String? addedDate;
+  final String? coverPhoto;
+  final String? createdAt;
+  final String? updatedAt;
+  final String? publisherId;
+  final Publisher? publisher;
+  final List<dynamic>? score;
+  final List<BookGenre>? bookGenres;
+  final List<BookAuthor>? bookAuthors;
+  final List<Isbn>? isbns;
+  final List<Book>? books;
 
   BooksModel({
-    required this.bookInfoId,
-    required this.classNumber,
-    required this.bookNumber,
-    required this.title,
-    required this.subTitle,
-    required this.editionStatement,
-    required this.numberOfPages,
-    required this.publicationYear,
-    required this.seriesStatement,
-    required this.addedDate,
-    required this.coverPhoto,
-    required this.createdAt,
-    required this.updatedAt,
-    this.deletedAt,
-    required this.publisherId,
-    required this.publisher,
-    required this.score,
-    required this.bookGenres,
-    required this.bookAuthors,
-    required this.isbns,
-    required this.books,
+    this.bookInfoId,
+    this.classNumber,
+    this.bookNumber,
+    this.title,
+    this.subTitle,
+    this.editionStatement,
+    this.numberOfPages,
+    this.publicationYear,
+    this.seriesStatement,
+    this.addedDate,
+    this.coverPhoto,
+    this.createdAt,
+    this.updatedAt,
+    this.publisherId,
+    this.publisher,
+    this.score,
+    this.bookGenres,
+    this.bookAuthors,
+    this.isbns,
+    this.books,
   });
 
   factory BooksModel.fromJson(Map<String, dynamic> json) {
@@ -68,16 +65,17 @@ class BooksModel {
       coverPhoto: json["coverPhoto"],
       createdAt: json["createdAt"],
       updatedAt: json["updatedAt"],
-      deletedAt: json["deletedAt"],
       publisherId: json["publisherId"],
-      publisher: Publisher.fromJson(json["publisher"]),
-      score: List<dynamic>.from(json["score"] ?? []),
-      bookGenres: List<BookGenre>.from(
-          json["bookGenres"].map((x) => BookGenre.fromJson(x))),
-      bookAuthors: List<BookAuthor>.from(
-          json["bookAuthors"].map((x) => BookAuthor.fromJson(x))),
-      isbns: List<Isbn>.from(json["isbns"].map((x) => Isbn.fromJson(x))),
-      books: List<Book>.from(json["books"].map((x) => Book.fromJson(x))),
+      publisher: json["publisher"] != null ? Publisher.fromJson(json["publisher"]) : null,
+      score: json["score"] != null ? List<dynamic>.from(json["score"]) : [],
+      bookGenres: json["bookGenres"] != null
+          ? List<BookGenre>.from(json["bookGenres"].map((x) => BookGenre.fromJson(x)))
+          : [],
+      bookAuthors: json["bookAuthors"] != null
+          ? List<BookAuthor>.from(json["bookAuthors"].map((x) => BookAuthor.fromJson(x)))
+          : [],
+      isbns: json["isbns"] != null ? List<Isbn>.from(json["isbns"].map((x) => Isbn.fromJson(x))) : [],
+      books: json["books"] != null ? List<Book>.from(json["books"].map((x) => Book.fromJson(x))) : [],
     );
   }
 
@@ -96,36 +94,32 @@ class BooksModel {
       "coverPhoto": coverPhoto,
       "createdAt": createdAt,
       "updatedAt": updatedAt,
-      "deletedAt": deletedAt,
       "publisherId": publisherId,
-      "publisher": publisher.toJson(),
-      "score": score,
-      "bookGenres": List<dynamic>.from(bookGenres.map((x) => x.toJson())),
-      "bookAuthors": List<dynamic>.from(bookAuthors.map((x) => x.toJson())),
-      "isbns": List<dynamic>.from(isbns.map((x) => x.toJson())),
-      "books": List<dynamic>.from(books.map((x) => x.toJson())),
+      "publisher": publisher?.toJson(),
+      "score": score ?? [],
+      "bookGenres": bookGenres?.map((x) => x.toJson()).toList() ?? [],
+      "bookAuthors": bookAuthors?.map((x) => x.toJson()).toList() ?? [],
+      "isbns": isbns?.map((x) => x.toJson()).toList() ?? [],
+      "books": books?.map((x) => x.toJson()).toList() ?? [],
     };
   }
 }
 
-
 class BookGenre {
-  final String bookGenreId;
-  final String bookInfoId;
-  final String genreId;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
-  final Genre genre;
+  final String? bookGenreId;
+  final String? bookInfoId;
+  final String? genreId;
+  final String? createdAt;
+  final String? updatedAt;
+  final Genre? genre;
 
   BookGenre({
-    required this.bookGenreId,
-    required this.bookInfoId,
-    required this.genreId,
-    required this.createdAt,
-    required this.updatedAt,
-    this.deletedAt,
-    required this.genre,
+    this.bookGenreId,
+    this.bookInfoId,
+    this.genreId,
+    this.createdAt,
+    this.updatedAt,
+    this.genre,
   });
 
   factory BookGenre.fromJson(Map<String, dynamic> json) => BookGenre(
@@ -134,8 +128,7 @@ class BookGenre {
     genreId: json["genreId"],
     createdAt: json["createdAt"],
     updatedAt: json["updatedAt"],
-    deletedAt: json["deletedAt"],
-    genre: Genre.fromJson(json["genre"]),
+    genre: json["genre"] != null ? Genre.fromJson(json["genre"]) : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -144,29 +137,26 @@ class BookGenre {
     "genreId": genreId,
     "createdAt": createdAt,
     "updatedAt": updatedAt,
-    "deletedAt": deletedAt,
-    "genre": genre.toJson(),
+    "genre": genre?.toJson(),
   };
 }
 
 
 class BookAuthor {
-  final String bookAuthorId;
-  final String bookInfoId;
-  final String authorId;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
-  final Author author;
+  final String? bookAuthorId;
+  final String? bookInfoId;
+  final String? authorId;
+  final String? createdAt;
+  final String? updatedAt;
+  final Author? author;
 
   BookAuthor({
-    required this.bookAuthorId,
-    required this.bookInfoId,
-    required this.authorId,
-    required this.createdAt,
-    required this.updatedAt,
-    this.deletedAt,
-    required this.author,
+     this.bookAuthorId,
+     this.bookInfoId,
+     this.authorId,
+     this.createdAt,
+     this.updatedAt,
+     this.author,
   });
 
   factory BookAuthor.fromJson(Map<String, dynamic> json) => BookAuthor(
@@ -175,7 +165,6 @@ class BookAuthor {
     authorId: json["authorId"],
     createdAt: json["createdAt"],
     updatedAt: json["updatedAt"],
-    deletedAt: json["deletedAt"],
     author: Author.fromJson(json["author"]),
   );
 
@@ -185,27 +174,21 @@ class BookAuthor {
     "authorId": authorId,
     "createdAt": createdAt,
     "updatedAt": updatedAt,
-    "deletedAt": deletedAt,
-    "author": author.toJson(),
+    "author": author?.toJson(),
   };
 }
 
-
-
-
 class Book {
-  final String bookId;
-  final String barcode;
-  final String status;
-  final String? damagedOn;
-  final String bookInfoId;
+  final String? bookId;
+  final String? barcode;
+  final String? status;
+  final String? bookInfoId;
 
   Book({
-    required this.bookId,
-    required this.barcode,
-    required this.status,
-    this.damagedOn,
-    required this.bookInfoId,
+     this.bookId,
+     this.barcode,
+     this.status,
+     this.bookInfoId,
   });
 
   factory Book.fromJson(Map<String, dynamic> json) {
@@ -213,7 +196,6 @@ class Book {
       bookId: json['bookId'],
       barcode: json['barcode'],
       status: json['status'],
-      damagedOn: json['damagedOn'],
       bookInfoId: json['bookInfoId'],
     );
   }
@@ -223,7 +205,6 @@ class Book {
       'bookId': bookId,
       'barcode': barcode,
       'status': status,
-      'damagedOn': damagedOn,
       'bookInfoId': bookInfoId,
     };
   }

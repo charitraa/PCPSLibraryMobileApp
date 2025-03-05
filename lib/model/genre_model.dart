@@ -1,15 +1,15 @@
 class Genre {
-  final String genreId;
-  final String genre;
-  final String createdAt;
-  final String updatedAt;
+  final String? genreId;
+  final String? genre;
+  final String? createdAt;
+  final String? updatedAt;
   final String? deletedAt;
 
   Genre({
-    required this.genreId,
-    required this.genre,
-    required this.createdAt,
-    required this.updatedAt,
+     this.genreId,
+     this.genre,
+     this.createdAt,
+     this.updatedAt,
     this.deletedAt,
   });
 

@@ -5,6 +5,7 @@ import 'package:library_management_sys/repository/auth_repository.dart';
 import 'package:library_management_sys/screens/student/dashboard/student_dashboard.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/utils/utils.dart';
+import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
 
 import '../data/response/api_response.dart';
 import '../data/response/status.dart';
@@ -94,4 +95,24 @@ class AuthViewModel with ChangeNotifier {
       setLoading(false);
     }
   }
+  Future<void> logout(BuildContext context) async {
+    setLoading(true);
+    try {
+      final response = await _myrepo.logout(context);
+      if (response.status == Status.COMPLETED) {
+        Utils.flushBarSuccessMessage("User Logged out Successfully!", context);
+
+        await UserViewModel().remove();
+        Navigator.pushReplacementNamed(context, RoutesName.login);
+      } else {
+        Utils.flushBarErrorMessage(
+            response.message ?? "An error occurred", context);
+      }
+    } catch (e) {
+      Utils.flushBarErrorMessage("Error: $e", context);
+    } finally {
+      setLoading(false);
+    }
+  }
+
 }

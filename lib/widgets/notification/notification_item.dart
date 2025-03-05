@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/constant/base_url.dart';
 
 class NotificationItem extends StatelessWidget {
-  final IconData icon;
+  final String image;
   final String title;
   final String? subtitle;
   final String time;
@@ -9,7 +11,7 @@ class NotificationItem extends StatelessWidget {
 
   const NotificationItem({
     super.key,
-    required this.icon,
+    required this.image,
     required this.title,
     this.subtitle,
     required this.time,
@@ -18,53 +20,84 @@ class NotificationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.blue[50],
-          child: Icon(icon, color: Colors.blue),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (subtitle != null)
-              Text(
-                subtitle!,
-                style: TextStyle(color: Colors.grey[700]),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.grey[300],
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2),
+                  ),
+                  errorWidget: (context, url, error) =>
+                  const Icon(Icons.error, size: 24),
+                ),
               ),
-            Text(
-              time,
-              style: TextStyle(
+            ),
+            title: Text(
+              title,
+              style: const TextStyle(
                 fontSize: 12,
-                color: Colors.grey[600],
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
               ),
             ),
-          ],
-        ),
-        trailing: action != null
-            ? ElevatedButton(
-          onPressed: () {
-            // Handle action
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.blue,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (subtitle != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      subtitle!,
+                      style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    time,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                  ),
+                ),
+              ],
             ),
+            trailing: action != null
+                ? Container(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                action!,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            )
+                : null,
           ),
-          child: Text(action!),
-        )
-            : null,
+          const Divider(
+            height: 1,
+            thickness: 1,
+            color: Colors.grey,
+            indent: 60,
+          ),
+        ],
       ),
     );
   }

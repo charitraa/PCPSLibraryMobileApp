@@ -8,6 +8,7 @@ import 'package:library_management_sys/view_model/attributes/attr_publisher_view
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/books/comment_view_model.dart';
+import 'package:library_management_sys/view_model/notifications/notification_view_model.dart';
 import 'package:library_management_sys/view_model/reservations/reservation_view_model.dart';
 import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
 import 'package:provider/provider.dart';
@@ -31,19 +32,28 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AttrPublisherViewModel()),
         ChangeNotifierProvider(create: (_) => CommentViewModel()),
         ChangeNotifierProvider(create: (_) => ReservationViewModel()),
-
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          fontFamily: 'poppins',
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
+        ChangeNotifierProvider(create: (_) => NotificationViewModel()
         ),
-        debugShowCheckedModeBanner: false,
-        initialRoute: RoutesName.flash,
-        onGenerateRoute: Routes.generateRoute,
-
+      ],
+      child: Builder(
+        builder: (context) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.noScaling, // Apply global text scaling
+            ),
+            child: MaterialApp(
+              title: 'PCPS Library',
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+                useMaterial3: true,
+                fontFamily: 'Poppins',
+              ),
+              debugShowCheckedModeBanner: false,
+              initialRoute: RoutesName.flash,
+              onGenerateRoute: Routes.generateRoute,
+            ),
+          );
+        },
       ),
     );
   }

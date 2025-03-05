@@ -70,8 +70,8 @@ class BookInfo {
   String? title;
   String? subTitle;
   String? editionStatement;
-  String? numberOfPages;
-  String? publicationYear;
+  int? numberOfPages;
+  int? publicationYear;
   String? seriesStatement;
   String? addedDate;
   String? coverPhoto;

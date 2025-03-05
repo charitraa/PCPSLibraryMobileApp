@@ -126,6 +126,7 @@ class BooksViewModel with ChangeNotifier {
       _frontList.clear();
       final Map<String, dynamic> response = await _booksRepo.fetchBooks(
           _filter, _bookAuthor, _publisher, _bookGenre, 1, _limit, context);
+      print(response['booksList']);
       _booksList.addAll(response['booksList']);
       _frontList.addAll(response['booksList']);
       if (response['next'] != null) {
@@ -133,6 +134,7 @@ class BooksViewModel with ChangeNotifier {
       }
       notifyListeners();
     } catch (error) {
+      print("minal");
       Utils.flushBarErrorMessage("Error fetching books: $error", context);
     } finally {
       setLoading(false);
@@ -144,14 +146,14 @@ class BooksViewModel with ChangeNotifier {
       final Map<String, dynamic> response = await _booksRepo.fetchBooks(_filter,
           _bookAuthor, _publisher, _bookGenre, _currentPage, _limit, context);
       if (_currentPage != null) {
-        print("${response['next']}=$_currentPage");
+
         _booksList.addAll(response['booksList']);
         _currentPage++;
       }
 
       notifyListeners();
     } catch (error) {
-      Utils.flushBarErrorMessage("Error fetching books: $error", context);
+      Utils.flushBarErrorMessage("Minal Error fetching books: $error", context);
     }
   }
 
@@ -172,8 +174,9 @@ class BooksViewModel with ChangeNotifier {
   Future<bool> reserve(String uid, BuildContext context) async {
     try {
       final user = await _booksRepo.reserveBook(uid, context);
-      if(user){
-        Utils.flushBarSuccessMessage('You have successfully applied for reservation!!', context);
+      if (user) {
+        Utils.flushBarSuccessMessage(
+            'You have successfully applied for reservation!!', context);
       }
       print(user);
       return true;
@@ -182,10 +185,11 @@ class BooksViewModel with ChangeNotifier {
       return false;
     }
   }
-  Future<bool> rateBook(String uid,String rating, BuildContext context) async {
+
+  Future<bool> rateBook(String uid, String rating, BuildContext context) async {
     try {
-      final user = await _booksRepo.rateBook(uid, rating,context);
-      if(user){
+      final user = await _booksRepo.rateBook(uid, rating, context);
+      if (user) {
         Utils.flushBarSuccessMessage('Thanks for rating this book!!', context);
       }
       return true;

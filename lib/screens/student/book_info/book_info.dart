@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 
 import '../../../data/response/status.dart';
 import '../../../resource/colors.dart';
+import '../../../utils/parse_date.dart';
 import '../../../widgets/form_widget/custom_comment.dart';
 import '../../../widgets/form_widget/modern_btn_widget.dart';
 
@@ -66,7 +67,8 @@ class _BookInfoState extends State<BookInfo> {
     super.initState();
     getIndividualData();
   }
-
+  final TextEditingController _commentController =
+  TextEditingController();
   bool isLoading = false;
   String comment = "";
   void getIndividualData() async {
@@ -579,17 +581,30 @@ class _BookInfoState extends State<BookInfo> {
                       height: 10,
                     ),
                     CustomCommentField(
-                        hintText: 'Write a comment...',
-                        outlinedColor: Colors.grey,
-                        focusedColor: AppColors.primary,
-                        width: size.width,
-                        maxLines: 5,
-                        onChanged: (e) {
+                      hintText: 'Write a comment...',
+                      outlinedColor: Colors.grey,
+                      focusedColor: AppColors.primary,
+                      width: size.width,
+                      maxLines: 5,
+                      textController: _commentController, // Controller added
+                      onChanged: (e) {
+                        setState(() {
+                          comment = e;
+                        });
+                      },
+                      suffixicon: comment.isNotEmpty
+                          ? InkWell(
+                        child: Icon(Icons.clear, color: Colors.grey),
+                        onTap: () {
                           setState(() {
-                            comment = e;
+                            comment = "";
+                            _commentController.clear(); // Clears the input
                           });
                         },
-                        text: 'Write a comment'),
+                      )
+                          : null,
+                      text: 'Write a comment',
+                    ),
                     const SizedBox(
                       height: 5,
                     ),
@@ -624,6 +639,8 @@ class _BookInfoState extends State<BookInfo> {
                     ),
                     Consumer<CommentViewModel>(
                       builder: (context, viewModel, child) {
+                        int itemCount = viewModel.commentsList.length >= 2 ? 2 : viewModel.commentsList.length;
+
                         if (viewModel.isLoading) {
                           return const ReviewCardSkeleton();
                         } else if (viewModel.commentsList.isEmpty) {
@@ -645,13 +662,14 @@ class _BookInfoState extends State<BookInfo> {
                         return ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: 2,
+                          itemCount: itemCount,
                           itemBuilder: (context, index) {
                             final completionData =
                                 viewModel.commentsList[index];
                             final commentData = viewModel.commentsList[index];
                             int length = commentData.replies!.length;
                             return ReviewCard(
+                              date: commentData.updatedAt!=null ?parseDate(commentData.updatedAt.toString()): "",
                               image: completionData.user?.profilePicUrl != null
                                   ? "${BaseUrl.imageDisplay}/${completionData.user?.profilePicUrl.toString()}"
                                   : '',

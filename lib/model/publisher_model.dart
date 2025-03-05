@@ -1,18 +1,16 @@
 class Publisher {
-  final String publisherId;
-  final String publisherName;
-  final String address;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final String? publisherId;
+  final String? publisherName;
+  final String? address;
+  final String? createdAt;
+  final String? updatedAt;
 
   Publisher({
-    required this.publisherId,
-    required this.publisherName,
-    required this.address,
-    required this.createdAt,
-    required this.updatedAt,
-    this.deletedAt,
+     this.publisherId,
+     this.publisherName,
+     this.address,
+     this.createdAt,
+     this.updatedAt,
   });
 
   factory Publisher.fromJson(Map<String, dynamic> json) => Publisher(
@@ -21,7 +19,6 @@ class Publisher {
     address: json["address"],
     createdAt: json["createdAt"],
     updatedAt: json["updatedAt"],
-    deletedAt: json["deletedAt"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -30,6 +27,5 @@ class Publisher {
     "address": address,
     "createdAt": createdAt,
     "updatedAt": updatedAt,
-    "deletedAt": deletedAt,
   };
 }

@@ -124,12 +124,11 @@ class _DropDownFieldState extends State<CustomPublisher> {
                     return DropdownMenuItem<String>(
                       value: publisher.publisherId,
                       child: Text(
-                        publisher.publisherName.split(' ').take(3).join(' ') +
-                            (publisher.publisherName.split(' ').length > 2
-                                ? '...'
-                                : ''),
+                        (publisher.publisherName?.split(' ').take(3).join(' ') ?? '') +
+                            (publisher.publisherName != null && publisher.publisherName!.split(' ').length > 3 ? '...' : ''),
                         style: const TextStyle(fontSize: 14),
-                      ),
+                      )
+
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
