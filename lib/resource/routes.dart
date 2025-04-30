@@ -22,7 +22,7 @@ class Routes {
             builder: (BuildContext context) => const Loginpage());
       case RoutesName.student:
         return MaterialPageRoute(
-            builder: (BuildContext context) => const StudentNavBar());
+            builder: (BuildContext context) => const StudentNavBar(index:2,));
       case RoutesName.notification:
         return MaterialPageRoute(
             builder: (BuildContext context) =>  NotificationPage());

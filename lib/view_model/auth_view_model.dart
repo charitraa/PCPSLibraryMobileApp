@@ -49,7 +49,7 @@ class AuthViewModel with ChangeNotifier {
         Navigator.of(context).push(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-            const StudentNavBar(),
+            const StudentNavBar(index:2),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               const begin = Offset(1.0, 0.0);

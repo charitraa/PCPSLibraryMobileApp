@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:library_management_sys/data/network/AuthNetworkApiService.dart';
 import 'package:library_management_sys/data/network/BaseApiService.dart';
@@ -17,6 +19,8 @@ class AuthRepository {
       dynamic response =
           await _apiService.getPostResponse(AuthEndPoints.authUrl, body);
       return ApiResponse.completed(UserModel.fromJson(response));
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (e) {
       Utils.flushBarErrorMessage(e.toString(), context);
       return ApiResponse.error(e.toString());
@@ -33,6 +37,8 @@ class AuthRepository {
       }
 
       return CurrentUserModel.fromJson(response);
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (e) {
       print('errror $e.');
       return Utils.flushBarErrorMessage(e.toString(), context);
@@ -47,7 +53,9 @@ class AuthRepository {
       } else {
         return ApiResponse.error(response['errorMessage'] ?? "Unknown error");
       }
-    } catch (e) {
+    }on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
+    }  catch (e) {
       return ApiResponse.error(e.toString());
     }
   }

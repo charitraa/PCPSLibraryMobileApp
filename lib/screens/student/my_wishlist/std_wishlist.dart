@@ -24,14 +24,7 @@ class _WishlistState extends State<Wishlist> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchData();
   }
-
-  void fetchData() async {
-    await Provider.of<ReservationViewModel>(context, listen: false)
-        .fetchReservation(context);
-  }
-
   int index = 1;
   @override
   Widget build(BuildContext context) {
@@ -61,55 +54,7 @@ class _WishlistState extends State<Wishlist> {
               height: size.height,
               child: Column(
                 children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        buildFilterButton('Pending', () async {
-                          setState(() {
-                            index = 1;
-                          });
-                          Provider.of<ReservationViewModel>(context,
-                                  listen: false)
-                              .setStatus("Pending", context);
-                        }, 1),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        buildFilterButton('Cancelled', () async {
-                          setState(() {
-                            index = 2;
-                          });
-                          Provider.of<ReservationViewModel>(context,
-                                  listen: false)
-                              .setStatus("Cancelled", context);
-                        }, 2),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        buildFilterButton('Confirmed', () async {
-                          setState(() {
-                            index = 3;
-                          });
-                          Provider.of<ReservationViewModel>(context,
-                                  listen: false)
-                              .setStatus("Confirmed", context);
-                        }, 3),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        buildFilterButton('Resolved', () async {
-                          setState(() {
-                            index = 4;
-                          });
-                          Provider.of<ReservationViewModel>(context,
-                                  listen: false)
-                              .setStatus("Resolved", context);
-                        }, 4),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
+
                   Expanded(
                     child: Consumer<ReservationViewModel>(
                       builder: (context, viewModel, child) {

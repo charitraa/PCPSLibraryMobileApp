@@ -3,11 +3,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ReplyWidget extends StatefulWidget {
-  final String? image, name, text;
+  final String? image, name, text,date;
   final double? rating;
   final VoidCallback? onTap;
   final int? length;
-  const ReplyWidget({super.key, required this.image, required this.name, required this.text, this.rating, this.length,  this.onTap});
+  const ReplyWidget({super.key, required this.image, required this.name, required this.text, this.rating, this.length,  this.onTap, this.date});
 
   @override
   State<ReplyWidget> createState() => _ReplyWidgetState();
@@ -83,9 +83,9 @@ class _ReplyWidgetState extends State<ReplyWidget> {
                     ],
                   ),
                   const SizedBox(height: 5),
-                  const Text(
-                    "June 5, 2019",
-                    style: TextStyle(
+                   Text(
+                    widget.date??'',
+                    style: const TextStyle(
                         fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 10),

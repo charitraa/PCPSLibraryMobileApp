@@ -25,6 +25,7 @@ class _NotificationPageState extends State<NotificationPage> {
   void initState() {
     _scrollController = ScrollController()..addListener(_scrollListener);
     super.initState();
+    fetch();
   }
 
   void _scrollListener() {
@@ -47,7 +48,12 @@ class _NotificationPageState extends State<NotificationPage> {
       setState(() => isLoad = false);
     }
   }
+  Future<void> fetch() async {
 
+      await Provider.of<NotificationViewModel>(context, listen: false)
+          .fetchNotifications(context);
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,8 +160,9 @@ class _NotificationPageState extends State<NotificationPage> {
                             itemCount: viewModel.notificationList.length,
                             itemBuilder: (context, index) {
                               final notify = viewModel.notificationList[index];
+                              print(notify.icon);
                               String image = notify.icon != null
-                                  ? "${BaseUrl.imageDisplay}${notify.icon}"
+                                  ?   "https://pcpslibrary.mssn.org.np${notify.icon ?? ''}"
                                   : "";
                               print(image);
                               return NotificationItem(

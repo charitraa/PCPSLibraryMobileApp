@@ -9,8 +9,8 @@ import '../../../resource/colors.dart';
 import '../../../view_model/books/book_view_model.dart';
 
 class AddReview extends StatefulWidget {
-  final String uid;
-  const AddReview({super.key, required this.uid});
+  final String uid,name;
+  const AddReview({super.key, required this.uid, required this.name});
 
   @override
   State<AddReview> createState() => _AddReviewState();
@@ -104,6 +104,9 @@ class _AddReviewState extends State<AddReview> {
                               await Provider.of<BooksViewModel>(context,
                                       listen: false)
                                   .getIndividualBooks(widget.uid, context);
+                              Provider.of<BooksViewModel>(context,
+                                  listen: false)
+                                  .setFilter(widget.name, context);
                               await Provider.of<BooksViewModel>(context,
                                       listen: false)
                                   .fetchBooksList(context);

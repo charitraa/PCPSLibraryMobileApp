@@ -132,7 +132,7 @@ class BooksViewModel with ChangeNotifier {
       if (response['next'] != null) {
         _currentPage++;
       }
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (error) {
       print("minal");
       Utils.flushBarErrorMessage("Error fetching books: $error", context);
@@ -150,7 +150,7 @@ class BooksViewModel with ChangeNotifier {
         _booksList.addAll(response['booksList']);
         _currentPage++;
       }
-
+      Future.microtask(() => notifyListeners());
       notifyListeners();
     } catch (error) {
       Utils.flushBarErrorMessage("Minal Error fetching books: $error", context);
@@ -163,7 +163,7 @@ class BooksViewModel with ChangeNotifier {
       BookInfoModel user = await _booksRepo.getIndividualBooks(uid, context);
       if (kDebugMode) {
         print('user ${user.toJson()}');
-      }
+      }   Future.microtask(() => notifyListeners());
       setUser(ApiResponse.completed(user));
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);
@@ -179,6 +179,7 @@ class BooksViewModel with ChangeNotifier {
             'You have successfully applied for reservation!!', context);
       }
       print(user);
+      Future.microtask(() => notifyListeners());
       return true;
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);
@@ -192,6 +193,8 @@ class BooksViewModel with ChangeNotifier {
       if (user) {
         Utils.flushBarSuccessMessage('Thanks for rating this book!!', context);
       }
+
+      Future.microtask(() => notifyListeners());
       return true;
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);

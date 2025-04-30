@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/data/network/BaseApiService.dart';
@@ -30,7 +32,9 @@ class CommentsRepository {
 
       print(commentList);
       return {"comments": commentList, "next": next};
-    } catch (error) {
+    }on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
+    }  catch (error) {
       print(error);
       return Utils.flushBarErrorMessage(error.toString(), context);
     }
@@ -47,6 +51,8 @@ class CommentsRepository {
         throw Exception(response['errorMessage'] ?? "Unknown error");
       }
       return true;
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (e) {
       Utils.flushBarErrorMessage(e.toString(), context);
       throw e;
@@ -57,6 +63,7 @@ class CommentsRepository {
   Future<bool> replyComment(
       String uid, dynamic body, BuildContext context) async {
     try {
+      print("${CommentEndpoints.commentReply}/$uid");
       dynamic response = await _apiService.getPostApiResponse(
           "${CommentEndpoints.commentReply}/$uid", body);
       if (response['error'] != null && response['error'] == true) {
@@ -65,6 +72,8 @@ class CommentsRepository {
         throw Exception(response['errorMessage'] ?? "Unknown error");
       }
       return true;
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (e) {
       Utils.flushBarErrorMessage(e.toString(), context);
       throw e;
@@ -83,7 +92,9 @@ class CommentsRepository {
         throw Exception(response['errorMessage'] ?? "Unknown error");
       }
       return true;
-    } catch (e) {
+    }on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
+    }  catch (e) {
       Utils.flushBarErrorMessage(e.toString(), context);
       throw e;
       return false;
@@ -100,6 +111,8 @@ class CommentsRepository {
         throw Exception(response['errorMessage'] ?? "Unknown error");
       }
       return true;
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (e) {
       Utils.flushBarErrorMessage(e.toString(), context);
       throw e;

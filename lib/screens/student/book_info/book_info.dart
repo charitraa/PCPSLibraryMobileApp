@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
+import 'package:library_management_sys/resource/routes_name.dart';
 import 'package:library_management_sys/screens/student/book_info/comments.dart';
 import 'package:library_management_sys/screens/student/book_info/reply_comments.dart';
 import 'package:library_management_sys/screens/student/book_info/review.dart';
+import 'package:library_management_sys/screens/student_nav.dart';
+import 'package:library_management_sys/utils/format_date.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/books/comment_view_model.dart';
 import 'package:library_management_sys/widgets/book/book_info_column.dart';
@@ -67,8 +70,8 @@ class _BookInfoState extends State<BookInfo> {
     super.initState();
     getIndividualData();
   }
-  final TextEditingController _commentController =
-  TextEditingController();
+
+  final TextEditingController _commentController = TextEditingController();
   bool isLoading = false;
   String comment = "";
   void getIndividualData() async {
@@ -154,7 +157,7 @@ class _BookInfoState extends State<BookInfo> {
                             .unfocus(), // Hides keyboard when tapping outside input fields
                         child: FractionallySizedBox(
                           heightFactor: 0.5, // Covers half the screen
-                          child: AddReview(uid: widget.uid),
+                          child: AddReview(uid: widget.uid,name:widget.bookName),
                         ),
                       ),
                     );
@@ -179,6 +182,13 @@ class _BookInfoState extends State<BookInfo> {
                         await Provider.of<BooksViewModel>(context,
                                 listen: false)
                             .fetchBooksList(context);
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const StudentNavBar(index: 0),
+                          ),
+                        );
                       }
                     } catch (e) {
                       debugPrint(e.toString());
@@ -247,32 +257,68 @@ class _BookInfoState extends State<BookInfo> {
                     const SizedBox(
                       height: 8,
                     ),
-                    if (widget.score == null || widget.score == 0)
-                      const Text(
-                        "No rating available",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      )
-                    else
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ...List.generate(
-                            widget.score!.toInt(),
-                            (index) =>
-                                const Icon(Icons.star, color: Colors.amber),
-                          ),
-                          const SizedBox(
-                            width: 2,
-                          ),
-                          Text(
-                            widget.score!.toString(),
-                            style: TextStyle(fontSize: 12),
-                          )
-                        ],
-                      ),
+                    Consumer<BooksViewModel>(
+                      builder: (context, viewModel, child) {
+                        if (viewModel.booksData.status ==
+                            Status.LOADING) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        final user = viewModel.currentUser;
+                        if (user == null) {
+                          return const Center(
+                              child: Text("No rating available"));
+                        }
+
+                        return Column(
+                          children: [
+                            if (user.score?.score == null || user.score?.score == 0)
+                              const Row(
+                                children: [
+                                  Text(
+                                    "No rating available",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios_sharp,
+                                    size: 13,
+                                  )
+                                ],
+                              )
+                            else
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  ...List.generate(
+                                    user.score?.score?? user.score!.score!,
+                                        (index) => const Icon(Icons.star,
+                                        color: Colors.amber, size: 16),
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    user.score!.score.toString(),
+                                    style: const TextStyle(
+                                        fontSize: 12, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+
+                                ],
+                              ),
+                          ],
+                        );
+                      },
+                    ),
                     const SizedBox(
                       height: 8,
                     ),
@@ -285,6 +331,62 @@ class _BookInfoState extends State<BookInfo> {
                     ),
                     const SizedBox(
                       height: 8,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        buildFilterButton('Rate Now', () async {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20)),
+                            ),
+                            backgroundColor: Colors.white,
+                            builder: (context) => GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () => FocusScope.of(context)
+                                  .unfocus(), // Hides keyboard when tapping outside input fields
+                              child: FractionallySizedBox(
+                                heightFactor: 0.5, // Covers half the screen
+                                child: AddReview(uid: widget.uid, name: widget.bookName,),
+                              ),
+                            ),
+                          );
+                        }, Colors.green, 12),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        buildFilterButton('Reserve', () async {
+                          setState(() => isLoading = true);
+                          try {
+                            final check = await Provider.of<BooksViewModel>(
+                                    context,
+                                    listen: false)
+                                .reserve(widget.uid, context);
+                            if (check) {
+                              await Provider.of<BooksViewModel>(context,
+                                      listen: false)
+                                  .getIndividualBooks(widget.uid, context);
+                              await Provider.of<BooksViewModel>(context,
+                                      listen: false)
+                                  .fetchBooksList(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const StudentNavBar(index: 0),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            debugPrint(e.toString());
+                          } finally {
+                            setState(() => isLoading = false);
+                          }
+                        }, AppColors.primary, 12)
+                      ],
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -529,52 +631,72 @@ class _BookInfoState extends State<BookInfo> {
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold),
                         ),
-                        if (widget.score == null || widget.score == 0)
-                          const Row(
-                            children: [
-                              Text(
-                                "No rating available",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios_sharp,
-                                size: 13,
-                              )
-                            ],
-                          )
-                        else
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              ...List.generate(
-                                widget.score!.toInt(),
-                                (index) => const Icon(Icons.star,
-                                    color: Colors.amber, size: 16),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                widget.score!.toString(),
-                                style: const TextStyle(
-                                    fontSize: 12, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              const Icon(
-                                Icons.arrow_forward_ios_sharp,
-                                size: 13,
-                              )
-                            ],
-                          ),
+                        Consumer<BooksViewModel>(
+                          builder: (context, viewModel, child) {
+                            if (viewModel.booksData.status ==
+                                Status.LOADING) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                            final user = viewModel.currentUser;
+                            if (user == null) {
+                              return const Center(
+                                  child: Text("No rating available"));
+                            }
+
+                            return Column(
+                              children: [
+                                if (user.score?.score == null || user.score?.score == 0)
+                                  const Row(
+                                    children: [
+                                      Text(
+                                        "No rating available",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Icon(
+                                        Icons.arrow_forward_ios_sharp,
+                                        size: 13,
+                                      )
+                                    ],
+                                  )
+                                else
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      ...List.generate(
+                                       user.score?.score?? user.score!.score!,
+                                            (index) => const Icon(Icons.star,
+                                            color: Colors.amber, size: 16),
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        user.score!.score.toString(),
+                                        style: const TextStyle(
+                                            fontSize: 12, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      const Icon(
+                                        Icons.arrow_forward_ios_sharp,
+                                        size: 13,
+                                      )
+                                    ],
+                                  ),
+                              ],
+                            );
+                          },
+                        ),
+
                       ],
                     ),
                     const SizedBox(
@@ -594,14 +716,15 @@ class _BookInfoState extends State<BookInfo> {
                       },
                       suffixicon: comment.isNotEmpty
                           ? InkWell(
-                        child: Icon(Icons.clear, color: Colors.grey),
-                        onTap: () {
-                          setState(() {
-                            comment = "";
-                            _commentController.clear(); // Clears the input
-                          });
-                        },
-                      )
+                              child: Icon(Icons.clear, color: Colors.grey),
+                              onTap: () {
+                                setState(() {
+                                  comment = "";
+                                  _commentController
+                                      .clear(); // Clears the input
+                                });
+                              },
+                            )
                           : null,
                       text: 'Write a comment',
                     ),
@@ -639,7 +762,9 @@ class _BookInfoState extends State<BookInfo> {
                     ),
                     Consumer<CommentViewModel>(
                       builder: (context, viewModel, child) {
-                        int itemCount = viewModel.commentsList.length >= 2 ? 2 : viewModel.commentsList.length;
+                        int itemCount = viewModel.commentsList.length >= 2
+                            ? 2
+                            : viewModel.commentsList.length;
 
                         if (viewModel.isLoading) {
                           return const ReviewCardSkeleton();
@@ -666,10 +791,15 @@ class _BookInfoState extends State<BookInfo> {
                           itemBuilder: (context, index) {
                             final completionData =
                                 viewModel.commentsList[index];
+
                             final commentData = viewModel.commentsList[index];
                             int length = commentData.replies!.length;
+                            print(
+                                "There is comment replies ${completionData.replies}");
                             return ReviewCard(
-                              date: commentData.updatedAt!=null ?parseDate(commentData.updatedAt.toString()): "",
+                              date: commentData.updatedAt != null
+                                  ? parseDate(commentData.updatedAt.toString())
+                                  : "",
                               image: completionData.user?.profilePicUrl != null
                                   ? "${BaseUrl.imageDisplay}/${completionData.user?.profilePicUrl.toString()}"
                                   : '',
@@ -685,6 +815,11 @@ class _BookInfoState extends State<BookInfo> {
                                             secondaryAnimation) =>
                                         ReplyComments(
                                       uid: widget.uid,
+                                      replies: completionData.replies,
+                                      date: completionData.createdAt != null
+                                          ? parseDate(completionData.createdAt
+                                              .toString())
+                                          : '',
                                       commentId: completionData.commentId ?? '',
                                       name: completionData.user?.fullName ?? '',
                                       image: completionData

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/data/network/BaseApiService.dart';
@@ -28,6 +30,8 @@ class AttributesRepository {
       final next = response['info']?['next'];
 
       return {"Genre": genre, "next": next};
+    }on TimeoutException {
+     return Utils.noInternet("No internet connection. Please try again later.");
     } catch (error) {
       return Utils.flushBarErrorMessage(error.toString(), context);
     }
@@ -50,6 +54,8 @@ class AttributesRepository {
       final next = response['info']?['next'];
 
       return {"author": author, "next": next};
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (error) {
       return Utils.flushBarErrorMessage(error.toString(), context);
     }
@@ -72,6 +78,8 @@ class AttributesRepository {
       final next = response['info']?['next'];
 
       return {"publisher": publisher, "next": next};
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (error) {
       return Utils.flushBarErrorMessage(error.toString(), context);
     }

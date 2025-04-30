@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/screens/student/my_books/my_book_widget.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/view_reservation.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/wishlist_skeleton.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/wishlist_widget.dart';
-import 'package:library_management_sys/view_model/reservations/reservation_view_model.dart';
+import 'package:library_management_sys/view_model/users/my_book_view_model.dart';
 import 'package:provider/provider.dart';
-
 import '../../../constant/base_url.dart';
 import '../../../resource/colors.dart';
 import '../../../utils/format_date.dart';
-import '../../../widgets/book/review_skeleton.dart';
+import '../../../utils/parse_date.dart';
 
 class MyBooks extends StatefulWidget {
   const MyBooks({super.key});
@@ -27,8 +27,8 @@ class _MyBooksState extends State<MyBooks> {
   }
 
   void fetchData() async {
-    await Provider.of<ReservationViewModel>(context, listen: false)
-        .fetchReservation(context);
+    await Provider.of<MyBooksViewModel>(context, listen: false)
+        .fetchBooksList(context);
   }
 
   int index = 1;
@@ -42,6 +42,7 @@ class _MyBooksState extends State<MyBooks> {
           "My Books",
           style: TextStyle(fontFamily: 'poppins-black', color: Colors.black),
         ),
+        automaticallyImplyLeading: false,
         actions: const [
           Image(
             image: AssetImage('assets/images/pcpsLogo.png'),
@@ -60,33 +61,39 @@ class _MyBooksState extends State<MyBooks> {
               height: size.height,
               child: Column(
                 children: [
-
-
                   Expanded(
-                    child: Consumer<ReservationViewModel>(
+                    child: Consumer<MyBooksViewModel>(
                       builder: (context, viewModel, child) {
                         if (viewModel.isLoading) {
-                          return const WishlistSkeleton();
-                        } else if (viewModel.reservationList.isEmpty) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              WishlistSkeleton(),
+                            ],
+                          );
+                        } else if (viewModel.booksList.isEmpty) {
                           return const Center(
                             child: Padding(
                               padding: EdgeInsets.all(16.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.disabled_visible_rounded,color: Colors.grey,),
-                                  SizedBox(height: 10,),
+                                  Icon(
+                                    Icons.disabled_visible_rounded,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
                                   Text(
                                     "No books found! Time to add some to your collection!",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.grey,
                                     ),
                                   ),
-
                                 ],
                               ),
                             ),
@@ -94,80 +101,29 @@ class _MyBooksState extends State<MyBooks> {
                         }
                         return ListView.builder(
                           physics: const BouncingScrollPhysics(),
-                          itemCount: viewModel.reservationList.length,
+                          itemCount: viewModel.booksList.length,
                           itemBuilder: (context, index) {
-                            final reservationData =
-                            viewModel.reservationList[index];
+                            final reservationData = viewModel.booksList[index];
 
-                            String authors = "";
-                            List<String> authorNames = reservationData
-                                .bookInfo!.bookAuthors!
-                                .map((bookAuthor) {
-                              return bookAuthor.author?.fullName ?? '';
-                            }).toList();
-                            authors += authorNames.join(", ");
-                            return WishlistWidget(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) => ViewReservation(
-                                        uid: reservationData.bookInfoId ?? '',
-                                        reserveId: reservationData.reservationId ?? '',
-                                        bookName: reservationData.bookInfo?.title ??
-                                            '',
-                                        author: authors ?? '',
-                                        edition: reservationData
-                                            .bookInfo?.editionStatement ??
-                                            '',
-                                        year: reservationData
-                                            .bookInfo?.publicationYear
-                                            .toString() ??
-                                            '',
-                                        pages: reservationData
-                                            .bookInfo?.numberOfPages
-                                            .toString() ??
-                                            '',
-                                        bookNo: reservationData
-                                            .bookInfo?.bookNumber
-                                            .toString() ??
-                                            '',
-                                        classNo: reservationData
-                                            .bookInfo?.classNumber ??
-                                            '',
-                                        series: reservationData
-                                            .bookInfo?.seriesStatement ??
-                                            '',
-                                        image: "${BaseUrl.imageDisplay}/${reservationData.bookInfo?.coverPhoto}" ?? '',
-                                        status: '',
-                                        subTitle: reservationData.bookInfo?.subTitle ?? ''),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      const begin = Offset(1.0, 0.0);
-                                      const end = Offset.zero;
-                                      const curve = Curves.easeInOut;
-                                      var tween = Tween(begin: begin, end: end)
-                                          .chain(CurveTween(curve: curve));
-                                      var offsetAnimation =
-                                      animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              title: reservationData.bookInfo?.title ?? '',
-                              author: authors ?? '',
-                              image: reservationData.bookInfo?.coverPhoto !=
-                                  null
-                                  ? "${BaseUrl.imageDisplay}/${reservationData.bookInfo?.coverPhoto.toString()}"
+                            return MyBookWidget(
+                              onTap: () async {},
+                              title:
+                                  reservationData.book?.bookInfo?.title ?? '',
+                              image: reservationData
+                                          .book?.bookInfo?.coverPhoto !=
+                                      null
+                                  ? "${BaseUrl.imageDisplay}/${reservationData.book?.bookInfo?.coverPhoto.toString()}"
                                   : '',
-                              genre: reservationData.reservationDate != null
-                                  ? formatDate(reservationData.reservationDate
-                                  .toString())
+                              checkIn: reservationData.checkInDate != null
+                                  ? parseDate(
+                                      reservationData.checkInDate.toString())
                                   : '',
-                              available: reservationData.book?.status ?? '',
+                              due: reservationData.dueDate != null
+                                  ? parseDate(
+                                      reservationData.dueDate.toString())
+                                  : '',
+                              id: reservationData.issueId ?? '',
+                              status: reservationData.book?.status ?? '',
                             );
                           },
                         );

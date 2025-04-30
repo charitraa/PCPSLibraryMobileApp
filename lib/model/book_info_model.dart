@@ -25,7 +25,7 @@ class BookInfoModel {
   final String? deletedAt;
   final String? publisherId;
   final Publisher? publisher;
-  final List<dynamic>? score;
+  final Score? score;
   final List<BookGenre>? bookGenres;
   final List<BookAuthor>? bookAuthors;
   final List<Isbn>? isbns;
@@ -49,7 +49,7 @@ class BookInfoModel {
     this.deletedAt,
      this.publisherId,
      this.publisher,
-     this.score,
+      this.score,
      this.bookGenres,
      this.bookAuthors,
      this.isbns,
@@ -76,7 +76,7 @@ class BookInfoModel {
       deletedAt: json["deletedAt"],
       publisherId: json["publisherId"],
       publisher: Publisher.fromJson(json["publisher"]),
-      score: List<dynamic>.from(json["score"] ?? []),
+      score: json["score"] != null ? Score.fromJson(json["score"]) :null,
       bookGenres: List<BookGenre>.from(
           json["bookGenres"].map((x) => BookGenre.fromJson(x))),
       bookAuthors: List<BookAuthor>.from(
@@ -106,7 +106,7 @@ class BookInfoModel {
       "deletedAt": deletedAt,
       "publisherId": publisherId,
       "publisher": publisher!.toJson(),
-      "score": score,
+      "score":score?.toJson(),
       "bookGenres": List<dynamic>.from(bookGenres!.map((x) => x.toJson())),
       "bookAuthors": List<dynamic>.from(bookAuthors!.map((x) => x.toJson())),
       "isbns": List<dynamic>.from(isbns!.map((x) => x.toJson())),
@@ -115,7 +115,27 @@ class BookInfoModel {
   }
 }
 
+class Score {
+  String? bookRatingScoreId;
+  String? bookInfoId;
+  int? score;
 
+  Score({this.bookRatingScoreId, this.bookInfoId, this.score});
+
+  Score.fromJson(Map<String, dynamic> json) {
+    bookRatingScoreId = json['bookRatingScoreId'];
+    bookInfoId = json['bookInfoId'];
+    score = json['score'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['bookRatingScoreId'] = this.bookRatingScoreId;
+    data['bookInfoId'] = this.bookInfoId;
+    data['score'] = this.score;
+    return data;
+  }
+}
 class BookGenre {
   final String? bookGenreId;
   final String? bookInfoId;

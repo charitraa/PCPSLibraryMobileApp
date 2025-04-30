@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/model/due_model.dart';
 import 'package:library_management_sys/resource/routes.dart';
 import 'package:library_management_sys/resource/routes_name.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
@@ -8,9 +9,13 @@ import 'package:library_management_sys/view_model/attributes/attr_publisher_view
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/books/comment_view_model.dart';
+import 'package:library_management_sys/view_model/books/recommended_view_model.dart';
 import 'package:library_management_sys/view_model/notifications/notification_view_model.dart';
 import 'package:library_management_sys/view_model/reservations/reservation_view_model.dart';
 import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
+import 'package:library_management_sys/view_model/users/my_book_view_model.dart';
+import 'package:library_management_sys/view_model/users/my_due_view_model.dart';
+import 'package:library_management_sys/view_model/users/my_pay_view_model.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -32,7 +37,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AttrPublisherViewModel()),
         ChangeNotifierProvider(create: (_) => CommentViewModel()),
         ChangeNotifierProvider(create: (_) => ReservationViewModel()),
-        ChangeNotifierProvider(create: (_) => NotificationViewModel()
+        ChangeNotifierProvider(create: (_) => RecommendedViewModel()),
+        ChangeNotifierProvider(create: (_) => MyBooksViewModel()),
+        ChangeNotifierProvider(create: (_) => PaymentViewModel()),
+        ChangeNotifierProvider(create: (_) => MyDueViewModel()),
+        ChangeNotifierProvider(create: (_) => NotificationViewModel(),
         ),
       ],
       child: Builder(
@@ -46,6 +55,7 @@ class MyApp extends StatelessWidget {
               theme: ThemeData(
                 colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
                 useMaterial3: true,
+                scaffoldBackgroundColor: Colors.white,
                 fontFamily: 'Poppins',
               ),
               debugShowCheckedModeBanner: false,

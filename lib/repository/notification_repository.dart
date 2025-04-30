@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:library_management_sys/endpoints/notification_endpoints.dart';
@@ -12,9 +14,7 @@ class NotificationRepository {
   Future<Map<String,dynamic>> getNotification(BuildContext context, int page, int limit) async {
     try {
       String url='${NotificationEndpoints.notification}?page=$page&pageSize=$limit';
-      if(kDebugMode){
-        print(url);
-      }
+      print(url);
       dynamic response =
       await _apiServices.getApiResponse(url);
       if (response['error'] != null && response['error'] == true) {
@@ -32,7 +32,9 @@ class NotificationRepository {
       final next= response['info']?['next'];
 
       return {"notifications":notifications,"next":next};
-    } catch (e) {
+    }on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
+    }  catch (e) {
       print('Error: $e');
       Utils.flushBarErrorMessage(e.toString(), context);
       rethrow;
@@ -54,6 +56,8 @@ class NotificationRepository {
             response['errorMessage'] ?? "Unknown error", context);
         throw Exception(response['errorMessage'] ?? "Unknown error");
       }
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (e) {
       print('Error: $e');
       Utils.flushBarErrorMessage(e.toString(), context);

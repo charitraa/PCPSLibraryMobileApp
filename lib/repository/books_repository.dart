@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/data/network/BaseApiService.dart';
@@ -10,8 +12,7 @@ import 'package:library_management_sys/utils/utils.dart';
 
 class BooksRepository {
   final BaseApiServices _apiService = NetworkApiService();
-
-  Future<Map<String, dynamic>> fetchBooks(
+  Future<Map<String, dynamic>> recommended(
       String seed,
       String bookAuthor,
       String publisher,
@@ -22,13 +23,13 @@ class BooksRepository {
     String url = '';
     if (bookAuthor.isNotEmpty) {
       url =
-          '${BookEndPoints.bookUrl}?seed=$seed&bookAuthor=$bookAuthor&page=$page&pageSize=$limit';
+      '${BookEndPoints.bookUrl}?seed=$seed&bookAuthor=$bookAuthor&page=$page&pageSize=$limit';
     } else if (publisher.isNotEmpty) {
       url =
-          '${BookEndPoints.bookUrl}?seed=$seed&publisher=$publisher&page=$page&pageSize=$limit';
+      '${BookEndPoints.bookUrl}?seed=$seed&publisher=$publisher&page=$page&pageSize=$limit';
     } else if (bookGenres.isNotEmpty) {
       url =
-          '${BookEndPoints.bookUrl}?seed=$seed&bookGenres=$bookGenres&page=$page&pageSize=$limit';
+      '${BookEndPoints.bookUrl}?seed=$seed&bookGenres=$bookGenres&page=$page&pageSize=$limit';
     } else if (seed.isNotEmpty) {
       url = '${BookEndPoints.bookUrl}?seed=$seed&page=$page&pageSize=$limit';
     } else {
@@ -50,7 +51,57 @@ class BooksRepository {
       final next = response['info']?['next'] ?? '';
 
       return {"booksList": booksList, "next": next};
-    } catch (error) {
+    }on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
+    }  catch (error) {
+      print(error);
+      return Utils.flushBarErrorMessage(
+          "Minal displaued errir $error", context);
+    }
+  }
+  Future<Map<String, dynamic>> fetchBooks(
+      String seed,
+      String bookAuthor,
+      String publisher,
+      String bookGenres,
+      int page,
+      int limit,
+      BuildContext context) async {
+    String url = '';
+    if (bookAuthor.isNotEmpty) {
+      url =
+          '${BookEndPoints.bookUrl}?seed=$seed&author=$bookAuthor&page=$page&pageSize=$limit';
+    } else if (publisher.isNotEmpty) {
+      url =
+          '${BookEndPoints.bookUrl}?seed=$seed&publisher=$publisher&page=$page&pageSize=$limit';
+    } else if (bookGenres.isNotEmpty) {
+      url =
+          '${BookEndPoints.bookUrl}?seed=$seed&genre=$bookGenres&page=$page&pageSize=$limit';
+    } else if (seed.isNotEmpty) {
+      url = '${BookEndPoints.bookUrl}?seed=$seed&page=$page&pageSize=$limit';
+    } else {
+      url = '${BookEndPoints.bookUrl}?seed=$seed&page=$page&pageSize=$limit';
+    }
+
+    try {
+      print(url);
+      dynamic response = await _apiService.getApiResponse(url);
+
+      List<BooksModel> booksList = (response['data'] as List)
+          .map((e) => BooksModel.fromJson(e))
+          .toList();
+
+      if (kDebugMode) {
+        print(url);
+        print('bbooks $booksList');
+      }
+
+      final next = response['info']?['next'] ?? '';
+
+      return {"booksList": booksList, "next": next};
+    }on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
+    }  catch (error) {
       print(error);
       return Utils.flushBarErrorMessage(
           "Minal displaued errir $error", context);
@@ -68,6 +119,8 @@ class BooksRepository {
         throw Exception(response['errorMessage'] ?? "Unknown error");
       }
       return BookInfoModel.fromJson(response);
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (e) {
       Utils.flushBarErrorMessage(e.toString(), context);
       throw e;
@@ -76,10 +129,10 @@ class BooksRepository {
 
   Future<bool> reserveBook(String uid, BuildContext context) async {
     try {
-      print("${BookEndPoints.reserveUrl}/$uid");
+      print("${BookEndPoints.renewalUrl}/$uid");
 
       dynamic response =
-          await _apiService.postUrlResponse("${BookEndPoints.reserveUrl}/$uid");
+          await _apiService.postUrlResponse("${BookEndPoints.renewalUrl}/$uid");
 
       if (response == null) {
         Utils.flushBarErrorMessage("Server did not respond", context);
@@ -93,6 +146,8 @@ class BooksRepository {
       }
       print(response);
       return true;
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (e) {
       print("Error reserving book: $e");
       Utils.flushBarErrorMessage(
@@ -117,7 +172,9 @@ class BooksRepository {
         return false;
       }
       return true;
-    } catch (e) {
+    }on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
+    }  catch (e) {
       print("Error reserving book: $e");
       Utils.flushBarErrorMessage(
           "Failed to rate the book. Please try again.", context);
@@ -141,6 +198,8 @@ class BooksRepository {
 
       final next = response['info']?['next'];
       return {"reservations": reservations, "next": next};
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (error) {
       return Utils.flushBarErrorMessage(
           "Failed to get Reservation. Please try again. ${error.toString()}",
@@ -165,6 +224,8 @@ class BooksRepository {
         return false;
       }
       return true;
+    } on TimeoutException {
+      return Utils.noInternet("No internet connection. Please try again later.");
     } catch (e) {
       print("Error reserving book: $e");
       Utils.flushBarErrorMessage(

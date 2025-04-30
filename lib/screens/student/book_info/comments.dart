@@ -209,6 +209,7 @@ class _CommentsState extends State<Comments> {
                                     pageBuilder: (context, animation,
                                         secondaryAnimation) =>
                                         ReplyComments(
+                                          replies: commentData.replies,
                                           uid:widget.uid,
                                           commentId:commentData.commentId??'' ,
                                           name: commentData.user?.fullName ?? '',

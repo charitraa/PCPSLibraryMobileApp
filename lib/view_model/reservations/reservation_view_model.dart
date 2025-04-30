@@ -66,7 +66,7 @@ class ReservationViewModel with ChangeNotifier {
       if (response['next'] != null) {
         _currentPage++;
       }
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (error) {
       Utils.flushBarErrorMessage("Error fetching books: $error", context);
     } finally {
@@ -84,7 +84,7 @@ class ReservationViewModel with ChangeNotifier {
         _currentPage++;
       }
 
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (error) {
       Utils.flushBarErrorMessage("Error fetching reservation: $error", context);
     }
@@ -96,6 +96,7 @@ class ReservationViewModel with ChangeNotifier {
       if(user){
         Utils.flushBarSuccessMessage('You have cancelled the reservation!!', context);
       }
+      Future.microtask(() => notifyListeners());
       return user;
     } catch (e) {
       print(e);

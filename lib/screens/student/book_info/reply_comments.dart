@@ -1,12 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/model/book_info_model.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import '../../../constant/base_url.dart';
 import '../../../resource/colors.dart';
+import '../../../utils/parse_date.dart';
 import '../../../view_model/books/comment_view_model.dart';
+import '../../../widgets/book/replies_widget.dart';
 import '../../../widgets/form_widget/custom_comment.dart';
 
 class ReplyComments extends StatefulWidget {
-  final String? name, image, text, uid, commentId;
+  final String? name, image, text, uid,date, commentId;
+  final List<dynamic>? replies;
   final double? rating;
   final int? length;
   const ReplyComments(
@@ -17,7 +24,7 @@ class ReplyComments extends StatefulWidget {
       this.rating,
       this.length,
       this.uid,
-      this.commentId});
+      this.commentId, this.date, this.replies});
 
   @override
   State<ReplyComments> createState() => _ReplyCommentsState();
@@ -27,6 +34,7 @@ class _ReplyCommentsState extends State<ReplyComments> {
   bool isLoading = false;
   final TextEditingController _commentController = TextEditingController();
   String comment = "";
+ 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -52,12 +60,21 @@ class _ReplyCommentsState extends State<ReplyComments> {
           SizedBox(width: 18),
         ],
       ),
-      body: Container(
+      body: isLoading
+          ? Center(
+        child: LoadingAnimationWidget.twistingDots(
+          leftDotColor: Colors.red,
+          rightDotColor: AppColors.primary,
+          size: 40,
+        ),
+      )
+          : Container(
           width: size.width,
           height: size.height,
           padding: const EdgeInsets.all(14),
           child: Column(
             children: [
+
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: Stack(
@@ -127,8 +144,8 @@ class _ReplyCommentsState extends State<ReplyComments> {
                             ],
                           ),
                           const SizedBox(height: 5),
-                          const Text(
-                            "June 5, 2019",
+                           Text(
+                            widget.date??'',
                             style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                           const SizedBox(height: 10),
@@ -185,17 +202,20 @@ class _ReplyCommentsState extends State<ReplyComments> {
                                   isLoading = true;
                                 });
                                 try {
+
                                   final check =
                                       await Provider.of<CommentViewModel>(
                                               context,
                                               listen: false)
                                           .replyComment(widget.commentId??'',
-                                              {'comment': comment}, context);
+                                              {'reply': comment}, context);
+                                  print(check);
                                   if (check) {
                                     await Provider.of<CommentViewModel>(context,
                                             listen: false)
                                         .fetchComments(
                                             widget.uid ?? '', context);
+
                                   }
                                   setState(() {
                                     isLoading = false;
@@ -234,7 +254,29 @@ class _ReplyCommentsState extends State<ReplyComments> {
                     ),
                   ],
                 ),
-              )
+              ),
+              if(widget.replies!=null||widget.replies!=[])...[
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: widget.replies!.length,
+                    itemBuilder: (context, index) {
+                      final replyData = widget.replies![index];
+
+                      return RepliesWidget(
+                        date: replyData.updatedAt != null
+                            ? parseDate(replyData.updatedAt.toString())
+                            : "",
+                        image: replyData.user?.profilePicUrl != null
+                            ? "${BaseUrl.imageDisplay}/${replyData.user?.profilePicUrl}"
+                            : '',
+                        name: replyData.user?.fullName ?? '',
+                        text: replyData.reply ?? '',
+
+                      );
+                    },
+                  ),
+                ),
+              ]
             ],
           )),
     );

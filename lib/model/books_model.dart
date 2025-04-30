@@ -21,7 +21,7 @@ class BooksModel {
   final String? updatedAt;
   final String? publisherId;
   final Publisher? publisher;
-  final List<dynamic>? score;
+  final Score? score;
   final List<BookGenre>? bookGenres;
   final List<BookAuthor>? bookAuthors;
   final List<Isbn>? isbns;
@@ -67,7 +67,7 @@ class BooksModel {
       updatedAt: json["updatedAt"],
       publisherId: json["publisherId"],
       publisher: json["publisher"] != null ? Publisher.fromJson(json["publisher"]) : null,
-      score: json["score"] != null ? List<dynamic>.from(json["score"]) : [],
+      score: json["score"] != null ? Score.fromJson(json["score"]) :null,
       bookGenres: json["bookGenres"] != null
           ? List<BookGenre>.from(json["bookGenres"].map((x) => BookGenre.fromJson(x)))
           : [],
@@ -96,7 +96,7 @@ class BooksModel {
       "updatedAt": updatedAt,
       "publisherId": publisherId,
       "publisher": publisher?.toJson(),
-      "score": score ?? [],
+      "score": score?.toJson(),
       "bookGenres": bookGenres?.map((x) => x.toJson()).toList() ?? [],
       "bookAuthors": bookAuthors?.map((x) => x.toJson()).toList() ?? [],
       "isbns": isbns?.map((x) => x.toJson()).toList() ?? [],
@@ -141,6 +141,27 @@ class BookGenre {
   };
 }
 
+class Score {
+  String? bookRatingScoreId;
+  String? bookInfoId;
+  int? score;
+
+  Score({this.bookRatingScoreId, this.bookInfoId, this.score});
+
+  Score.fromJson(Map<String, dynamic> json) {
+    bookRatingScoreId = json['bookRatingScoreId'];
+    bookInfoId = json['bookInfoId'];
+    score = json['score'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['bookRatingScoreId'] = this.bookRatingScoreId;
+    data['bookInfoId'] = this.bookInfoId;
+    data['score'] = this.score;
+    return data;
+  }
+}
 
 class BookAuthor {
   final String? bookAuthorId;

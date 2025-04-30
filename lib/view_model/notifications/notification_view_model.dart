@@ -21,7 +21,7 @@ class NotificationViewModel with ChangeNotifier {
 
   void setLoading(bool value) {
     _isLoading = value;
-    notifyListeners();
+    Future.microtask(() => notifyListeners());
   }
 
   Future<void> fetchNotifications(BuildContext context) async {
@@ -36,7 +36,7 @@ class NotificationViewModel with ChangeNotifier {
       if(response['next']!=null){
         _limit++;
       }
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (error) {
       Utils.flushBarErrorMessage(
           "Error fetching notifications: $error", context);
@@ -55,8 +55,7 @@ class NotificationViewModel with ChangeNotifier {
         _notificationList.addAll(response['notifications']);
         _limit++;
       }
-
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (error) {
       Utils.flushBarErrorMessage(
           "Error fetching notifications: $error", context);
@@ -70,6 +69,7 @@ class NotificationViewModel with ChangeNotifier {
       await _notificationRepo.marktNotification(context);
       _notificationList.clear();
       await fetchNotifications(context);
+      Future.microtask(() => notifyListeners());
       return true;
     } catch (error) {
       Utils.flushBarErrorMessage(

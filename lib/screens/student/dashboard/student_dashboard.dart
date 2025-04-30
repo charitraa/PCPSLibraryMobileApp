@@ -1,22 +1,30 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/resource/colors.dart';
+import 'package:library_management_sys/screens/student/dashboard/category_shimmer_eff.dart';
+import 'package:library_management_sys/screens/student/dashboard/profile_skeleton.dart';
+import 'package:library_management_sys/screens/student/dashboard/reservation_list.dart';
+import 'package:library_management_sys/screens/student/dashboard/user_stats.dart';
 import 'package:library_management_sys/screens/student/in_app_notification/in_app_notification.dart';
-import 'package:library_management_sys/view_model/attributes/attr_author_view_model.dart';
-import 'package:library_management_sys/view_model/attributes/attr_genre_view_model.dart';
-import 'package:library_management_sys/view_model/attributes/attr_publisher_view_model.dart';
+import 'package:library_management_sys/screens/student/my_books/my_books.dart';
+import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/view_model/notifications/notification_view_model.dart';
+import 'package:library_management_sys/view_model/users/my_book_view_model.dart';
+import 'package:library_management_sys/view_model/users/my_due_view_model.dart';
+import 'package:library_management_sys/view_model/users/my_pay_view_model.dart';
 import 'package:library_management_sys/widgets/book/book_widget.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../constant/base_url.dart';
 import '../../../data/response/status.dart';
+import '../../../utils/parse_date.dart';
 import '../../../view_model/books/book_view_model.dart';
+import '../../../view_model/reservations/reservation_view_model.dart';
 import '../../../widgets/book/book_skeleton.dart';
 import '../book_info/book_info.dart';
+import '../my_wishlist/std_wishlist.dart';
 
 class StudentDashboard extends StatefulWidget {
   const StudentDashboard({super.key});
@@ -29,21 +37,21 @@ class _StudentDashboardState extends State<StudentDashboard> {
   @override
   void initState() {
     // TODO: implement initState
+    fetch();
     super.initState();
-    fetchBooks();
+
   }
 
-  fetchBooks() async {
-    await Provider.of<BooksViewModel>(context, listen: false)
+  fetch() async {
+    await Provider.of<PaymentViewModel>(context, listen: false)
+        .fetchReservation(context);
+    await Provider.of<MyDueViewModel>(context, listen: false)
         .fetchBooksList(context);
-    await Provider.of<AttrPublisherViewModel>(context, listen: false)
-        .fetchPublishersList(context);
-    await Provider.of<AttrGenreViewModel>(context, listen: false)
-        .fetchGenresList(context);
-    await Provider.of<AttrAuthorViewModel>(context, listen: false)
-        .fetchAuthorsList(context);
-    await Provider.of<NotificationViewModel>(context, listen: false)
-        .fetchNotifications(context);
+    await Provider.of<MyBooksViewModel>(context, listen: false)
+        .fetchBooksList(context);
+    await Provider.of<ReservationViewModel>(context, listen: false)
+        .fetchReservation(context);
+
   }
 
   @override
@@ -63,17 +71,13 @@ class _StudentDashboardState extends State<StudentDashboard> {
               Consumer<AuthViewModel>(
                 builder: (context, userDataViewModel, child) {
                   final user = userDataViewModel.currentUser;
-                  if (userDataViewModel.userData.status == Status.ERROR) {
-                    return const Text(
-                      "Something went wrong",
-                      style: TextStyle(color: Colors.red),
-                    );
+                  if (userDataViewModel.isLoading) {
+                    return const ProfileSkeleton();
                   } else if (user != null) {
                     String getFirstWord(String input) {
                       List<String> words = input.trim().split(' ');
                       return words.isNotEmpty ? words[0] : input;
                     }
-
                     String name = getFirstWord(user.fullName!);
                     String image = user.profilePicUrl != null
                         ? "${BaseUrl.imageDisplay}/${user.profilePicUrl}"
@@ -118,7 +122,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                   style: TextStyle(
                                       color: AppColors.secondary,
                                       fontSize: 12,
-                                      fontFamily: 'poppins-black'),
+                                      fontFamily: 'poppins'),
                                 )
                               ],
                             ),
@@ -130,7 +134,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                               onTap: () {
                                 Navigator.of(context).push(
                                   PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) =>
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
                                         NotificationPage(),
                                     transitionsBuilder: (context, animation,
                                         secondaryAnimation, child) {
@@ -140,7 +145,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                       var tween = Tween(begin: begin, end: end)
                                           .chain(CurveTween(curve: curve));
                                       var offsetAnimation =
-                                      animation.drive(tween);
+                                          animation.drive(tween);
                                       return SlideTransition(
                                         position: offsetAnimation,
                                         child: child,
@@ -155,13 +160,12 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                   int unreadCount = notificationViewModel
                                       .notificationList
                                       .where((notification) =>
-                                  !(notification.read ?? false))
+                                          !(notification.read ?? false))
                                       .length;
                                   return Stack(
                                     clipBehavior: Clip.none,
                                     children: [
-                                      const Icon(Icons.notifications,
-                                          size: 28),
+                                      const Icon(Icons.notifications, size: 28),
                                       if (unreadCount > 0)
                                         Positioned(
                                           right: 0,
@@ -195,7 +199,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                 },
                               ),
                             ),
-
                             const SizedBox(
                               width: 4,
                             ),
@@ -252,7 +255,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                     style: TextStyle(
                                         color: AppColors.secondary,
                                         fontSize: 12,
-                                        fontFamily: 'poppins-black'),
+                                        fontFamily: 'poppins'),
                                   )
                                 ],
                               ),
@@ -278,28 +281,18 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   }
                 },
               ),
-
               const SizedBox(
-                height: 12,
+                height: 10,
               ),
-              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                Text(
-                  "Explore",
-                  style: TextStyle(
-                      fontSize: 43,
-                      color: AppColors.primary,
-                      fontFamily: 'poppins-black'),
-                ),
-              ]),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Most Popular',
+                    'Your Dues',
                     style: TextStyle(
                         fontSize: 15,
-                        fontFamily: 'poppins-black',
+                        fontFamily: 'poppins',
                         color: AppColors.primary),
                   ),
                 ],
@@ -308,15 +301,269 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 height: 10,
               ),
               SizedBox(
+                height: 125,
+                child: Consumer<MyDueViewModel>(
+                  builder: (context, value, child) {
+                    final books = value.booksList;
+                    if (value.isLoading) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 70,
+                                  width: 70,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: const Color(0xff868484),
+                                      width: 0.4,
+                                    ),
+                                    color: Colors.white,
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.category, // Placeholder icon
+                                      color: Colors.black,
+                                      size: 33,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                const SizedBox(
+                                  width: 70,
+                                  child: Text(
+                                    "Loading...", // Placeholder text
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 70,
+                                  width: 70,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: const Color(0xff868484),
+                                      width: 0.4,
+                                    ),
+                                    color: Colors.white,
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.category, // Placeholder icon
+                                      color: Colors.black,
+                                      size: 33,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                const SizedBox(
+                                  width: 70,
+                                  child: Text(
+                                    "Loading...", // Placeholder text
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                          ,
+                          Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 70,
+                                  width: 70,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: const Color(0xff868484),
+                                      width: 0.4,
+                                    ),
+                                    color: Colors.white,
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.category, // Placeholder icon
+                                      color: Colors.black,
+                                      size: 33,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                const SizedBox(
+                                  width: 70,
+                                  child: Text(
+                                    "Loading...", // Placeholder text
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      );
+                    }
+                    if(books!=null){
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(bottom: 18),
+                        itemCount: books.length,
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final book = books[index];
+                          return Column(
+                            children: [
+                              Container(
+                                height: 70,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: const Color(0xff868484),
+                                    width: 0.4,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+
+                                    const Text('Rs.',style: TextStyle(color: Colors.white)),
+                                    Text(book.amount.toString(),style: TextStyle(color: Colors.white),)
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 5,),
+                              SizedBox(
+                                width:80,
+                                child: Text(
+                                  book.penaltyType??'',
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+
+                                  style: TextStyle(fontSize: 11,fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                    }
+                    else {
+                      return Column(
+                        children: [
+                          Container(
+                            height: 70,
+                            width: 80,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: const Color(0xff868484),
+                                width: 0.4,
+                              ),
+                            ),
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+
+                                Text('Rs.',style: TextStyle(color: Colors.white)),
+                                Text('N/A',style: TextStyle(color: Colors.white),)
+                              ],
+                            ),
+                          ),
+
+                        ],
+                      );
+                    }
+                  },
+                ),
+              ),
+
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Text(
+                  "My Books",
+                  style: TextStyle(
+                      fontSize: 30,
+                      color: AppColors.primary,
+                      fontFamily: 'poppins'),
+                ),
+              ]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Currently Readings',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'poppins',
+                        color: AppColors.primary),
+                  ),
+                  buildFilterButton('View', () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const StudentNavBar(
+                          index: 3,
+                          reqIndex: 0,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.easeInOut;
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  }, AppColors.primary, 12)
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
                 height: 200,
-                child: Consumer<BooksViewModel>(
+                child: Consumer<MyBooksViewModel>(
                   builder: (context, value, child) {
                     final books = value.booksList;
 
                     if (value.isLoading) {
                       return const BookSkeletonGrid();
                     }
-
                     if (books.isEmpty) {
                       return const Center(
                         child: Text(
@@ -329,86 +576,76 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.only(bottom: 18),
-                      itemCount: 6,
+                      itemCount: books.length > 1 ? books.length.clamp(1, 4) : books.length,
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) {
                         final book = books[index];
 
-                        String authors = "By ";
-                        List<String> authorNames =
-                            book.bookAuthors!.map((bookAuthor) {
-                          return bookAuthor.author!.fullName ?? '';
-                        }).toList();
-                        authors += authorNames.join(", ");
-                        String genres = "";
-                        List<String> genresMap =
-                            book.bookGenres!.map((bookGenres) {
-                          return bookGenres.genre!.genre ?? '';
-                        }).toList();
-                        genres += genresMap.join(", ");
-
-                        String isbn = "";
-                        List<String> isbnMap = book.isbns!.map((isbn) {
-                          return isbn.isbn ?? '';
-                        }).toList();
-                        isbn += isbnMap.join(", ");
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5.0),
                           child: BookWidget(
                               bookImage:
-                                  "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
-                              title: book.title ?? '',
+                                  "${BaseUrl.imageDisplay}/${book.book?.bookInfo?.coverPhoto ?? ''}",
+                              title: book.book?.bookInfo?.title ?? '',
                               author:
-                                  "By ${book.bookAuthors![0].author!.fullName}" ??
+                              book.dueDate != null
+                                  ? parseDate(
+                                  book.dueDate.toString())
+                                  : '' ??
                                       '',
                               onTap: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) => BookInfo(
-                                        uid: book.bookInfoId ?? '',
-                                        bookName: book.title ?? '',
-                                        author: authors ?? '',
-                                        edition: book.editionStatement ?? '',
-                                        year: book.publicationYear.toString() ??
-                                            '',
-                                        publisher:
-                                            book.publisher!.publisherName ?? '',
-                                        pages:
-                                            book.numberOfPages.toString() ?? '',
-                                        score: book.score!.isNotEmpty
-                                            ? (book.score![0]['score'] as int)
-                                                .toDouble()
-                                            : 0,
-                                        bookNo:
-                                            book.bookNumber.toString() ?? '',
-                                        classNo:
-                                            book.classNumber.toString() ?? '',
-                                        series:
-                                            book.seriesStatement.toString() ??
-                                                '',
-                                        genre: genres ?? '',
-                                        isbn: isbn ?? '',
-                                        image:
-                                            "${BaseUrl.imageDisplay}/${book.coverPhoto}" ??
-                                                '',
-                                        status: '',
-                                        subTitle: book.subTitle ?? ''),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      const begin = Offset(1.0, 0.0);
-                                      const end = Offset.zero;
-                                      const curve = Curves.easeInOut;
-                                      var tween = Tween(begin: begin, end: end)
-                                          .chain(CurveTween(curve: curve));
-                                      var offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
+                                // Navigator.of(context).push(
+                                //   PageRouteBuilder(
+                                //     pageBuilder: (context, animation,
+                                //             secondaryAnimation) =>
+                                //         BookInfo(
+                                //             uid: book.bookInfoId ?? '',
+                                //             bookName: book.title ?? '',
+                                //             author: authors ?? '',
+                                //             edition: book.editionStatement ??
+                                //                 '',
+                                //             year: book.publicationYear.toString() ??
+                                //                 '',
+                                //             publisher:
+                                //                 book.publisher!.publisherName ??
+                                //                     '',
+                                //             pages:
+                                //                 book.numberOfPages.toString() ??
+                                //                     '',
+                                //             score: book.score != null
+                                //                 ? (book.score?.score as int)
+                                //                     .toDouble()
+                                //                 : 0,
+                                //             bookNo: book.bookNumber.toString() ??
+                                //                 '',
+                                //             classNo:
+                                //                 book.classNumber.toString() ??
+                                //                     '',
+                                //             series:
+                                //                 book.seriesStatement.toString() ??
+                                //                     '',
+                                //             genre: genres ?? '',
+                                //             isbn: isbn ?? '',
+                                //             image:
+                                //                 "${BaseUrl.imageDisplay}/${book.coverPhoto}" ?? '',
+                                //             status: '',
+                                //             subTitle: book.subTitle ?? ''),
+                                //     transitionsBuilder: (context, animation,
+                                //         secondaryAnimation, child) {
+                                //       const begin = Offset(1.0, 0.0);
+                                //       const end = Offset.zero;
+                                //       const curve = Curves.easeInOut;
+                                //       var tween = Tween(begin: begin, end: end)
+                                //           .chain(CurveTween(curve: curve));
+                                //       var offsetAnimation =
+                                //           animation.drive(tween);
+                                //       return SlideTransition(
+                                //         position: offsetAnimation,
+                                //         child: child,
+                                //       );
+                                //     },
+                                //   ),
+                                // );
                               }),
                         );
                       },
@@ -416,67 +653,227 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   },
                 ),
               ),
+
               const SizedBox(
-                height: 5,
+                height: 11,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'E-library',
+                    "Your Reservation's",
                     style: TextStyle(
                         fontSize: 15,
-                        fontFamily: 'poppins-black',
+                        fontFamily: 'poppins',
                         color: AppColors.primary),
                   ),
-                  InkWell(
-                    onTap: () {},
-                    child: Icon(Icons.arrow_forward_ios_sharp,
-                        size: 18, color: AppColors.primary),
-                  )
                 ],
               ),
-              // const SingleChildScrollView(
-              //   scrollDirection: Axis.horizontal,
-              //   padding: EdgeInsets.symmetric(vertical: 10),
-              //   child: Row(
-              //     children: [
-              //       BookWidget(
-              //           bookImage: 'assets/images/book.png',
-              //           title: "My Type of book and well done",
-              //           author: "Author kenzie Mcnary"),
-              //       SizedBox(
-              //         width: 8,
-              //       ),
-              //       BookWidget(
-              //           bookImage: 'assets/images/two.webp',
-              //           title: "A Million To One",
-              //           author: "Tony Fagoli"),
-              //       SizedBox(
-              //         width: 8,
-              //       ),
-              //       BookWidget(
-              //           bookImage: 'assets/images/hide.webp',
-              //           title: "Hide and Seek",
-              //           author: "Olivia Wilson"),
-              //       SizedBox(
-              //         width: 8,
-              //       ),
-              //       BookWidget(
-              //           bookImage: 'assets/images/one.webp',
-              //           title: "Walk Into The shadow",
-              //           author: "Author kenzie Mcnary"),
-              //       SizedBox(
-              //         width: 8,
-              //       ),
-              //     ],
-              //   ),
-              // )
+              const SizedBox(
+                height: 8,
+              ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: ReservationList(),
+              ),
+              buildFilterButton('View all Reservations', () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const Wishlist(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0);
+                      const end = Offset.zero;
+                      const curve = Curves.easeInOut;
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+                      var offsetAnimation = animation.drive(tween);
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              }, AppColors.primary, 12),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Payment History',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'poppins',
+                        color: AppColors.primary),
+                  ),
+                  buildFilterButton('View', () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                        const StudentNavBar(
+                          index: 2,
+                          reqIndex: 0,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.easeInOut;
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  }, AppColors.primary, 12)
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                height: 100,
+                child: Consumer<PaymentViewModel>(
+                  builder: (context, value, child) {
+                    final books = value.reservationList;
+                    if (value.isLoading) {
+                      return const BookSkeletonGrid();
+                    }
+                    if (books.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: size.width * 0.3,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Dues',
+                                style:
+                                TextStyle(color: Colors.white, fontSize: 12),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                '---',
+                                style:
+                                TextStyle(color: Colors.white, fontSize: 10),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(bottom: 18),
+                      itemCount: books.length,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final book = books[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            width: size.width * 0.35,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  book.paymentType ?? '',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 12),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  "Rs. ${book.amountPaid.toString()}" ?? '',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 15),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 10,)
             ],
           ),
         ),
       ),
     ));
+  }
+
+  Widget buildFilterButton(
+      String title, VoidCallback onTap, Color color, double size) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Text(
+          title,
+          style: TextStyle(color: Colors.white, fontSize: size),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Flexible(
+            child: Text(
+              value,
+              style: const TextStyle(color: Colors.black54),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

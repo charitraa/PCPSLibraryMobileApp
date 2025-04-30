@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:library_management_sys/screens/student/account/my_account.dart';
 import 'package:library_management_sys/screens/student/browse_books/std_browse.dart';
 import 'package:library_management_sys/screens/student/dashboard/student_dashboard.dart';
+import 'package:library_management_sys/screens/student/e-books.dart';
 import 'package:library_management_sys/screens/student/my_books/my_books.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
 
 class StudentNavBar extends StatefulWidget {
-  const StudentNavBar({super.key});
+  final int? index,reqIndex;
+  const StudentNavBar({super.key, this.index=0, this.reqIndex=0});
 
   @override
   State<StudentNavBar> createState() => _StudentNavBarState();
@@ -14,23 +16,24 @@ class StudentNavBar extends StatefulWidget {
 
 class _StudentNavBarState extends State<StudentNavBar> {
   int _currentIndex = 0;
+  int index = 0;
   late PageController _pageController;
-
+  late List<Widget> screenList;
   @override
   void initState() {
     super.initState();
+     _currentIndex = widget.index ?? 0;
+    index = widget.reqIndex ?? 0;
     _pageController = PageController(initialPage: _currentIndex);
+    screenList = [
+      const StudentDashboard(),
+      const Ebooks(),
+      StudentBrowseBooks(reqIndex: index,),
+      const MyBooks(),
+      const Profile(),
+    ];
   }
 
-  final List<Widget> _pages = [
-    const StudentDashboard(),
-    const Wishlist(),
-    const StudentBrowseBooks(),
-    const MyBooks(),
-    const Profile(),
-  ];
-
-  @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
@@ -42,7 +45,7 @@ class _StudentNavBarState extends State<StudentNavBar> {
             _currentIndex = index;
           });
         },
-        children: _pages,
+        children: screenList,
       ),
       bottomNavigationBar: Container(
         width: size.width,
@@ -88,8 +91,8 @@ class _StudentNavBarState extends State<StudentNavBar> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildNavItem(Icons.dashboard, 'Home', 0),
-                  _buildNavItem(Icons.shopping_bag_outlined, 'Wishlist', 1),
+                  _buildNavItem(Icons.dashboard, 'Hub', 0),
+                  _buildNavItem(Icons.book, 'E-books', 1),
                   const SizedBox(width: 48), // Space for the FAB
                   _buildNavItem(Icons.bookmark_remove_sharp, 'My Books', 3),
                   _buildNavItem(Icons.settings, 'Setting', 4),

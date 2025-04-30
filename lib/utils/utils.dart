@@ -8,7 +8,26 @@ class Utils {
   //   Fluttertoast.showToast(
   //       msg: message, backgroundColor: Colors.green, textColor: Colors.white);
   // }
-
+  static noInternet(String message) {
+    Flushbar(
+      message: message,
+      backgroundColor: Colors.red,
+      title: 'Error',
+      messageColor: Colors.black,
+      duration: const Duration(seconds: 3),
+      icon: const Icon(
+        Icons.error,
+        size: 28.0,
+        color: Colors.white,
+      ),
+      leftBarIndicatorColor: Colors.redAccent,
+      animationDuration: const Duration(milliseconds: 2000),
+      isDismissible: true,
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      forwardAnimationCurve: Curves.easeInOut,
+    );
+  }
   static flushBarErrorMessage(String message, BuildContext context) {
     Flushbar(
       message: message,
