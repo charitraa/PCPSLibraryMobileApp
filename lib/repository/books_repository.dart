@@ -37,7 +37,6 @@ class BooksRepository {
     }
 
     try {
-      print(url);
       dynamic response = await _apiService.getApiResponse(url);
 
       List<BooksModel> booksList = (response['data'] as List)

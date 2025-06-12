@@ -1,94 +1,70 @@
 class CurrentUserModel {
-  String? userId;
-  String? fullName;
-  String? dob;
-  String? address;
-  String? contactNo;
-  String? universityId;
-  String? collegeId;
-  String? profilePicUrl;
-  String? accountCreationDate;
-  String? enrollmentYear;
-  String? gender;
-  String? roleId;
-  String? email;
-  String? accountStatus;
-  String? createdAt;
-  String? updatedAt;
-  String? deletedAt;
-  Role? role;
-  Membership? membership;
+  int? statusCode;
+  Data? data;
 
-  CurrentUserModel({
-    this.userId,
-    this.fullName,
-    this.dob,
-    this.address,
-    this.contactNo,
-    this.universityId,
-    this.collegeId,
-    this.profilePicUrl,
-    this.accountCreationDate,
-    this.enrollmentYear,
-    this.gender,
-    this.roleId,
-    this.email,
-    this.accountStatus,
-    this.createdAt,
-    this.updatedAt,
-    this.deletedAt,
-    this.role,
-    this.membership,
-  });
+  CurrentUserModel({this.statusCode, this.data});
 
-  factory CurrentUserModel.fromJson(Map<String, dynamic> json) {
-    return CurrentUserModel(
-      userId: json['userId'],
-      fullName: json['fullName'],
-      dob: json['dob'],
-      address: json['address'],
-      contactNo: json['contactNo'],
-      universityId: json['universityId'],
-      collegeId: json['collegeId'],
-      profilePicUrl: json['profilePicUrl'],
-      accountCreationDate: json['accountCreationDate'],
-      enrollmentYear: json['enrollmentYear'],
-      gender: json['gender'],
-      roleId: json['roleId'],
-      email: json['email'],
-      accountStatus: json['accountStatus'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      deletedAt: json['deletedAt'],
-      role: json['role'] != null ? Role.fromJson(json['role']) : null,
-      membership: json['membership'] != null ? Membership.fromJson(json['membership']) : null,
-    );
+  CurrentUserModel.fromJson(Map<String, dynamic> json) {
+    statusCode = json['statusCode'];
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['userId'] = userId;
-    data['fullName'] = fullName;
-    data['dob'] = dob;
-    data['address'] = address;
-    data['contactNo'] = contactNo;
-    data['universityId'] = universityId;
-    data['collegeId'] = collegeId;
-    data['profilePicUrl'] = profilePicUrl;
-    data['accountCreationDate'] = accountCreationDate;
-    data['enrollmentYear'] = enrollmentYear;
-    data['gender'] = gender;
-    data['roleId'] = roleId;
-    data['email'] = email;
-    data['accountStatus'] = accountStatus;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
-    data['deletedAt'] = deletedAt;
-    if (role != null) {
-      data['role'] = role!.toJson();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['statusCode'] = this.statusCode;
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
     }
-    if (membership != null) {
-      data['membership'] = membership!.toJson();
+    return data;
+  }
+}
+
+class Data {
+  String? userId;
+  String? fullName;
+  String? cardId;
+  String? profilePicUrl;
+  String? roleId;
+  String? membershipValidUntil;
+  String? createdAt;
+  String? updatedAt;
+  Role? role;
+
+  Data(
+      {this.userId,
+        this.fullName,
+        this.cardId,
+        this.profilePicUrl,
+        this.roleId,
+        this.membershipValidUntil,
+        this.createdAt,
+        this.updatedAt,
+        this.role});
+
+  Data.fromJson(Map<String, dynamic> json) {
+    userId = json['userId'];
+    fullName = json['fullName'];
+    cardId = json['cardId'];
+    profilePicUrl = json['profilePicUrl'];
+    roleId = json['roleId'];
+    membershipValidUntil = json['membershipValidUntil'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    role = json['role'] != null ? new Role.fromJson(json['role']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['userId'] = this.userId;
+    data['fullName'] = this.fullName;
+    data['cardId'] = this.cardId;
+    data['profilePicUrl'] = this.profilePicUrl;
+    data['roleId'] = this.roleId;
+    data['membershipValidUntil'] = this.membershipValidUntil;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    if (this.role != null) {
+      data['role'] = this.role!.toJson();
     }
     return data;
   }
@@ -98,77 +74,20 @@ class Role {
   String? roleId;
   String? role;
   int? precedence;
-  String? deletedAt;
 
-  Role({this.roleId, this.role, this.precedence, this.deletedAt});
+  Role({this.roleId, this.role, this.precedence,});
 
-  factory Role.fromJson(Map<String, dynamic> json) {
-    return Role(
-      roleId: json['roleId'],
-      role: json['role'],
-      precedence: json['precedence'],
-      deletedAt: json['deletedAt'],
-    );
+  Role.fromJson(Map<String, dynamic> json) {
+    roleId = json['roleId'];
+    role = json['role'];
+    precedence = json['precedence'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'roleId': roleId,
-      'role': role,
-      'precedence': precedence,
-      'deletedAt': deletedAt,
-    };
-  }
-}
-
-class Membership {
-  String? membershipId;
-  String? startDate;
-  String? expiryDate;
-  int? renewalCount;
-  String? lastRenewalDate;
-  String? status;
-  String? membershipTypeId;
-  String? userId;
-  String? deletedAt;
-
-  Membership({
-    this.membershipId,
-    this.startDate,
-    this.expiryDate,
-    this.renewalCount,
-    this.lastRenewalDate,
-    this.status,
-    this.membershipTypeId,
-    this.userId,
-    this.deletedAt,
-  });
-
-  factory Membership.fromJson(Map<String, dynamic> json) {
-    return Membership(
-      membershipId: json['membershipId'],
-      startDate: json['startDate'],
-      expiryDate: json['expiryDate'],
-      renewalCount: json['renewalCount'],
-      lastRenewalDate: json['lastRenewalDate'],
-      status: json['status'],
-      membershipTypeId: json['membershipTypeId'],
-      userId: json['userId'],
-      deletedAt: json['deletedAt'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'membershipId': membershipId,
-      'startDate': startDate,
-      'expiryDate': expiryDate,
-      'renewalCount': renewalCount,
-      'lastRenewalDate': lastRenewalDate,
-      'status': status,
-      'membershipTypeId': membershipTypeId,
-      'userId': userId,
-      'deletedAt': deletedAt,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['roleId'] = this.roleId;
+    data['role'] = this.role;
+    data['precedence'] = this.precedence;
+    return data;
   }
 }

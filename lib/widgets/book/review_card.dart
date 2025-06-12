@@ -1,15 +1,29 @@
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 import '../../resource/colors.dart';
+import '../../view_model/books/comment_view_model.dart';
 
 class ReviewCard extends StatefulWidget {
-  final String? image, name, text,date;
+  final String? image, name, text, date, uid;
   final double? rating;
-  final VoidCallback? onTap;
+  final VoidCallback? onTap, onEdit,onDelete;
   final int? length;
-  const ReviewCard({super.key, required this.image, required this.name, required this.text, this.rating, this.length,  this.onTap, this.date});
+  const ReviewCard(
+      {super.key,
+      required this.image,
+      required this.name,
+      required this.text,
+      this.rating,
+      this.length,
+      this.onTap,
+      this.date,
+      this.onDelete,
+      this.uid, this.onEdit});
 
   @override
   State<ReviewCard> createState() => _ReviewCardState();
@@ -19,7 +33,7 @@ class _ReviewCardState extends State<ReviewCard> {
 
   @override
   Widget build(BuildContext context) {
-    return   Padding(
+    return Padding(
       padding: const EdgeInsets.all(10),
       child: InkWell(
         onTap: widget.onTap,
@@ -47,8 +61,8 @@ class _ReviewCardState extends State<ReviewCard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                       Text(
-                        widget.name??'',
+                      Text(
+                        widget.name ?? '',
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
@@ -70,45 +84,123 @@ class _ReviewCardState extends State<ReviewCard> {
                           children: [
                             ...List.generate(
                               widget.rating!.toInt(),
-                                  (index) =>
-                              const Icon(Icons.star, color: Colors.amber,size: 14,),
+                              (index) => const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 14,
+                              ),
                             ),
                             const SizedBox(
                               width: 5,
                             ),
                             Text(
                               widget.rating!.toString(),
-                              style: const TextStyle(fontSize: 11,fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  fontSize: 11, fontWeight: FontWeight.bold),
                             )
                           ],
                         ),
                     ],
                   ),
                   const SizedBox(height: 5),
-                   Text(
-                   widget.date?? "",
-                    style: const TextStyle(
-                        fontSize: 12, color: Colors.grey),
+                  Text(
+                    widget.date ?? "",
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 10),
-                   Text(
-                   widget.text??'',
+                  Text(
+                    widget.text ?? '',
                     style: const TextStyle(fontSize: 12),
                   ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text("${widget.length.toString()} replies", style: const TextStyle(
-                          fontSize: 12, color: Colors.grey)),
-                      const SizedBox(width: 8,),
-                       Icon(Icons.chat,
-                          size: 16, color:  AppColors.primary),
+                      Text("${widget.length.toString()} replies",
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.grey)),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Icon(Icons.chat, size: 16, color: AppColors.primary),
                       const SizedBox(width: 5),
-                       Text(
+                      Text(
                         "Reply",
-                        style: TextStyle(
-                            fontSize: 12, color: AppColors.primary),
+                        style:
+                            TextStyle(fontSize: 12, color: AppColors.primary),
+                      ),
+                      const SizedBox(width: 10,),
+
+                      Consumer<AuthViewModel>(
+                        builder: (context, viewModel, child) {
+                          final user = viewModel.currentUser;
+                          var logger=Logger();
+                          logger.d("${widget.uid} :${user?.data?.userId}");
+                          if (user?.data?.userId == widget.uid) {
+                            return Row(
+                              children: [
+                                InkWell(
+                                  onTap: widget.onEdit,
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.shade100,
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    child: const Icon(
+                                      Icons.edit,
+                                      color: Colors.blue,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                InkWell(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Confirm Delete'),
+                                          content: const Text('Are you sure you want to delete this item?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.of(context).pop(),
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                widget.onDelete?.call();
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.shade100,
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    child: const Icon(
+                                      Icons.delete_forever,
+                                      color: Colors.red,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -123,14 +215,15 @@ class _ReviewCardState extends State<ReviewCard> {
                 backgroundColor: Colors.grey[300],
                 child: ClipOval(
                   child: CachedNetworkImage(
-                    imageUrl: widget.image??'',
+                    imageUrl: widget.image ?? '',
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => const Center(
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
-                    errorWidget: (context, url, error) => const Icon(Icons.error, size: 24),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error, size: 24),
                   ),
                 ),
               ),

@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:library_management_sys/model/current_user_model.dart';
 import 'package:library_management_sys/repository/auth_repository.dart';
-import 'package:library_management_sys/screens/student/dashboard/student_dashboard.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/utils/utils.dart';
 import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
@@ -15,6 +14,7 @@ import '../resource/routes_name.dart';
 
 class AuthViewModel with ChangeNotifier {
   final AuthRepository _myrepo = AuthRepository();
+  final Logger _logger = Logger();
 
   ApiResponse<CurrentUserModel> userData = ApiResponse.loading();
 
@@ -25,18 +25,19 @@ class AuthViewModel with ChangeNotifier {
 
   void setLoading(bool value) {
     _isLoading = value;
-    notifyListeners();
+    Future.microtask(() => notifyListeners());
   }
+
   void setUser(ApiResponse<CurrentUserModel> response) {
     userData = response;
-    notifyListeners();
+    Future.microtask(() => notifyListeners());
   }
+
+
   Future login(dynamic body, BuildContext context) async {
     setLoading(true);
-
     try {
-      var logger=Logger();
-      logger.d('check');
+      _logger.d('Login attempt with body: $body');
       final response = await _myrepo.login(body, context);
       if (response.status == Status.ERROR) {
         Utils.flushBarErrorMessage(
@@ -44,14 +45,12 @@ class AuthViewModel with ChangeNotifier {
       } else {
         Utils.flushBarSuccessMessage("User Logged in successfully!!!!", context);
         final String role = response.data?.roleId ?? "Unknown";
-        UserModel user = UserModel(
-          cardId: response.data?.cardId,
-        );
+        UserModel user = UserModel(cardId: response.data?.cardId);
         setLoading(false);
         Navigator.of(context).push(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-            const StudentNavBar(index:2),
+            const StudentNavBar(index: 2),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               const begin = Offset(1.0, 0.0);
@@ -67,43 +66,39 @@ class AuthViewModel with ChangeNotifier {
             },
           ),
         );
-        // switch (role) {
-        //   case 'Student':
-        //     Navigator.pushReplacementNamed(context, RoutesName.student);
-        //     break;
-        //   default:
-        //     Navigator.pushReplacementNamed(context, RoutesName.unauthorised);
-        //     Utils.flushBarErrorMessage("Unknown role", context);
-        // }
       }
     } catch (error) {
+      _logger.e('Login error: $error');
       Utils.flushBarErrorMessage('$error', context);
       setLoading(false);
     }
   }
+
   Future<void> getUser(BuildContext context) async {
     setLoading(true);
     setUser(ApiResponse.loading());
     try {
       CurrentUserModel user = await _myrepo.getUser(context);
-      if (kDebugMode) {
-        print('User data: ${user.toJson()}');
-      }
+      _logger.d('Fetched user: ${user.data?.userId}');
       setUser(ApiResponse.completed(user));
     } catch (e) {
-      Navigator.pushReplacementNamed(context, RoutesName.login);
+      _logger.e('getUser error: $e');
+      Utils.flushBarErrorMessage('Failed to fetch user: $e', context);
+      if (e.toString().contains('Unauthorized') || e.toString().contains('401')) {
+        Navigator.pushReplacementNamed(context, RoutesName.login);
+      }
       setUser(ApiResponse.error(e.toString()));
     } finally {
       setLoading(false);
     }
   }
+
   Future<void> logout(BuildContext context) async {
     setLoading(true);
     try {
       final response = await _myrepo.logout(context);
       if (response.status == Status.COMPLETED) {
         Utils.flushBarSuccessMessage("User Logged out Successfully!", context);
-
         await UserViewModel().remove();
         Navigator.pushReplacementNamed(context, RoutesName.login);
       } else {
@@ -111,10 +106,10 @@ class AuthViewModel with ChangeNotifier {
             response.message ?? "An error occurred", context);
       }
     } catch (e) {
+      _logger.e('Logout error: $e');
       Utils.flushBarErrorMessage("Error: $e", context);
     } finally {
       setLoading(false);
     }
   }
-
 }

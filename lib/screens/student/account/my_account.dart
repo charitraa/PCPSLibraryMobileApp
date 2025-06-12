@@ -87,10 +87,9 @@ class _ProfileState extends State<Profile> {
                             children: [
                               CircleAvatar(
                                 radius: 70,
-                                backgroundImage: user.profilePicUrl != null &&
-                                        user.profilePicUrl!.isNotEmpty
+                                backgroundImage: user.data?.profilePicUrl != null
                                     ? NetworkImage(
-                                        "${BaseUrl.imageDisplay}/${user.profilePicUrl}")
+                                        "${BaseUrl.imageDisplay}/${user.data?.profilePicUrl}")
                                     : const AssetImage(
                                         'assets/images/pcps.jpg'),
                               ),
@@ -98,7 +97,7 @@ class _ProfileState extends State<Profile> {
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            user.fullName ?? '',
+                            user.data?.fullName ?? '',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -107,19 +106,13 @@ class _ProfileState extends State<Profile> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            user.email ?? '',
+                            user.data?.cardId ?? '',
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.grey,
                             ),
                           ),const SizedBox(height: 5),
-                          Text(
-                            user.collegeId ?? '',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
+
                         ],
                       );
                     } else {

@@ -1,14 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
+import 'package:library_management_sys/model/book_info_model.dart';
+import 'package:library_management_sys/model/books_model.dart';
+import 'package:library_management_sys/model/current_user_model.dart';
 import 'package:library_management_sys/resource/routes_name.dart';
+import 'package:library_management_sys/screens/student/book_info/book_preview.dart';
 import 'package:library_management_sys/screens/student/book_info/comments.dart';
 import 'package:library_management_sys/screens/student/book_info/reply_comments.dart';
 import 'package:library_management_sys/screens/student/book_info/review.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/utils/format_date.dart';
+import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/books/comment_view_model.dart';
+import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
 import 'package:library_management_sys/widgets/book/book_info_column.dart';
 import 'package:library_management_sys/widgets/book/book_info_row.dart';
 import 'package:library_management_sys/widgets/book/review_card.dart';
@@ -25,39 +31,17 @@ import '../../../widgets/form_widget/modern_btn_widget.dart';
 
 class BookInfo extends StatefulWidget {
   final double? score;
-  final String uid,
-      bookName,
-      author,
-      subTitle,
-      edition,
-      year,
-      publisher,
-      pages,
-      bookNo,
-      classNo,
-      series,
-      genre,
-      isbn,
-      image,
-      status;
+  final BooksModel books;
+  final String uid, author, genre, isbn, image;
   const BookInfo(
       {super.key,
-      required this.bookName,
       required this.author,
-      required this.edition,
-      required this.year,
-      required this.publisher,
-      required this.pages,
-      required this.bookNo,
-      required this.classNo,
-      required this.series,
+      required this.uid,
+      this.score,
+      required this.books,
       required this.genre,
       required this.isbn,
-      required this.image,
-      required this.status,
-      required this.subTitle,
-      required this.uid,
-      this.score});
+      required this.image});
 
   @override
   State<BookInfo> createState() => _BookInfoState();
@@ -157,7 +141,8 @@ class _BookInfoState extends State<BookInfo> {
                             .unfocus(), // Hides keyboard when tapping outside input fields
                         child: FractionallySizedBox(
                           heightFactor: 0.5, // Covers half the screen
-                          child: AddReview(uid: widget.uid,name:widget.bookName),
+                          child: AddReview(
+                              uid: widget.uid, name: widget.books.title ?? ''),
                         ),
                       ),
                     );
@@ -249,7 +234,7 @@ class _BookInfoState extends State<BookInfo> {
                       height: 18,
                     ),
                     Text(
-                      widget.bookName,
+                      widget.books.title ?? '',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.bold),
@@ -259,8 +244,7 @@ class _BookInfoState extends State<BookInfo> {
                     ),
                     Consumer<BooksViewModel>(
                       builder: (context, viewModel, child) {
-                        if (viewModel.booksData.status ==
-                            Status.LOADING) {
+                        if (viewModel.booksData.status == Status.LOADING) {
                           return const Center(
                               child: CircularProgressIndicator());
                         }
@@ -272,7 +256,8 @@ class _BookInfoState extends State<BookInfo> {
 
                         return Column(
                           children: [
-                            if (user.score?.score == null || user.score?.score == 0)
+                            if (user.score?.score == null ||
+                                user.score?.score == 0)
                               const Row(
                                 children: [
                                   Text(
@@ -297,8 +282,8 @@ class _BookInfoState extends State<BookInfo> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   ...List.generate(
-                                    user.score?.score?? user.score!.score!,
-                                        (index) => const Icon(Icons.star,
+                                    user.score?.score ?? user.score!.score!,
+                                    (index) => const Icon(Icons.star,
                                         color: Colors.amber, size: 16),
                                   ),
                                   const SizedBox(
@@ -307,12 +292,12 @@ class _BookInfoState extends State<BookInfo> {
                                   Text(
                                     user.score!.score.toString(),
                                     style: const TextStyle(
-                                        fontSize: 12, fontWeight: FontWeight.bold),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(
                                     width: 5,
                                   ),
-
                                 ],
                               ),
                           ],
@@ -350,12 +335,15 @@ class _BookInfoState extends State<BookInfo> {
                                   .unfocus(), // Hides keyboard when tapping outside input fields
                               child: FractionallySizedBox(
                                 heightFactor: 0.5, // Covers half the screen
-                                child: AddReview(uid: widget.uid, name: widget.bookName,),
+                                child: AddReview(
+                                  uid: widget.uid,
+                                  name: widget.books.title ?? '',
+                                ),
                               ),
                             ),
                           );
-                        }, Colors.green, 12),
-                        SizedBox(
+                        }, Colors.green, 15),
+                        const SizedBox(
                           width: 5,
                         ),
                         buildFilterButton('Reserve', () async {
@@ -385,7 +373,7 @@ class _BookInfoState extends State<BookInfo> {
                           } finally {
                             setState(() => isLoading = false);
                           }
-                        }, AppColors.primary, 12)
+                        }, AppColors.primary, 15)
                       ],
                     ),
                     Padding(
@@ -402,16 +390,19 @@ class _BookInfoState extends State<BookInfo> {
                             children: [
                               BookInfoColumn(
                                 title: 'Edition',
-                                value: widget.edition,
+                                value: widget.books.editionStatement ?? '',
                               ),
                               BookInfoColumn(
                                 title: 'Publication Year',
-                                value: widget.year,
+                                value:
+                                    widget.books.publicationYear.toString() ??
+                                        '',
                               ),
                               BookInfoColumn(
-                                title: 'Pages',
-                                value: widget.pages,
-                              )
+                                  title: 'Pages',
+                                  value:
+                                      widget.books.numberOfPages.toString() ??
+                                          '')
                             ],
                           )),
                     ),
@@ -445,7 +436,7 @@ class _BookInfoState extends State<BookInfo> {
                                 Flexible(
                                   child: BookInfoRow(
                                     title: 'Title',
-                                    value: widget.bookName,
+                                    value: widget.books.title ?? '',
                                   ),
                                 ),
                               ],
@@ -458,7 +449,7 @@ class _BookInfoState extends State<BookInfo> {
                                 Flexible(
                                   child: BookInfoRow(
                                       title: 'Sub Title',
-                                      value: widget.subTitle),
+                                      value: widget.books.subTitle ?? ''),
                                 ),
                               ],
                             ),
@@ -470,7 +461,7 @@ class _BookInfoState extends State<BookInfo> {
                                 Flexible(
                                   child: BookInfoRow(
                                     title: 'Book Number',
-                                    value: widget.bookNo,
+                                    value: widget.books?.classNumber ?? '',
                                   ),
                                 ),
                               ],
@@ -483,7 +474,7 @@ class _BookInfoState extends State<BookInfo> {
                                 Flexible(
                                   child: BookInfoRow(
                                     title: 'Class Number',
-                                    value: widget.classNo,
+                                    value: widget.books.classNumber ?? '',
                                   ),
                                 ),
                               ],
@@ -496,7 +487,7 @@ class _BookInfoState extends State<BookInfo> {
                                 Flexible(
                                   child: BookInfoRow(
                                     title: 'Series',
-                                    value: widget.series,
+                                    value: widget.books.seriesStatement ?? '',
                                   ),
                                 ),
                               ],
@@ -509,7 +500,9 @@ class _BookInfoState extends State<BookInfo> {
                                 Flexible(
                                   child: BookInfoRow(
                                     title: 'Publication',
-                                    value: widget.publisher,
+                                    value:
+                                        widget.books.publisher?.publisherName ??
+                                            '',
                                   ),
                                 ),
                               ],
@@ -522,7 +515,9 @@ class _BookInfoState extends State<BookInfo> {
                                 Flexible(
                                   child: BookInfoRow(
                                     title: 'Publication Date',
-                                    value: widget.year,
+                                    value: widget.books.publicationYear
+                                            .toString() ??
+                                        '',
                                   ),
                                 ),
                               ],
@@ -605,6 +600,27 @@ class _BookInfoState extends State<BookInfo> {
                                         buildFilterButton(
                                             available, () {}, Colors.green, 12)
                                       ],
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 100,
+                                          child: const Text(
+                                            "Referenced Book",
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            softWrap: true,
+                                          ),
+                                        ),
+                                        buildFilterButton(
+                                            user.reference.toString() ?? '',
+                                            () {},
+                                            Colors.green,
+                                            12)
+                                      ],
                                     )
                                   ],
                                 );
@@ -616,6 +632,116 @@ class _BookInfoState extends State<BookInfo> {
                           ],
                         ),
                       ),
+                    ),
+                    Consumer<BooksViewModel>(
+                      builder: (context, viewModel, child) {
+                        if (viewModel.booksData.status == Status.LOADING) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        final user = viewModel.currentUser;
+                        if (user == null) {
+                          return const Center(
+                              child: Text("User data not available"));
+                        }
+                        return Stack(
+                          children: [
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
+                              child: Row(
+                                children: user.bookImages!.map((bookImage) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          PageRouteBuilder(
+                                            pageBuilder: (context, animation,
+                                                    secondaryAnimation) =>
+                                                BookPreview(
+                                                    imageUrl:
+                                                        "${BaseUrl.imageDisplay}/${bookImage.imageUrl}"),
+                                            transitionsBuilder: (context,
+                                                animation,
+                                                secondaryAnimation,
+                                                child) {
+                                              return FadeTransition(
+                                                opacity: animation,
+                                                child: child,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Hero(
+                                        tag: bookImage.imageUrl ??
+                                            '', // Unique tag for each image
+                                        child: Container(
+                                          width: 60,
+                                          height: 70,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.grey, width: 1.0),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: CachedNetworkImage(
+                                              imageUrl:
+                                                  "${BaseUrl.imageDisplay}/${bookImage.imageUrl}",
+                                              width: 60,
+                                              height: 70,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  const Padding(
+                                                padding: EdgeInsets.all(10),
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              top: 0,
+                              bottom: 0,
+                              child: IconButton(
+                                icon: const Icon(Icons.arrow_left,
+                                    color: Colors.grey),
+                                onPressed: () {
+                                  // Implement scroll left logic if needed
+                                },
+                              ),
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              bottom: 0,
+                              child: IconButton(
+                                icon: const Icon(Icons.arrow_right,
+                                    color: Colors.grey),
+                                onPressed: () {
+                                  // Implement scroll right logic if needed
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                     const Divider(),
                     const SizedBox(
@@ -633,8 +759,7 @@ class _BookInfoState extends State<BookInfo> {
                         ),
                         Consumer<BooksViewModel>(
                           builder: (context, viewModel, child) {
-                            if (viewModel.booksData.status ==
-                                Status.LOADING) {
+                            if (viewModel.booksData.status == Status.LOADING) {
                               return const Center(
                                   child: CircularProgressIndicator());
                             }
@@ -646,7 +771,8 @@ class _BookInfoState extends State<BookInfo> {
 
                             return Column(
                               children: [
-                                if (user.score?.score == null || user.score?.score == 0)
+                                if (user.score?.score == null ||
+                                    user.score?.score == 0)
                                   const Row(
                                     children: [
                                       Text(
@@ -668,11 +794,12 @@ class _BookInfoState extends State<BookInfo> {
                                 else
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       ...List.generate(
-                                       user.score?.score?? user.score!.score!,
-                                            (index) => const Icon(Icons.star,
+                                        user.score?.score ?? user.score!.score!,
+                                        (index) => const Icon(Icons.star,
                                             color: Colors.amber, size: 16),
                                       ),
                                       const SizedBox(
@@ -681,7 +808,8 @@ class _BookInfoState extends State<BookInfo> {
                                       Text(
                                         user.score!.score.toString(),
                                         style: const TextStyle(
-                                            fontSize: 12, fontWeight: FontWeight.bold),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(
                                         width: 5,
@@ -696,7 +824,6 @@ class _BookInfoState extends State<BookInfo> {
                             );
                           },
                         ),
-
                       ],
                     ),
                     const SizedBox(
@@ -716,7 +843,7 @@ class _BookInfoState extends State<BookInfo> {
                       },
                       suffixicon: comment.isNotEmpty
                           ? InkWell(
-                              child: Icon(Icons.clear, color: Colors.grey),
+                              child: const Icon(Icons.clear, color: Colors.grey),
                               onTap: () {
                                 setState(() {
                                   comment = "";
@@ -757,7 +884,7 @@ class _BookInfoState extends State<BookInfo> {
                               isLoading = false;
                             });
                           }
-                        }, Colors.red, 12)
+                        }, Colors.red, 16)
                       ],
                     ),
                     Consumer<CommentViewModel>(
@@ -794,9 +921,14 @@ class _BookInfoState extends State<BookInfo> {
 
                             final commentData = viewModel.commentsList[index];
                             int length = commentData.replies!.length;
-                            print(
-                                "There is comment replies ${completionData.replies}");
                             return ReviewCard(
+                              onDelete: ()async{
+                              final  check=await viewModel.deleteComment(commentData.commentId??'', context);
+                              if(check){
+                                await viewModel.fetchComments(widget.uid??'', context);
+                              }
+                              },
+                              uid: commentData.userId,
                               date: commentData.updatedAt != null
                                   ? parseDate(commentData.updatedAt.toString())
                                   : "",

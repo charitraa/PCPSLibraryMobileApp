@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
+import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/screens/student/book_info/book_info.dart';
 import 'package:library_management_sys/view_model/books/recommended_view_model.dart';
 import 'package:library_management_sys/widgets/book/book_skeleton.dart';
@@ -57,7 +58,6 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
       if (index == 0) {
         await Provider.of<RecommendedViewModel>(context, listen: false)
             .loadMoreBooks(context);
-        print("recomend");
       } else {
         await Provider.of<BooksViewModel>(context, listen: false)
             .loadMoreBooks(context);
@@ -221,29 +221,29 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                       }, 1),
                     ],
                   ),
-            if(index==1)...[
-              InkWell(
-                onTap: () {
-                  _scaffoldKey.currentState?.openDrawer();
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                      color: AppColors.primary,
-                      width: 1.0,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.filter_alt_rounded,
-                    size: 15,
-                    color: Colors.white,
-                  ),
-                ),
-              )
-            ]
+                  if (index == 1) ...[
+                    InkWell(
+                      onTap: () {
+                        _scaffoldKey.currentState?.openDrawer();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color: AppColors.primary,
+                            width: 1.0,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.filter_alt_rounded,
+                          size: 15,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  ]
                 ],
               ),
               const SizedBox(height: 10),
@@ -327,11 +327,8 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                   ),
                                 );
                               }
-                              final book = books[index];
-                              // if (kDebugMode) {
-                              //   print(
-                              //       "Image display : ${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}");
-                              // }
+                              final BooksModel book = books[index];
+
                               String authors = "By ";
                               List<String> authorNames =
                                   book.bookAuthors!.map((bookAuthor) {
@@ -352,9 +349,18 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                               }).toList();
                               isbn += isbnMap.join(", ");
 
+                              String? profileImageUrl;
+                              try {
+                                profileImageUrl = book.bookImages!
+                                    .firstWhere((img) => img.isProfile == true)
+                                    .imageUrl;
+                              } catch (e) {
+                                profileImageUrl = '';
+                              }
+
                               return BookWidget(
                                   bookImage:
-                                      "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
+                                      "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
                                   title: book.title ?? '',
                                   author:
                                       "By ${book.bookAuthors![0].author?.fullName}" ??
@@ -362,40 +368,20 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                   onTap: () {
                                     Navigator.of(context).push(
                                       PageRouteBuilder(
-                                        pageBuilder: (context, animation, secondaryAnimation) => BookInfo(
-                                            uid: book.bookInfoId ?? '',
-                                            bookName: book.title ?? '',
-                                            author: authors ?? '',
-                                            edition:
-                                                book.editionStatement ?? '',
-                                            year: book.publicationYear
-                                                    .toString() ??
-                                                '',
-                                            publisher:
-                                                book.publisher?.publisherName ??
-                                                    '',
-                                            pages:
-                                                book.numberOfPages.toString() ??
-                                                    '',
-                                            bookNo: book.bookNumber.toString() ??
-                                                '',
-                                            classNo:
-                                                book.classNumber.toString() ??
-                                                    '',
-                                            series: book.seriesStatement
-                                                    .toString() ??
-                                                '',
-                                            score: book.score != null
-                                                ? (book.score?.score as int)
-                                                    .toDouble()
-                                                : 0,
-                                            genre: genres ?? '',
-                                            isbn: isbn ?? '',
-                                            image:
-                                                "${BaseUrl.imageDisplay}/${book.coverPhoto}" ??
-                                                    '',
-                                            status: '',
-                                            subTitle: book.subTitle ?? ''),
+                                        pageBuilder: (context, animation,
+                                                secondaryAnimation) =>
+                                            BookInfo(
+                                                uid: book.bookInfoId ?? '',
+                                                score: book.score != null
+                                                    ? (book.score?.score as int)
+                                                        .toDouble()
+                                                    : 0,
+                                                genre: genres ?? '',
+                                                isbn: isbn ?? '',
+                                                image:
+                                                    "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
+                                                author: authors,
+                                                books: book),
                                         transitionsBuilder: (context, animation,
                                             secondaryAnimation, child) {
                                           const begin = Offset(1.0, 0.0);
@@ -513,10 +499,17 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                 return isbn.isbn ?? '';
                               }).toList();
                               isbn += isbnMap.join(", ");
-
+                              String? profileImageUrl;
+                              try {
+                                profileImageUrl = book.bookImages!
+                                    .firstWhere((img) => img.isProfile == true)
+                                    .imageUrl;
+                              } catch (e) {
+                                profileImageUrl = '';
+                              }
                               return BookWidget(
                                   bookImage:
-                                      "${BaseUrl.imageDisplay}/${book.coverPhoto ?? ''}",
+                                      "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
                                   title: book.title ?? '',
                                   author:
                                       "By ${book.bookAuthors![0].author?.fullName}" ??
@@ -526,38 +519,16 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                       PageRouteBuilder(
                                         pageBuilder: (context, animation, secondaryAnimation) => BookInfo(
                                             uid: book.bookInfoId ?? '',
-                                            bookName: book.title ?? '',
-                                            author: authors ?? '',
-                                            edition:
-                                                book.editionStatement ?? '',
-                                            year: book.publicationYear
-                                                    .toString() ??
-                                                '',
-                                            publisher:
-                                                book.publisher?.publisherName ??
-                                                    '',
-                                            pages:
-                                                book.numberOfPages.toString() ??
-                                                    '',
-                                            bookNo: book.bookNumber.toString() ??
-                                                '',
-                                            classNo:
-                                                book.classNumber.toString() ??
-                                                    '',
-                                            series: book.seriesStatement
-                                                    .toString() ??
-                                                '',
                                             score: book.score != null
                                                 ? (book.score?.score as int)
-                                                    .toDouble()
+                                                .toDouble()
                                                 : 0,
                                             genre: genres ?? '',
                                             isbn: isbn ?? '',
                                             image:
-                                                "${BaseUrl.imageDisplay}/${book.coverPhoto}" ??
-                                                    '',
-                                            status: '',
-                                            subTitle: book.subTitle ?? ''),
+                                            "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
+                                            author: authors,
+                                            books: book),
                                         transitionsBuilder: (context, animation,
                                             secondaryAnimation, child) {
                                           const begin = Offset(1.0, 0.0);

@@ -78,9 +78,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       List<String> words = input.trim().split(' ');
                       return words.isNotEmpty ? words[0] : input;
                     }
-                    String name = getFirstWord(user.fullName!);
-                    String image = user.profilePicUrl != null
-                        ? "${BaseUrl.imageDisplay}/${user.profilePicUrl}"
+                    String name = getFirstWord(user.data!.fullName??'');
+                    String image = user.data?.profilePicUrl != null
+                        ? "${BaseUrl.imageDisplay}/${user.data?.profilePicUrl}"
                         : '';
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

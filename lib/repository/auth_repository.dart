@@ -40,7 +40,6 @@ class AuthRepository {
             response['errorMessage'] ?? "Unknown error", context);
         throw Exception(response['errorMessage'] ?? "Unknown error");
       }
-
       return CurrentUserModel.fromJson(response);
     } on TimeoutException {
       return Utils.noInternet("No internet connection. Please try again later.");

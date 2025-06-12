@@ -125,7 +125,6 @@ class RecommendedViewModel with ChangeNotifier {
       _frontList.clear();
       final Map<String, dynamic> response = await _booksRepo.recommended(
           _filter, _bookAuthor, _publisher, _bookGenre, 1, _limit, context);
-      print(response['booksList']);
       _booksList.addAll(response['booksList']);
       _frontList.addAll(response['booksList']);
       if (response['next'] != null) {
@@ -133,7 +132,6 @@ class RecommendedViewModel with ChangeNotifier {
       }
       notifyListeners();
     } catch (error) {
-      print("minal");
       Utils.flushBarErrorMessage("Error fetching books: $error", context);
     } finally {
       setLoading(false);
@@ -145,11 +143,9 @@ class RecommendedViewModel with ChangeNotifier {
       final Map<String, dynamic> response = await _booksRepo.recommended(_filter,
           _bookAuthor, _publisher, _bookGenre, _currentPage, _limit, context);
       if (_currentPage != null) {
-
         _booksList.addAll(response['booksList']);
         _currentPage++;
       }
-
       notifyListeners();
     } catch (error) {
       Utils.flushBarErrorMessage("Minal Error fetching books: $error", context);

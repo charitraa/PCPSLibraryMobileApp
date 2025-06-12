@@ -5,6 +5,8 @@ import 'package:library_management_sys/screens/student/dashboard/student_dashboa
 import 'package:library_management_sys/screens/student/e-books.dart';
 import 'package:library_management_sys/screens/student/my_books/my_books.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
+import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:provider/provider.dart';
 
 class StudentNavBar extends StatefulWidget {
   final int? index,reqIndex;
@@ -19,9 +21,15 @@ class _StudentNavBarState extends State<StudentNavBar> {
   int index = 0;
   late PageController _pageController;
   late List<Widget> screenList;
+  void getIndividualData() async {
+    await Provider.of<AuthViewModel>(context, listen: false)
+        .getUser( context);
+
+  }
   @override
   void initState() {
     super.initState();
+    getIndividualData();
      _currentIndex = widget.index ?? 0;
     index = widget.reqIndex ?? 0;
     _pageController = PageController(initialPage: _currentIndex);
