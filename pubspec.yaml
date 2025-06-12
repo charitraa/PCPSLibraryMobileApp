@@ -44,7 +44,7 @@ dependencies:
   loading_animation_widget: ^1.3.0
   shared_preferences: 2.3.5
   url_launcher: ^6.3.1
-
+  logger: ^2.5.0
   intl:
 dev_dependencies:
   flutter_test:
@@ -62,8 +62,12 @@ flutter_launcher_icons:
   ios: true
   remove_alpha_ios: true
   image_path: "assets/images/logo_library.png"
+
+  adaptive_icon_background: "#40534C" # Replace with your solid color or use a background image
+  adaptive_icon_foreground: "assets/images/logo_library.png"
+
   min_sdk_android: 21
-  background_color: "#FFFFFF"
+
 
 
 

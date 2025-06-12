@@ -1,88 +1,68 @@
 class UserModel {
   String? userId;
   String? fullName;
-  String? dob;
-  String? address;
-  String? contactNo;
-  String? universityId;
-  String? collegeId;
+  String? cardId;
   String? profilePicUrl;
-  String? accountCreationDate;
-  String? enrollmentYear;
-  String? gender;
-  String? roleId;
   String? session;
-  String? rollNumber;
-  String? email;
-  String? accountStatus;
-  String? createdAt;
-  String? updatedAt;
-  String? deletedAt;
+  String? roleId;
+  String? membershipValidUntil;
+  Role? role;
 
   UserModel(
       {this.userId,
         this.fullName,
-        this.dob,
-        this.address,
-        this.contactNo,
-        this.universityId,
-        this.collegeId,
+        this.cardId,
         this.profilePicUrl,
-        this.accountCreationDate,
-        this.enrollmentYear,
-        this.gender,
-        this.roleId,
         this.session,
-        this.rollNumber,
-        this.email,
-        this.accountStatus,
-        this.createdAt,
-        this.updatedAt,
-        this.deletedAt});
+        this.roleId,
+        this.membershipValidUntil,
+        this.role});
 
   UserModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
     fullName = json['fullName'];
-    dob = json['dob'];
-    address = json['address'];
-    contactNo = json['contactNo'];
-    universityId = json['universityId'];
-    collegeId = json['collegeId'];
+    cardId = json['cardId'];
     profilePicUrl = json['profilePicUrl'];
-    accountCreationDate = json['accountCreationDate'];
-    enrollmentYear = json['enrollmentYear'];
-    gender = json['gender'];
-    roleId = json['roleId'];
     session = json['session'];
-    rollNumber = json['rollNumber'];
-    email = json['email'];
-    accountStatus = json['accountStatus'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    deletedAt = json['deletedAt'];
+    roleId = json['roleId'];
+    membershipValidUntil = json['membershipValidUntil'];
+    role = json['role'] != null ? new Role.fromJson(json['role']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['userId'] = this.userId;
     data['fullName'] = this.fullName;
-    data['dob'] = this.dob;
-    data['address'] = this.address;
-    data['contactNo'] = this.contactNo;
-    data['universityId'] = this.universityId;
-    data['collegeId'] = this.collegeId;
+    data['cardId'] = this.cardId;
     data['profilePicUrl'] = this.profilePicUrl;
-    data['accountCreationDate'] = this.accountCreationDate;
-    data['enrollmentYear'] = this.enrollmentYear;
-    data['gender'] = this.gender;
-    data['roleId'] = this.roleId;
     data['session'] = this.session;
-    data['rollNumber'] = this.rollNumber;
-    data['email'] = this.email;
-    data['accountStatus'] = this.accountStatus;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['deletedAt'] = this.deletedAt;
+    data['roleId'] = this.roleId;
+    data['membershipValidUntil'] = this.membershipValidUntil;
+    if (this.role != null) {
+      data['role'] = this.role!.toJson();
+    }
+    return data;
+  }
+}
+
+class Role {
+  String? roleId;
+  String? role;
+  int? precedence;
+
+  Role({this.roleId, this.role, this.precedence});
+
+  Role.fromJson(Map<String, dynamic> json) {
+    roleId = json['roleId'];
+    role = json['role'];
+    precedence = json['precedence'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['roleId'] = this.roleId;
+    data['role'] = this.role;
+    data['precedence'] = this.precedence;
     return data;
   }
 }

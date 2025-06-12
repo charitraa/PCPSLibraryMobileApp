@@ -32,9 +32,7 @@ class _FlashingpageState extends State<Flashingpage> {
     if (session != null) {
       final userDataViewModel = Provider.of<AuthViewModel>(context, listen: false);
       await userDataViewModel.getUser(context);
-
       final user = userDataViewModel.currentUser;
-      print(user?.roleId);
       if (userDataViewModel.userData.status == Status.ERROR || user == null) {
         _navigateTo(RoutesName.login);
       } else {

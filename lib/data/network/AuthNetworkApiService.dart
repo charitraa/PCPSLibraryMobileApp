@@ -30,7 +30,7 @@ class AuthNetworkApiService{
       if (session != null) {
         UserModel user = UserModel(
             roleId: responseBody['roleId'],
-            email: responseBody['email'],
+            cardId: responseBody['cardId'],
             session: session);
         await UserViewModel().saveUser(user);
       } else {

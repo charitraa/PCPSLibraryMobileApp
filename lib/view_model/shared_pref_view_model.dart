@@ -10,7 +10,7 @@ class UserViewModel with ChangeNotifier {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     bool sessionSaved = await sp.setString('session', user.session.toString());
     bool roleSaved = await sp.setString('role', user.roleId.toString());
-    bool emailSaved = await sp.setString('email', user.email.toString());
+    bool emailSaved = await sp.setString('email', user.cardId.toString());
     if (kDebugMode) {
       print('Role saved: $roleSaved ${sp.getString('session')}');
       print('Email saved: $emailSaved ${sp.getString('email')}');

@@ -71,47 +71,47 @@ class _LoginpageState extends State<Loginpage> {
                         const SizedBox(
                           height: 8,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation,
-                                            secondaryAnimation) =>
-                                        const StudentNavBar(),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      const begin = Offset(1.0, 0.0);
-                                      const end = Offset.zero;
-                                      const curve = Curves.easeInOut;
-                                      var tween = Tween(begin: begin, end: end)
-                                          .chain(CurveTween(curve: curve));
-                                      var offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'poppins',
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            )
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.end,
+                        //   children: [
+                        //     InkWell(
+                        //       onTap: () {
+                        //         Navigator.of(context).push(
+                        //           PageRouteBuilder(
+                        //             pageBuilder: (context, animation,
+                        //                     secondaryAnimation) =>
+                        //                 const StudentNavBar(),
+                        //             transitionsBuilder: (context, animation,
+                        //                 secondaryAnimation, child) {
+                        //               const begin = Offset(1.0, 0.0);
+                        //               const end = Offset.zero;
+                        //               const curve = Curves.easeInOut;
+                        //               var tween = Tween(begin: begin, end: end)
+                        //                   .chain(CurveTween(curve: curve));
+                        //               var offsetAnimation =
+                        //                   animation.drive(tween);
+                        //               return SlideTransition(
+                        //                 position: offsetAnimation,
+                        //                 child: child,
+                        //               );
+                        //             },
+                        //           ),
+                        //         );
+                        //       },
+                        //       child: const Text(
+                        //         'Forgot Password?',
+                        //         style: TextStyle(
+                        //           color: Colors.black,
+                        //           fontFamily: 'poppins',
+                        //           fontSize: 14,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     const SizedBox(
+                        //       width: 15,
+                        //     )
+                        //   ],
+                        // ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -125,7 +125,7 @@ class _LoginpageState extends State<Loginpage> {
                                 isLoading = false;
                               });
                               return Utils.flushBarErrorMessage(
-                                  "Email is required", context);
+                                  "Student ID is required", context);
 
                             }
                             if (password.isEmpty || password == '') {
@@ -133,12 +133,12 @@ class _LoginpageState extends State<Loginpage> {
                                 isLoading = false;
                               });
                               return Utils.flushBarErrorMessage(
-                                  "Email is required", context);
+                                  "Student ID is required", context);
                             }
                             await Provider.of<AuthViewModel>(context,
                                     listen: false)
                                 .login(
-                                    {"email": username, "password": password},
+                                    {"cardId": username, "password": password},
                                     context);
                             setState(() {
                               isLoading = false;

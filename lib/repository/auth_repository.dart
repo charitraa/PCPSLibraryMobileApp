@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:library_management_sys/data/network/AuthNetworkApiService.dart';
 import 'package:library_management_sys/data/network/BaseApiService.dart';
@@ -7,6 +7,7 @@ import 'package:library_management_sys/data/network/NetworkApiService.dart';
 import 'package:library_management_sys/data/response/api_response.dart';
 import 'package:library_management_sys/endpoints/auth_endpoints.dart';
 import 'package:library_management_sys/model/user_model.dart';
+import 'package:logger/logger.dart';
 
 import '../model/current_user_model.dart';
 import '../utils/utils.dart';
@@ -15,7 +16,11 @@ class AuthRepository {
   final AuthNetworkApiService _apiService = AuthNetworkApiService();
   final BaseApiServices _baseService = NetworkApiService();
   Future<dynamic> login(dynamic body,BuildContext context) async {
+    var logger= Logger();
+
+    logger.d(body);
     try {
+      logger.d(AuthEndPoints.authUrl);
       dynamic response =
           await _apiService.getPostResponse(AuthEndPoints.authUrl, body);
       return ApiResponse.completed(UserModel.fromJson(response));

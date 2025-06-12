@@ -6,6 +6,7 @@ import 'package:library_management_sys/screens/student/dashboard/student_dashboa
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/utils/utils.dart';
 import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
+import 'package:logger/logger.dart';
 
 import '../data/response/api_response.dart';
 import '../data/response/status.dart';
@@ -34,6 +35,8 @@ class AuthViewModel with ChangeNotifier {
     setLoading(true);
 
     try {
+      var logger=Logger();
+      logger.d('check');
       final response = await _myrepo.login(body, context);
       if (response.status == Status.ERROR) {
         Utils.flushBarErrorMessage(
@@ -42,8 +45,7 @@ class AuthViewModel with ChangeNotifier {
         Utils.flushBarSuccessMessage("User Logged in successfully!!!!", context);
         final String role = response.data?.roleId ?? "Unknown";
         UserModel user = UserModel(
-          roleId: response.data?.roleId,
-          email: response.data?.email,
+          cardId: response.data?.cardId,
         );
         setLoading(false);
         Navigator.of(context).push(
