@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/widgets/Dialog/alert.dart';
 
 import '../resource/colors.dart';
 
@@ -78,18 +79,43 @@ class _UnauthorisedPageState extends State<UnauthorisedPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.error,
-                  color: AppColors.primary,
-                  size:100
-                ),
+                Icon(Icons.error, color: AppColors.primary, size: 100),
               ],
             ),
             const SizedBox(
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // showDialog(
+                //   context: context,
+                //   builder: (context) => Alert(
+                //     icon: Icons.auto_fix_high_outlined,
+                //     iconColor: Colors.blue,
+                //     title: "404 found",
+                //     content: "404 found",
+                //     actions: <Widget>[
+                //       TextButton(
+                //         onPressed: () {
+                //           Navigator.of(context).pop();
+                //         },
+                //         child: const Text('OK'),
+                //       ),
+                //       ElevatedButton(
+                //         style: ElevatedButton.styleFrom(
+                //           backgroundColor: Colors.red,
+                //           foregroundColor: Colors.white,
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(12),
+                //           ),
+                //         ),
+                //         onPressed: () => Navigator.of(context).pop(true),
+                //         child: const Text('Logout'),
+                //       ),
+                //     ],
+                //   ),
+                // );
+              },
               style: ButtonStyle(
                 foregroundColor: const MaterialStatePropertyAll(Colors.white),
                 minimumSize: const MaterialStatePropertyAll(
