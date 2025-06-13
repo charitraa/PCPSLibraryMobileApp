@@ -1,42 +1,55 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/model/due_model.dart';
-import 'package:library_management_sys/model/my_books_model.dart';
 import 'package:library_management_sys/repository/my_books_repository.dart';
+import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
 import '../../model/book_info_model.dart';
 import '../../utils/utils.dart';
 
 class MyDueViewModel with ChangeNotifier {
-  final List<DueModel> _booksList = [];
+  final List<DueModel> _duesList = [];
   final MyBooksRepository _booksRepo = MyBooksRepository();
-  ApiResponse<BookInfoModel> booksData = ApiResponse.loading();
-  BookInfoModel? get currentUser => booksData.data;
-  void setUser(ApiResponse<BookInfoModel> response) {
-    booksData = response;
+  ApiResponse<BookInfoModel> duesData = ApiResponse.loading();
+  BookInfoModel? get currentDue => duesData.data;
+  final Logger _logger = Logger();
+
+  void setDue(ApiResponse<BookInfoModel> response) {
+    duesData = response;
     Future.microtask(() => notifyListeners());
   }
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-  List<DueModel> get booksList => _booksList;
+  List<DueModel> get duesList => _duesList;
 
   void setLoading(bool value) {
     _isLoading = value;
     Future.microtask(() => notifyListeners());
   }
 
-  Future<void> fetchBooksList(BuildContext context) async {
+  Future<void> fetchDues(BuildContext context) async {
     if (_isLoading) return;
     setLoading(true);
     try {
-      _booksList.clear();
+      _duesList.clear();
       final Map<String, dynamic> response = await _booksRepo.getDues(context);
-      print(response['booksList']);
-      _booksList.addAll(response['booksList']);
+      if (response != null && response['booksList'] != null) {
+        _duesList.addAll(response['booksList'] as List<DueModel>);
+        if (kDebugMode) {
+          _logger.d('Dues fetched: ${_duesList.length} items');
+        }
+      } else {
+        _logger.w('No dues received in response');
+        Utils.flushBarErrorMessage('No dues received from server', context);
+      }
       Future.microtask(() => notifyListeners());
     } catch (error) {
-      Utils.flushBarErrorMessage("Error fetching books: $error", context);
+      _logger.e('Error fetching dues: $error');
+      String errorMessage = error.toString().contains('No internet connection')
+          ? 'No internet connection. Please try again.'
+          : 'Error fetching dues: $error';
+      Utils.flushBarErrorMessage(errorMessage, context);
     } finally {
       setLoading(false);
     }

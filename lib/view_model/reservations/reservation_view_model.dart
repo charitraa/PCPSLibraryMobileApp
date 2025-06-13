@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/endpoints/book_endpoints.dart';
-import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/repository/books_repository.dart';
 import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
-import '../../model/book_info_model.dart';
 import '../../model/reservation_model.dart';
 import '../../utils/utils.dart';
 
@@ -64,7 +62,7 @@ class ReservationViewModel with ChangeNotifier {
     try {
       _currentPage = 1;
       _reservationList.clear();
-      final Map<String, dynamic>? response = await _booksRepo.fetchReservation(
+      final Map<String, dynamic> response = await _booksRepo.fetchReservation(
           _status, _filter, 1, _limit, context);
 
       if (response != null && response['reservations'] != null) {

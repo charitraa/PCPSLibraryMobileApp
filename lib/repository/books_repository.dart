@@ -233,9 +233,8 @@ class BooksRepository {
           .toList();
 
       if (kDebugMode) {
-        logger.d("Reservations fetched: $reservations");
+        logger.d("Reservations fetched: $response['data']");
       }
-
       final next = response['info']?['next'] ?? '';
       return {"reservations": reservations, "next": next};
     } on TimeoutException {

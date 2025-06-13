@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
 import 'package:library_management_sys/model/books_model.dart';
@@ -42,15 +43,16 @@ class BookInfo extends StatefulWidget {
 
 class _BookInfoState extends State<BookInfo> {
   bool _isLoading = true;
+  final TextEditingController _commentController = TextEditingController();
+  String comment = "";
+  // Use CarouselSliderController from carousel_slider package
+  final CarouselSliderController carouselController = CarouselSliderController();
 
   @override
   void initState() {
     super.initState();
     _loadData();
   }
-
-  final TextEditingController _commentController = TextEditingController();
-  String comment = "";
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
@@ -154,7 +156,7 @@ class _BookInfoState extends State<BookInfo> {
                     setState(() => _isLoading = true);
                     try {
                       final check = await Provider.of<BooksViewModel>(context, listen: false)
-                          .reserve(widget.books.bookInfoId??'', context);
+                          .reserve(widget.books.bookInfoId ?? '', context);
                       if (check) {
                         await Future.wait([
                           Provider.of<BooksViewModel>(context, listen: false)
@@ -553,90 +555,132 @@ class _BookInfoState extends State<BookInfo> {
                     ),
                   ),
                 ),
+                // Updated Carousel Section
                 Consumer<BooksViewModel>(
                   builder: (context, viewModel, child) {
                     final user = viewModel.currentUser;
-                    if (user == null) {
-                      return const SizedBox();
+                    if (user == null || user.bookImages == null || user.bookImages!.isEmpty) {
+                      return const SizedBox(
+                        height: 100,
+                        child: Center(
+                          child: Text(
+                            'No images available',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ),
+                      );
                     }
 
-                    return Stack(
-                      children: [
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Row(
-                            children: user.bookImages!.map((bookImage) {
+                    return Container(
+                      height: 100,
+                      width: size.width,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CarouselSlider.builder(
+                            carouselController: carouselController,
+                            itemCount: user.bookImages!.length,
+                            itemBuilder: (context, index, realIndex) {
+                              final bookImage = user.bookImages![index];
+                              final imageUrl = "${BaseUrl.imageDisplay}/${bookImage.imageUrl}";
                               return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 6.0),
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.of(context).push(
                                       PageRouteBuilder(
                                         pageBuilder: (context, animation, secondaryAnimation) =>
-                                            BookPreview(
-                                              imageUrl: "${BaseUrl.imageDisplay}/${bookImage.imageUrl}",
-                                            ),
+                                            BookPreview(imageUrl: imageUrl),
                                         transitionsBuilder:
                                             (context, animation, secondaryAnimation, child) {
-                                          return FadeTransition(
-                                            opacity: animation,
-                                            child: child,
-                                          );
+                                          return FadeTransition(opacity: animation, child: child);
                                         },
                                       ),
                                     );
                                   },
                                   child: Hero(
-                                    tag: bookImage.imageUrl ?? '',
+                                    tag: bookImage.imageUrl ?? 'image_$index',
                                     child: Container(
-                                      width: 60,
-                                      height: 70,
                                       decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey, width: 1.0),
-                                        borderRadius: BorderRadius.circular(8.0),
+                                        border: Border.all(color: Colors.grey.shade300, width: 1),
+                                        borderRadius: BorderRadius.circular(8),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.1),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8.0),
+                                        borderRadius: BorderRadius.circular(8),
                                         child: CachedNetworkImage(
-                                          imageUrl: "${BaseUrl.imageDisplay}/${bookImage.imageUrl}",
-                                          width: 60,
-                                          height: 70,
+                                          imageUrl: imageUrl,
+                                          width: 70,
+                                          height: 90,
                                           fit: BoxFit.cover,
                                           placeholder: (context, url) => _buildImageSkeleton(),
-                                          errorWidget: (context, url, error) => const Icon(Icons.error),
+                                          errorWidget: (context, url, error) =>
+                                          const Icon(Icons.broken_image, color: Colors.grey),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
                               );
-                            }).toList(),
-                          ),
-                        ),
-                        Positioned(
-                          left: 0,
-                          top: 0,
-                          bottom: 0,
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_left, color: Colors.grey),
-                            onPressed: () {
-                              // Implement scroll left logic if needed
                             },
+                            options: CarouselOptions(
+                              height: 90,
+                              autoPlay: user.bookImages!.length > 1,
+                              autoPlayInterval: const Duration(seconds: 1),
+                              autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                              viewportFraction: 0.22,
+                              enableInfiniteScroll: user.bookImages!.length > 1,
+                              pauseAutoPlayOnTouch: true,
+                              enlargeCenterPage: true,
+                              enlargeFactor: 0.2,
+                            ),
                           ),
-                        ),
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          bottom: 0,
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_right, color: Colors.grey),
-                            onPressed: () {
-                              // Implement scroll right logic if needed
-                            },
-                          ),
-                        ),
-                      ],
+                          if (user.bookImages!.length > 1)
+                            Positioned(
+                              left: 0,
+                              child: IconButton(
+                                icon: Icon(Icons.arrow_left, color: Colors.grey.shade600, size: 30),
+                                onPressed: () {
+                                  carouselController.previousPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                },
+                              ),
+                            ),
+                          if (user.bookImages!.length > 1)
+                            Positioned(
+                              right: 0,
+                              child: IconButton(
+                                icon: Icon(Icons.arrow_right, color: Colors.grey.shade600, size: 30),
+                                onPressed: () {
+                                  carouselController.nextPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                },
+                              ),
+                            ),
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -857,18 +901,18 @@ class _BookInfoState extends State<BookInfo> {
                             uid: widget.uid,
                           ),
                           transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(1.0, 0.0);
-                            const end = Offset.zero;
-                            const curve = Curves.easeInOut;
-                            var tween =
-                            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                            var offsetAnimation = animation.drive(tween);
-                            return SlideTransition(
-                              position: offsetAnimation,
-                              child: child,
-                            );
-                          },
+                          (context, animation, secondary, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOut;
+                        var tween =
+                        Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                        );
+                        },
                         ),
                       );
                     }, AppColors.primary, 12),

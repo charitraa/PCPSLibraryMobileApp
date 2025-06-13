@@ -9,6 +9,8 @@ class MyBooksModel {
   String? bookId;
   String? userId;
   String? issuedBy;
+  String? createdAt;
+  String? updatedAt;
   Book? book;
 
   MyBooksModel(
@@ -22,6 +24,8 @@ class MyBooksModel {
         this.bookId,
         this.userId,
         this.issuedBy,
+        this.createdAt,
+        this.updatedAt,
         this.book});
 
   MyBooksModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +39,8 @@ class MyBooksModel {
     bookId = json['bookId'];
     userId = json['userId'];
     issuedBy = json['issuedBy'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
     book = json['book'] != null ? new Book.fromJson(json['book']) : null;
   }
 
@@ -50,6 +56,8 @@ class MyBooksModel {
     data['bookId'] = this.bookId;
     data['userId'] = this.userId;
     data['issuedBy'] = this.issuedBy;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
     if (this.book != null) {
       data['book'] = this.book!.toJson();
     }
@@ -61,11 +69,11 @@ class Book {
   String? bookId;
   String? barcode;
   String? status;
-  Null? damagedOn;
+  String? damagedOn;
+  bool? isReference;
   String? bookInfoId;
   String? createdAt;
   String? updatedAt;
-  Null? deletedAt;
   BookInfo? bookInfo;
 
   Book(
@@ -73,10 +81,10 @@ class Book {
         this.barcode,
         this.status,
         this.damagedOn,
+        this.isReference,
         this.bookInfoId,
         this.createdAt,
         this.updatedAt,
-        this.deletedAt,
         this.bookInfo});
 
   Book.fromJson(Map<String, dynamic> json) {
@@ -84,10 +92,10 @@ class Book {
     barcode = json['barcode'];
     status = json['status'];
     damagedOn = json['damagedOn'];
+    isReference = json['isReference'];
     bookInfoId = json['bookInfoId'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    deletedAt = json['deletedAt'];
     bookInfo = json['bookInfo'] != null
         ? new BookInfo.fromJson(json['bookInfo'])
         : null;
@@ -99,10 +107,10 @@ class Book {
     data['barcode'] = this.barcode;
     data['status'] = this.status;
     data['damagedOn'] = this.damagedOn;
+    data['isReference'] = this.isReference;
     data['bookInfoId'] = this.bookInfoId;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
-    data['deletedAt'] = this.deletedAt;
     if (this.bookInfo != null) {
       data['bookInfo'] = this.bookInfo!.toJson();
     }
@@ -113,52 +121,46 @@ class Book {
 class BookInfo {
   String? bookInfoId;
   String? classNumber;
-  String? bookNumber;
   String? title;
   String? subTitle;
   String? editionStatement;
+  String? coverPhoto;
   int? numberOfPages;
   int? publicationYear;
   String? seriesStatement;
   String? addedDate;
-  String? coverPhoto;
   String? createdAt;
   String? updatedAt;
-  String? deletedAt;
   String? publisherId;
 
   BookInfo(
       {this.bookInfoId,
         this.classNumber,
-        this.bookNumber,
         this.title,
         this.subTitle,
         this.editionStatement,
+        this.coverPhoto,
         this.numberOfPages,
         this.publicationYear,
         this.seriesStatement,
         this.addedDate,
-        this.coverPhoto,
         this.createdAt,
         this.updatedAt,
-        this.deletedAt,
         this.publisherId});
 
   BookInfo.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
     classNumber = json['classNumber'];
-    bookNumber = json['bookNumber'];
     title = json['title'];
     subTitle = json['subTitle'];
     editionStatement = json['editionStatement'];
+    coverPhoto = json['coverPhoto'];
     numberOfPages = json['numberOfPages'];
     publicationYear = json['publicationYear'];
     seriesStatement = json['seriesStatement'];
     addedDate = json['addedDate'];
-    coverPhoto = json['coverPhoto'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    deletedAt = json['deletedAt'];
     publisherId = json['publisherId'];
   }
 
@@ -166,18 +168,16 @@ class BookInfo {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['bookInfoId'] = this.bookInfoId;
     data['classNumber'] = this.classNumber;
-    data['bookNumber'] = this.bookNumber;
     data['title'] = this.title;
     data['subTitle'] = this.subTitle;
     data['editionStatement'] = this.editionStatement;
+    data['coverPhoto'] = this.coverPhoto;
     data['numberOfPages'] = this.numberOfPages;
     data['publicationYear'] = this.publicationYear;
     data['seriesStatement'] = this.seriesStatement;
     data['addedDate'] = this.addedDate;
-    data['coverPhoto'] = this.coverPhoto;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
-    data['deletedAt'] = this.deletedAt;
     data['publisherId'] = this.publisherId;
     return data;
   }

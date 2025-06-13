@@ -25,13 +25,14 @@ class MyBookWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> titleWords = title.split(" ");
     String truncatedTitle =
-        titleWords.length > 4 ? "${titleWords.take(5).join(" ")}..." : title;
+        titleWords.length > 3 ? "${titleWords.take(5).join(" ")}..." : title;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: InkWell(
         onTap: onTap,
         child: Container(
+          width: double.infinity,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(6),
@@ -73,12 +74,15 @@ class MyBookWidget extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                truncatedTitle,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                              SizedBox(
+                                width: 170,
+                                child: Text(
+                                  truncatedTitle,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                               Container(
@@ -137,89 +141,7 @@ class MyBookWidget extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 4),
-                          if (status != "Reserved") ...[
-                            InkWell(
-                              onTap: (){
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    bool isProcessing = false; // Track renewal status
 
-                                    return StatefulBuilder(
-                                      builder: (context, setState) {
-                                        return AlertDialog(
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                          title: const Text("Renew Book", textAlign: TextAlign.center),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Image.asset('assets/images/logo_library.png', height: 100),
-                                              const SizedBox(height: 15),
-                                              if (isProcessing)
-                                                const CircularProgressIndicator()
-                                              else
-                                                const Text(
-                                                  "Do you want to renew this book?",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(fontSize: 16),
-                                                ),
-                                            ],
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                setState(() => isProcessing = false); // Reset if needed
-                                              },
-                                              child: const Text("No", style: TextStyle(color: Colors.red)),
-                                            ),
-                                            TextButton(
-                                              onPressed: isProcessing
-                                                  ? null
-                                                  : () async {
-                                                setState(() => isProcessing = true);
-
-                                                final check = await Provider.of<MyBooksViewModel>(context, listen: false)
-                                                    .renew(id, context);
-
-                                                if (check) {
-                                                  await Provider.of<MyBooksViewModel>(context, listen: false)
-                                                      .fetchBooksList(context);
-
-                                                  Utils.flushBarSuccessMessage('Book renewed successfully!', context);
-                                                }
-
-                                                setState(() => isProcessing = false);
-                                              },
-                                              child: Text("Yes", style: TextStyle(color: Colors.green)),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: const Text(
-                                  'Renew now',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 12),
-                                ),
-                              ),
-                            ),
-                          ] else ...[
-                            const Text('Book cannot be renewed',style: TextStyle(
-                              fontSize:10,
-                              fontStyle: FontStyle.italic
-                            ),)
-                          ]
                         ],
                       ),
                     ),

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/screens/student/my_books/my_book_widget.dart';
-import 'package:library_management_sys/screens/student/my_wishlist/view_reservation.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/wishlist_skeleton.dart';
-import 'package:library_management_sys/screens/student/my_wishlist/wishlist_widget.dart';
 import 'package:library_management_sys/view_model/users/my_book_view_model.dart';
 import 'package:provider/provider.dart';
 import '../../../constant/base_url.dart';
 import '../../../resource/colors.dart';
-import '../../../utils/format_date.dart';
 import '../../../utils/parse_date.dart';
 
 class MyBooks extends StatefulWidget {
@@ -21,7 +18,6 @@ class _MyBooksState extends State<MyBooks> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchData();
   }
@@ -65,7 +61,7 @@ class _MyBooksState extends State<MyBooks> {
                     child: Consumer<MyBooksViewModel>(
                       builder: (context, viewModel, child) {
                         if (viewModel.isLoading) {
-                          return Column(
+                          return const Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               WishlistSkeleton(),
@@ -110,9 +106,9 @@ class _MyBooksState extends State<MyBooks> {
                               title:
                                   reservationData.book?.bookInfo?.title ?? '',
                               image: reservationData
-                                          .book?.bookInfo?.coverPhoto !=
+                                          .book?.bookInfo?.title !=
                                       null
-                                  ? "${BaseUrl.imageDisplay}/${reservationData.book?.bookInfo?.coverPhoto.toString()}"
+                                  ? "${BaseUrl.imageDisplay}/${reservationData.book?.bookInfo?.title.toString()}"
                                   : '',
                               checkIn: reservationData.checkInDate != null
                                   ? parseDate(
