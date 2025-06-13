@@ -150,20 +150,19 @@ class BooksRepository {
   Future<bool> reserveBook(String uid, BuildContext context) async {
     try {
       if (kDebugMode) {
-        logger.d("Reserving book with URL: ${BookEndPoints.renewalUrl}/$uid");
+        logger.d("Reserving book with URL: ${BookEndPoints.reserveUrl}/$uid");
       }
       final dynamic response =
-      await _apiService.postUrlResponse("${BookEndPoints.renewalUrl}/$uid");
+      await _apiService.postUrlResponse("${BookEndPoints.reserveUrl}/$uid");
 
       if (response == null) {
         logger.w("Server did not respond for reservation UID: $uid");
         Utils.flushBarErrorMessage("Server did not respond", context);
         return false;
       }
-
       if (response['error'] != null) {
         logger.e("API error for reservation: ${response['error']}");
-        Utils.flushBarErrorMessage(
+        Utils.flushBarWarning(
             response['error'] ?? "Unknown error", context);
         return false;
       }

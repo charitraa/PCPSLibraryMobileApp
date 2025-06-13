@@ -28,7 +28,7 @@ class Utils {
       forwardAnimationCurve: Curves.easeInOut,
     );
   }
-  static flushBarErrorMessage(String message, BuildContext context) {
+  static flushBarErrorMessage(String message, BuildContext context,) {
     Flushbar(
       message: message,
       backgroundColor: Colors.red,
@@ -41,6 +41,26 @@ class Utils {
         color: Colors.white,
       ),
       leftBarIndicatorColor: Colors.redAccent,
+      animationDuration: const Duration(milliseconds: 2000),
+      isDismissible: true,
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      forwardAnimationCurve: Curves.easeInOut,
+    ).show(context);
+  }
+  static void flushBarWarning(String message, BuildContext context) {
+    Flushbar(
+      message: message,
+      backgroundColor: Colors.orange, // Changed to orange for warning
+      title: 'Oops Sorry!!',
+      messageColor: Colors.black,
+      duration: const Duration(seconds: 4),
+      icon: const Icon(
+        Icons.warning,
+        size: 28.0,
+        color: Colors.white,
+      ),
+      leftBarIndicatorColor: Colors.orangeAccent, // Changed to orangeAccent
       animationDuration: const Duration(milliseconds: 2000),
       isDismissible: true,
       flushbarPosition: FlushbarPosition.BOTTOM,

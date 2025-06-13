@@ -154,7 +154,7 @@ class _BookInfoState extends State<BookInfo> {
                     setState(() => _isLoading = true);
                     try {
                       final check = await Provider.of<BooksViewModel>(context, listen: false)
-                          .reserve(widget.uid, context);
+                          .reserve(widget.books.bookInfoId??'', context);
                       if (check) {
                         await Future.wait([
                           Provider.of<BooksViewModel>(context, listen: false)
