@@ -54,7 +54,7 @@ class CommentViewModel with ChangeNotifier {
       _commentList.clear();
       final Map<String, dynamic> response = await _commentsRepo.fetchComments(uid,
           _filter, 1, _limit, context);
-      print(response['comments']);
+
       _commentList.addAll(response['comments']);
       if (response['next'] != null) {
         _currentPage++;

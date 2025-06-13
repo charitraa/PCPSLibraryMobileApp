@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/repository/books_repository.dart';
+import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
 import '../../model/book_info_model.dart';
 import '../../utils/utils.dart';
@@ -12,6 +13,8 @@ class BooksViewModel with ChangeNotifier {
   final BooksRepository _booksRepo = BooksRepository();
   ApiResponse<BookInfoModel> booksData = ApiResponse.loading();
   BookInfoModel? get currentUser => booksData.data;
+  final logger = Logger();
+
   void setUser(ApiResponse<BookInfoModel> response) {
     booksData = response;
     Future.microtask(() => notifyListeners());
@@ -124,17 +127,19 @@ class BooksViewModel with ChangeNotifier {
       _currentPage = 1;
       _booksList.clear();
       _frontList.clear();
-      final Map<String, dynamic> response = await _booksRepo.fetchBooks(
+      final Map<String, dynamic>? response = await _booksRepo.fetchBooks(
           _filter, _bookAuthor, _publisher, _bookGenre, 1, _limit, context);
-      print(response['booksList']);
-      _booksList.addAll(response['booksList']);
-      _frontList.addAll(response['booksList']);
-      if (response['next'] != null) {
+
+      if (response != null && response['booksList'] != null) {
+        _booksList.addAll(response['booksList'] as List<BooksModel>);
+        _frontList.addAll(response['booksList'] as List<BooksModel>);
+      }
+      if (response != null && response['next'] != null) {
         _currentPage++;
       }
       Future.microtask(() => notifyListeners());
     } catch (error) {
-      print("minal");
+      logger.e("Error fetching books: $error");
       Utils.flushBarErrorMessage("Error fetching books: $error", context);
     } finally {
       setLoading(false);
@@ -142,18 +147,24 @@ class BooksViewModel with ChangeNotifier {
   }
 
   Future<void> loadMoreBooks(BuildContext context) async {
+    if (_isLoading) return;
+    setLoading(true);
     try {
-      final Map<String, dynamic> response = await _booksRepo.fetchBooks(_filter,
-          _bookAuthor, _publisher, _bookGenre, _currentPage, _limit, context);
-      if (_currentPage != null) {
+      final Map<String, dynamic>? response = await _booksRepo.fetchBooks(
+          _filter, _bookAuthor, _publisher, _bookGenre, _currentPage, _limit, context);
 
-        _booksList.addAll(response['booksList']);
-        _currentPage++;
+      if (response != null && response['booksList'] != null) {
+        _booksList.addAll(response['booksList'] as List<BooksModel>);
+        if (response['next'] != null) {
+          _currentPage++;
+        }
       }
       Future.microtask(() => notifyListeners());
-      notifyListeners();
     } catch (error) {
-      Utils.flushBarErrorMessage("Minal Error fetching books: $error", context);
+      logger.e("Error fetching more books: $error");
+      Utils.flushBarErrorMessage("Error fetching more books: $error", context);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -162,10 +173,12 @@ class BooksViewModel with ChangeNotifier {
     try {
       BookInfoModel user = await _booksRepo.getIndividualBooks(uid, context);
       if (kDebugMode) {
-        print('user ${user.toJson()}');
-      }   Future.microtask(() => notifyListeners());
+        logger.d('user: ${user.toJson()}');
+      }
+      Future.microtask(() => notifyListeners());
       setUser(ApiResponse.completed(user));
     } catch (e) {
+      logger.e("Error getting individual book: $e");
       Utils.flushBarErrorMessage("Error: $e", context);
       setUser(ApiResponse.error(e.toString()));
     }
@@ -173,15 +186,15 @@ class BooksViewModel with ChangeNotifier {
 
   Future<bool> reserve(String uid, BuildContext context) async {
     try {
-      final user = await _booksRepo.reserveBook(uid, context);
-      if (user) {
+      final bool success = await _booksRepo.reserveBook(uid, context);
+      if (success) {
         Utils.flushBarSuccessMessage(
             'You have successfully applied for reservation!!', context);
       }
-      print(user);
       Future.microtask(() => notifyListeners());
-      return true;
+      return success;
     } catch (e) {
+      logger.e("Error reserving book: $e");
       Utils.flushBarErrorMessage("Error: $e", context);
       return false;
     }
@@ -189,14 +202,14 @@ class BooksViewModel with ChangeNotifier {
 
   Future<bool> rateBook(String uid, String rating, BuildContext context) async {
     try {
-      final user = await _booksRepo.rateBook(uid, rating, context);
-      if (user) {
+      final bool success = await _booksRepo.rateBook(uid, rating, context);
+      if (success) {
         Utils.flushBarSuccessMessage('Thanks for rating this book!!', context);
       }
-
       Future.microtask(() => notifyListeners());
-      return true;
+      return success;
     } catch (e) {
+      logger.e("Error rating book: $e");
       Utils.flushBarErrorMessage("Error: $e", context);
       return false;
     }

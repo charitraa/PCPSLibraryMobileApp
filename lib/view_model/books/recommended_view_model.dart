@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/repository/books_repository.dart';
+import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
 import '../../model/book_info_model.dart';
 import '../../utils/utils.dart';
@@ -11,6 +12,8 @@ class RecommendedViewModel with ChangeNotifier {
   final BooksRepository _booksRepo = BooksRepository();
   ApiResponse<BookInfoModel> booksData = ApiResponse.loading();
   BookInfoModel? get currentUser => booksData.data;
+  final logger = Logger();
+
   void setUser(ApiResponse<BookInfoModel> response) {
     booksData = response;
     Future.microtask(() => notifyListeners());
@@ -123,15 +126,21 @@ class RecommendedViewModel with ChangeNotifier {
       _currentPage = 1;
       _booksList.clear();
       _frontList.clear();
-      final Map<String, dynamic> response = await _booksRepo.recommended(
+      final Map<String, dynamic>? response = await _booksRepo.recommended(
           _filter, _bookAuthor, _publisher, _bookGenre, 1, _limit, context);
-      _booksList.addAll(response['booksList']);
-      _frontList.addAll(response['booksList']);
-      if (response['next'] != null) {
+
+      if (response != null && response['booksList'] != null) {
+        _booksList.addAll(response['booksList'] as List<BooksModel>);
+        _frontList.addAll(response['booksList'] as List<BooksModel>);
+      } else {
+        logger.w("No books received in response");
+      }
+      if (response != null && response['next'] != null) {
         _currentPage++;
       }
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (error) {
+      logger.e("Error fetching recommended books: $error");
       Utils.flushBarErrorMessage("Error fetching books: $error", context);
     } finally {
       setLoading(false);
@@ -139,19 +148,26 @@ class RecommendedViewModel with ChangeNotifier {
   }
 
   Future<void> loadMoreBooks(BuildContext context) async {
+    if (_isLoading) return;
+    setLoading(true);
     try {
-      final Map<String, dynamic> response = await _booksRepo.recommended(_filter,
-          _bookAuthor, _publisher, _bookGenre, _currentPage, _limit, context);
-      if (_currentPage != null) {
-        _booksList.addAll(response['booksList']);
-        _currentPage++;
+      final Map<String, dynamic>? response = await _booksRepo.recommended(
+          _filter, _bookAuthor, _publisher, _bookGenre, _currentPage, _limit, context);
+
+      if (response != null && response['booksList'] != null) {
+        _booksList.addAll(response['booksList'] as List<BooksModel>);
+        if (response['next'] != null) {
+          _currentPage++;
+        }
+      } else {
+        logger.w("No additional books received for page $_currentPage");
       }
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (error) {
-      Utils.flushBarErrorMessage("Minal Error fetching books: $error", context);
+      logger.e("Error fetching more recommended books: $error");
+      Utils.flushBarErrorMessage("Error fetching more books: $error", context);
+    } finally {
+      setLoading(false);
     }
   }
-
-
-
 }

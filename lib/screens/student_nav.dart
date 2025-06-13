@@ -5,6 +5,7 @@ import 'package:library_management_sys/screens/student/dashboard/student_dashboa
 import 'package:library_management_sys/screens/student/e-books.dart';
 import 'package:library_management_sys/screens/student/my_books/my_books.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
+import 'package:library_management_sys/screens/unauthorised_page.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -38,7 +39,7 @@ class _StudentNavBarState extends State<StudentNavBar> {
       const Ebooks(),
       StudentBrowseBooks(reqIndex: index,),
       const MyBooks(),
-      const Profile(),
+      const UnauthorisedPage(),
     ];
   }
 

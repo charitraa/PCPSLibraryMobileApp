@@ -17,7 +17,6 @@ class AuthViewModel with ChangeNotifier {
   final Logger _logger = Logger();
 
   ApiResponse<CurrentUserModel> userData = ApiResponse.loading();
-
   CurrentUserModel? get currentUser => userData.data;
   bool _isLoading = false;
 
@@ -33,20 +32,23 @@ class AuthViewModel with ChangeNotifier {
     Future.microtask(() => notifyListeners());
   }
 
-
-  Future login(dynamic body, BuildContext context) async {
+  Future<void> login(dynamic body, BuildContext context) async {
     setLoading(true);
     try {
       _logger.d('Login attempt with body: $body');
       final response = await _myrepo.login(body, context);
-      if (response.status == Status.ERROR) {
+      if (response == null) {
+        _logger.w('Login response is null');
+        Utils.flushBarErrorMessage("No response from server", context);
+      } else if (response.status == Status.ERROR) {
+        _logger.w('Login failed: ${response.message}');
         Utils.flushBarErrorMessage(
             response.message ?? "An error occurred", context);
-      } else {
-        Utils.flushBarSuccessMessage("User Logged in successfully!!!!", context);
-        final String role = response.data?.roleId ?? "Unknown";
-        UserModel user = UserModel(cardId: response.data?.cardId);
-        setLoading(false);
+      } else if (response.data != null) {
+        _logger.d('Login successful for user: ${response.data?.cardId}');
+        Utils.flushBarSuccessMessage("User logged in successfully!", context);
+        final String role = response.data!.roleId ?? "Unknown";
+        UserModel user = UserModel(cardId: response.data!.cardId);
         Navigator.of(context).push(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
@@ -66,10 +68,17 @@ class AuthViewModel with ChangeNotifier {
             },
           ),
         );
+      } else {
+        _logger.w('Login response data is null');
+        Utils.flushBarErrorMessage("No user data received", context);
       }
     } catch (error) {
       _logger.e('Login error: $error');
-      Utils.flushBarErrorMessage('$error', context);
+      String errorMessage = error.toString().contains('No internet connection')
+          ? 'No internet connection. Please try again.'
+          : 'Failed to login: $error';
+      Utils.flushBarErrorMessage(errorMessage, context);
+    } finally {
       setLoading(false);
     }
   }
@@ -78,12 +87,21 @@ class AuthViewModel with ChangeNotifier {
     setLoading(true);
     setUser(ApiResponse.loading());
     try {
-      CurrentUserModel user = await _myrepo.getUser(context);
-      _logger.d('Fetched user: ${user.data?.userId}');
-      setUser(ApiResponse.completed(user));
+      CurrentUserModel? user = await _myrepo.getUser(context);
+      if (user != null) {
+        _logger.d('Fetched user: ${user.data?.userId}');
+        setUser(ApiResponse.completed(user));
+      } else {
+        _logger.w('getUser returned null');
+        Utils.flushBarErrorMessage('Failed to fetch user: No user data', context);
+        setUser(ApiResponse.error('No user data'));
+      }
     } catch (e) {
       _logger.e('getUser error: $e');
-      Utils.flushBarErrorMessage('Failed to fetch user: $e', context);
+      String errorMessage = e.toString().contains('No internet connection')
+          ? 'No internet connection. Please try again.'
+          : 'Failed to fetch user: $e';
+      Utils.flushBarErrorMessage(errorMessage, context);
       if (e.toString().contains('Unauthorized') || e.toString().contains('401')) {
         Navigator.pushReplacementNamed(context, RoutesName.login);
       }
@@ -97,17 +115,25 @@ class AuthViewModel with ChangeNotifier {
     setLoading(true);
     try {
       final response = await _myrepo.logout(context);
-      if (response.status == Status.COMPLETED) {
-        Utils.flushBarSuccessMessage("User Logged out Successfully!", context);
+      if (response == null) {
+        _logger.w('Logout response is null');
+        Utils.flushBarErrorMessage("No response from server", context);
+      } else if (response.status == Status.COMPLETED) {
+        _logger.d('Logout successful');
+        Utils.flushBarSuccessMessage("User logged out successfully!", context);
         await UserViewModel().remove();
         Navigator.pushReplacementNamed(context, RoutesName.login);
       } else {
+        _logger.w('Logout failed: ${response.message}');
         Utils.flushBarErrorMessage(
             response.message ?? "An error occurred", context);
       }
     } catch (e) {
       _logger.e('Logout error: $e');
-      Utils.flushBarErrorMessage("Error: $e", context);
+      String errorMessage = e.toString().contains('No internet connection')
+          ? 'No internet connection. Please try again.'
+          : 'Failed to logout: $e';
+      Utils.flushBarErrorMessage(errorMessage, context);
     } finally {
       setLoading(false);
     }

@@ -56,7 +56,7 @@ class _DropDownFieldState extends State<CustomGenres> {
   @override
   Widget build(BuildContext context) {
     final genreViewModel = context.watch<AttrGenreViewModel>();
-    final genres = genreViewModel.GenresList;
+    final genres = genreViewModel.genresList;
 
     if (genres.isEmpty) {
       return const Center(child: Text('No genres available'));

@@ -13,28 +13,27 @@ import 'package:library_management_sys/utils/utils.dart';
 
 class MyBooksRepository {
   final BaseApiServices _apiService = NetworkApiService();
-  Future<Map<String, dynamic>> myBooks(
-      BuildContext context) async {
+  Future<Map<String, dynamic>> myBooks(BuildContext context) async {
     try {
       print(BookEndPoints.myBooks);
-      dynamic response = await _apiService.getApiResponse(BookEndPoints.myBooks);
-      List<MyBooksModel> booksList = (response as List)
-          .map((e) => MyBooksModel.fromJson(e))
-          .toList();
+      dynamic response =
+          await _apiService.getApiResponse(BookEndPoints.myBooks);
+      List<MyBooksModel> booksList =
+          (response as List).map((e) => MyBooksModel.fromJson(e)).toList();
 
       return {"booksList": booksList};
     } on TimeoutException {
-      return Utils.noInternet("No internet connection. Please try again later.");
+      return Utils.noInternet(
+          "No internet connection. Please try again later.");
     } catch (error) {
       print(error);
-      return Utils.flushBarErrorMessage(
-          " $error", context);
+      return Utils.flushBarErrorMessage(" $error", context);
     }
   }
+
   Future<Map<String, dynamic>> getPayment(
       int page, int limit, BuildContext context) async {
-    String url =
-        '${BookEndPoints.pay}?page=$page&pageSize=$limit';
+    String url = '${BookEndPoints.pay}?page=$page&pageSize=$limit';
     try {
       if (kDebugMode) {
         print(url);
@@ -48,37 +47,38 @@ class MyBooksRepository {
       final next = response['info']?['next'];
       return {"reservations": reservations, "next": next};
     } on TimeoutException {
-      return Utils.noInternet("No internet connection. Please try again later.");
+      return Utils.noInternet(
+          "No internet connection. Please try again later.");
     } catch (error) {
       return Utils.flushBarErrorMessage(
           "Failed to get Reservation. Please try again. ${error.toString()}",
           context);
     }
   }
-  Future<Map<String, dynamic>> getDues(
-      BuildContext context) async {
+
+  Future<Map<String, dynamic>> getDues(BuildContext context) async {
     try {
       print(BookEndPoints.due);
       dynamic response = await _apiService.getApiResponse(BookEndPoints.due);
-      List<DueModel> booksList = (response as List)
-          .map((e) => DueModel.fromJson(e))
-          .toList();
+      List<DueModel> booksList =
+          (response as List).map((e) => DueModel.fromJson(e)).toList();
 
       return {"booksList": booksList};
     } on TimeoutException {
-      return Utils.noInternet("No internet connection. Please try again later.");
+      return Utils.noInternet(
+          "No internet connection. Please try again later.");
     } catch (error) {
       print(error);
-      return Utils.flushBarErrorMessage(
-          " $error", context);
+      return Utils.flushBarErrorMessage(" $error", context);
     }
   }
+
   Future<bool> renew(String uid, BuildContext context) async {
     try {
       print("${BookEndPoints.renewalUrl}/$uid");
 
       dynamic response =
-      await _apiService.postUrlResponse("${BookEndPoints.renewalUrl}/$uid");
+          await _apiService.postUrlResponse("${BookEndPoints.renewalUrl}/$uid");
 
       if (response == null) {
         Utils.flushBarErrorMessage("Server did not respond", context);
@@ -93,7 +93,8 @@ class MyBooksRepository {
       print(response);
       return true;
     } on TimeoutException {
-      return Utils.noInternet("No internet connection. Please try again later.");
+      return Utils.noInternet(
+          "No internet connection. Please try again later.");
     } catch (e) {
       print("Error reserving book: $e");
       Utils.flushBarErrorMessage(

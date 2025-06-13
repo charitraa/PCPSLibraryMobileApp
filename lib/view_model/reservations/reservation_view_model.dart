@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:library_management_sys/endpoints/book_endpoints.dart';
 import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/repository/books_repository.dart';
+import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
 import '../../model/book_info_model.dart';
 import '../../model/reservation_model.dart';
@@ -12,6 +13,8 @@ class ReservationViewModel with ChangeNotifier {
   final BooksRepository _booksRepo = BooksRepository();
   ApiResponse<ReservationModel> booksData = ApiResponse.loading();
   ReservationModel? get currentUser => booksData.data;
+  final logger = Logger();
+
   void setUser(ApiResponse<ReservationModel> response) {
     booksData = response;
     Future.microtask(() => notifyListeners());
@@ -26,7 +29,7 @@ class ReservationViewModel with ChangeNotifier {
   bool get isLoading => _isLoading;
   List<ReservationModel> get reservationList => _reservationList;
   String get filter => _filter;
-  String get status => _filter;
+  String get status => _status; // Fixed: Corrected getter to return _status
 
   int get currentPage => _currentPage;
 
@@ -46,6 +49,7 @@ class ReservationViewModel with ChangeNotifier {
       notifyListeners();
     }
   }
+
   void setStatus(String value, BuildContext context) {
     if (_status != value) {
       _status = value;
@@ -60,46 +64,60 @@ class ReservationViewModel with ChangeNotifier {
     try {
       _currentPage = 1;
       _reservationList.clear();
-      final Map<String, dynamic> response = await _booksRepo.fetchReservation(
-          _status,_filter, 1, _limit, context);
-      _reservationList.addAll(response['reservations']);
-      if (response['next'] != null) {
+      final Map<String, dynamic>? response = await _booksRepo.fetchReservation(
+          _status, _filter, 1, _limit, context);
+
+      if (response != null && response['reservations'] != null) {
+        _reservationList.addAll(response['reservations'] as List<ReservationModel>);
+      } else {
+        logger.w("No reservations received in response");
+      }
+      if (response != null && response['next'] != null) {
         _currentPage++;
       }
       Future.microtask(() => notifyListeners());
     } catch (error) {
-      Utils.flushBarErrorMessage("Error fetching books: $error", context);
+      logger.e("Error fetching reservations: $error");
+      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
     } finally {
       setLoading(false);
     }
   }
 
   Future<void> loadMoreBooks(BuildContext context) async {
+    if (_isLoading) return;
+    setLoading(true);
     try {
-      final Map<String, dynamic> response = await _booksRepo.fetchReservation(
+      final Map<String, dynamic>? response = await _booksRepo.fetchReservation(
           _status, _filter, _currentPage, _limit, context);
-      _reservationList.addAll(response['reservations']);
-      if (_currentPage != null) {
-        _reservationList.addAll(response['reservations']);
-        _currentPage++;
-      }
 
+      if (response != null && response['reservations'] != null) {
+        _reservationList.addAll(response['reservations'] as List<ReservationModel>);
+        if (response['next'] != null) {
+          _currentPage++;
+        }
+      } else {
+        logger.w("No additional reservations received for page $_currentPage");
+      }
       Future.microtask(() => notifyListeners());
     } catch (error) {
-      Utils.flushBarErrorMessage("Error fetching reservation: $error", context);
+      logger.e("Error fetching more reservations: $error");
+      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
+    } finally {
+      setLoading(false);
     }
   }
 
-  Future<bool> cancel(String uid,BuildContext context) async {
+  Future<bool> cancel(String uid, BuildContext context) async {
     try {
-      final user = await _booksRepo.cancelReservation(uid, context);
-      if(user){
+      final bool success = await _booksRepo.cancelReservation(uid, context);
+      if (success) {
         Utils.flushBarSuccessMessage('You have cancelled the reservation!!', context);
       }
       Future.microtask(() => notifyListeners());
-      return user;
+      return success;
     } catch (e) {
-      print(e);
+      logger.e("Error canceling reservation: $e");
       Utils.flushBarErrorMessage("Error: $e", context);
       return false;
     }

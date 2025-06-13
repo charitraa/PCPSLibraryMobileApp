@@ -100,7 +100,6 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
         .fetchBooksList(context);
     await Provider.of<RecommendedViewModel>(context, listen: false)
         .fetchBooksList(context);
-
     await Provider.of<AttrPublisherViewModel>(context, listen: false)
         .fetchPublishersList(context);
     await Provider.of<AttrGenreViewModel>(context, listen: false)

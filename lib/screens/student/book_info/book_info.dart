@@ -1,28 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
-import 'package:library_management_sys/model/book_info_model.dart';
 import 'package:library_management_sys/model/books_model.dart';
-import 'package:library_management_sys/model/current_user_model.dart';
-import 'package:library_management_sys/resource/routes_name.dart';
 import 'package:library_management_sys/screens/student/book_info/book_preview.dart';
 import 'package:library_management_sys/screens/student/book_info/comments.dart';
 import 'package:library_management_sys/screens/student/book_info/reply_comments.dart';
 import 'package:library_management_sys/screens/student/book_info/review.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
-import 'package:library_management_sys/utils/format_date.dart';
-import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/books/comment_view_model.dart';
-import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
 import 'package:library_management_sys/widgets/book/book_info_column.dart';
 import 'package:library_management_sys/widgets/book/book_info_row.dart';
 import 'package:library_management_sys/widgets/book/review_card.dart';
 import 'package:library_management_sys/widgets/book/review_skeleton.dart';
-
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-
 import '../../../data/response/status.dart';
 import '../../../resource/colors.dart';
 import '../../../utils/parse_date.dart';
@@ -560,8 +552,7 @@ class _BookInfoState extends State<BookInfo> {
                                 }
                                 final user = viewModel.currentUser;
                                 if (user == null) {
-                                  return const Center(
-                                      child: Text("User data not available"));
+                                  return const SizedBox();
                                 }
 
                                 String totalBooks =
@@ -641,9 +632,9 @@ class _BookInfoState extends State<BookInfo> {
                         }
                         final user = viewModel.currentUser;
                         if (user == null) {
-                          return const Center(
-                              child: Text("User data not available"));
+                          return const SizedBox();
                         }
+
                         return Stack(
                           children: [
                             SingleChildScrollView(
@@ -843,7 +834,8 @@ class _BookInfoState extends State<BookInfo> {
                       },
                       suffixicon: comment.isNotEmpty
                           ? InkWell(
-                              child: const Icon(Icons.clear, color: Colors.grey),
+                              child:
+                                  const Icon(Icons.clear, color: Colors.grey),
                               onTap: () {
                                 setState(() {
                                   comment = "";
@@ -922,11 +914,13 @@ class _BookInfoState extends State<BookInfo> {
                             final commentData = viewModel.commentsList[index];
                             int length = commentData.replies!.length;
                             return ReviewCard(
-                              onDelete: ()async{
-                              final  check=await viewModel.deleteComment(commentData.commentId??'', context);
-                              if(check){
-                                await viewModel.fetchComments(widget.uid??'', context);
-                              }
+                              onDelete: () async {
+                                final check = await viewModel.deleteComment(
+                                    commentData.commentId ?? '', context);
+                                if (check) {
+                                  await viewModel.fetchComments(
+                                      widget.uid ?? '', context);
+                                }
                               },
                               uid: commentData.userId,
                               date: commentData.updatedAt != null

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/model/genre_model.dart';
+import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
 import '../../repository/attributes_repository.dart';
 import '../../utils/utils.dart';
@@ -9,6 +10,8 @@ class AttrGenreViewModel with ChangeNotifier {
   final AttributesRepository _booksRepo = AttributesRepository();
   ApiResponse<Genre> booksData = ApiResponse.loading();
   Genre? get currentUser => booksData.data;
+  final Logger _logger = Logger();
+
   void setUser(ApiResponse<Genre> response) {
     booksData = response;
     Future.microtask(() => notifyListeners());
@@ -16,16 +19,14 @@ class AttrGenreViewModel with ChangeNotifier {
 
   bool _isLoading = false;
   String _filter = '';
-
   int _currentPage = 1;
   int _limit = 10;
 
-
   bool get isLoading => _isLoading;
-  List<Genre> get GenresList => _genreList;
+  List<Genre> get genresList => _genreList; // Fixed naming to camelCase
   String get filter => _filter;
-
   int get currentPage => _currentPage;
+
   void setLoading(bool value) {
     _isLoading = value;
     Future.microtask(() => notifyListeners());
@@ -43,45 +44,55 @@ class AttrGenreViewModel with ChangeNotifier {
     }
   }
 
-
   Future<void> fetchGenresList(BuildContext context) async {
     if (_isLoading) return;
     setLoading(true);
     try {
-      _currentPage=1;
+      _currentPage = 1;
       _genreList.clear();
-      final Map<String,dynamic> response =
-      await _booksRepo.fetchGenre(_filter,1,_limit,context);
-      _genreList.addAll(response['Genre']);
-      if(response['next']!=null){
+      final Map<String, dynamic>? response =
+      await _booksRepo.fetchGenre(_filter, 1, _limit, context);
+
+      if (response != null && response['Genre'] != null) {
+        _genreList.addAll(response['Genre'] as List<Genre>);
+      } else {
+        _logger.w("No genres received in response");
+        Utils.flushBarErrorMessage("No genres received from server", context);
+      }
+      if (response != null && response['next'] != null) {
         _currentPage++;
       }
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (error) {
-      Utils.flushBarErrorMessage(
-          "Error fetching books: $error", context);
+      _logger.e("Error fetching genres: $error");
+      Utils.flushBarErrorMessage("Error fetching genres: $error", context);
     } finally {
       setLoading(false);
     }
   }
 
   Future<void> loadMoreGenres(BuildContext context) async {
+    if (_isLoading) return;
+    setLoading(true);
     try {
-      final Map<String,dynamic> response =
-      await _booksRepo.fetchGenre(_filter,_currentPage,_limit,context);
-      if(_currentPage!=null){
-        print("${response['next']}=$_currentPage");
-        _genreList.addAll(response['Genre']);
-        _currentPage++;
+      final Map<String, dynamic>? response =
+      await _booksRepo.fetchGenre(_filter, _currentPage, _limit, context);
+
+      if (response != null && response['Genre'] != null) {
+        _genreList.addAll(response['Genre'] as List<Genre>);
+        if (response['next'] != null) {
+          _currentPage++;
+        }
+      } else {
+        _logger.w("No additional genres received for page $_currentPage");
+        Utils.flushBarErrorMessage("No genres received from server", context);
       }
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     } catch (error) {
-      Utils.flushBarErrorMessage(
-          "Error fetching Genres: $error", context);
+      _logger.e("Error fetching more genres: $error");
+      Utils.flushBarErrorMessage("Error fetching genres: $error", context);
+    } finally {
+      setLoading(false);
     }
   }
-
-
-
-
 }
