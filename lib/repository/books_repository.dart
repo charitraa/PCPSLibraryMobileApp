@@ -233,7 +233,7 @@ class BooksRepository {
           .toList();
 
       if (kDebugMode) {
-        logger.d("Reservations fetched: $response['data']");
+        logger.d("Reservations fetched: $response");
       }
       final next = response['info']?['next'] ?? '';
       return {"reservations": reservations, "next": next};

@@ -3,18 +3,16 @@ import 'package:flutter/material.dart';
 
 class WishlistWidget extends StatelessWidget {
   final String title;
-  final String author;
   final String image;
   final String genre;
   final VoidCallback? onTap;
-  final String available;
+  final String status;
 
   const WishlistWidget({
     required this.title,
-    required this.author,
     required this.image,
     required this.genre,
-    required this.available,
+    required this.status,
     super.key, this.onTap,
   });
 
@@ -23,10 +21,6 @@ class WishlistWidget extends StatelessWidget {
     List<String> titleWords = title.split(" ");
     String truncatedTitle =
         titleWords.length > 4 ? "${titleWords.take(5).join(" ")}..." : title;
-    List<String> authorS = author.split(" ");
-    String truncatedAuthor =
-        authorS.length > 4 ? "${authorS.take(4).join(" ")}..." : author;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: InkWell(
@@ -79,14 +73,7 @@ class WishlistWidget extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            "By $truncatedAuthor",
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
+                          
                           Row(
                             children: [
                               Container(
@@ -97,7 +84,7 @@ class WishlistWidget extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Text(
-                                  available,
+                                  status,
                                   style: const TextStyle(
                                       color: Colors.white, fontSize: 12),
                                 ),

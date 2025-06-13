@@ -10,14 +10,14 @@ import '../my_wishlist/view_reservation.dart';
 import '../my_wishlist/wishlist_skeleton.dart';
 import '../my_wishlist/wishlist_widget.dart';
 
-class ReservationList extends StatefulWidget {
-  const ReservationList({super.key});
+class ConfirmReservationList extends StatefulWidget {
+  const ConfirmReservationList({super.key});
 
   @override
-  State<ReservationList> createState() => _ReservationListState();
+  State<ConfirmReservationList> createState() => _ConfirmReservationListState();
 }
 
-class _ReservationListState extends State<ReservationList> {
+class _ConfirmReservationListState extends State<ConfirmReservationList> {
   @override
   Widget build(BuildContext context) {
     return          Consumer<ReservationViewModel>(
@@ -28,7 +28,7 @@ class _ReservationListState extends State<ReservationList> {
               WishlistSkeleton(),
             ],
           );
-        } else if (viewModel.reservationList.isEmpty) {
+        } else if (viewModel.confirmReservation.isEmpty) {
           return const Center(
             child: Padding(
               padding: EdgeInsets.all(16.0),
@@ -54,10 +54,10 @@ class _ReservationListState extends State<ReservationList> {
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: viewModel.reservationList.length>2?3:viewModel.reservationList.length,
+          itemCount: viewModel.confirmReservation.length>2?3:viewModel.confirmReservation.length,
           itemBuilder: (context, index) {
             final reservationData =
-            viewModel.reservationList[index];
+            viewModel.confirmReservation[index];
 
 
 

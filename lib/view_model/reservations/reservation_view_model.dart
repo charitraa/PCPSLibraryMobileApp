@@ -8,6 +8,7 @@ import '../../utils/utils.dart';
 
 class ReservationViewModel with ChangeNotifier {
   final List<ReservationModel> _reservationList = [];
+  final List<ReservationModel> _confirmReservation = [];
   final BooksRepository _booksRepo = BooksRepository();
   ApiResponse<ReservationModel> booksData = ApiResponse.loading();
   ReservationModel? get currentUser => booksData.data;
@@ -26,6 +27,7 @@ class ReservationViewModel with ChangeNotifier {
 
   bool get isLoading => _isLoading;
   List<ReservationModel> get reservationList => _reservationList;
+  List<ReservationModel> get confirmReservation => _confirmReservation;
   String get filter => _filter;
   String get status => _status; // Fixed: Corrected getter to return _status
 
@@ -67,6 +69,31 @@ class ReservationViewModel with ChangeNotifier {
 
       if (response != null && response['reservations'] != null) {
         _reservationList.addAll(response['reservations'] as List<ReservationModel>);
+      } else {
+        logger.w("No reservations received in response");
+      }
+      if (response != null && response['next'] != null) {
+        _currentPage++;
+      }
+      Future.microtask(() => notifyListeners());
+    } catch (error) {
+      logger.e("Error fetching reservations: $error");
+      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
+    } finally {
+      setLoading(false);
+    }
+  }
+  Future<void> fetchConfirmReservation(BuildContext context) async {
+    if (_isLoading) return;
+    setLoading(true);
+    try {
+      _currentPage = 1;
+      _confirmReservation.clear();
+      final Map<String, dynamic> response = await _booksRepo.fetchReservation(
+          'Confirmed', _filter, 1, _limit, context);
+
+      if (response != null && response['reservations'] != null) {
+        _confirmReservation.addAll(response['reservations'] as List<ReservationModel>);
       } else {
         logger.w("No reservations received in response");
       }

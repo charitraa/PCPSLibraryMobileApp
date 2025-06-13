@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/resource/colors.dart';
+import 'package:library_management_sys/screens/student/dashboard/confirm_reserved_list.dart';
 import 'package:library_management_sys/screens/student/in_app_notification/in_app_notification.dart';
 import 'package:library_management_sys/screens/student/my_books/my_book_widget.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
@@ -47,6 +48,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
         dueViewModel.duesList.isEmpty ||
         booksViewModel.booksList.isEmpty ||
         reservationViewModel.reservationList.isEmpty ||
+        reservationViewModel.confirmReservation.isEmpty ||
         notificationViewModel.notificationList.isEmpty) {
       setState(() => _isLoading = true);
       try {
@@ -55,6 +57,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
           dueViewModel.fetchDues(context),
           booksViewModel.fetchBooksList(context),
           reservationViewModel.fetchReservation(context),
+          reservationViewModel.fetchConfirmReservation(context),
           notificationViewModel.fetchNotifications(context),
         ]);
       } catch (e) {
@@ -710,21 +713,42 @@ class _StudentDashboardState extends State<StudentDashboard> {
     return Consumer<ReservationViewModel>(
       builder: (context, value, child) {
         final reservations = value.reservationList;
+        final confirmReservation = value.confirmReservation;
+
+        // If there are no pending reservations
         if (reservations.isEmpty) {
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
                 height: 60,
-                child: _buildNoDataCard(size, 'No Reservations'),
+                child: _buildNoDataCard(
+                  size,
+                  'No Pending Reservations\nConfirmed: ${confirmReservation.length}',
+                ),
               ),
               const SizedBox(height: 8),
+              if (confirmReservation.isNotEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Confirmed Reservations:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      ConfirmReservationList(),
+                    ],
+                  ),
+                ),
               Align(
                 alignment: Alignment.center,
                 child: _buildFilterButton(
                   'View all Reservations',
                       () => Navigator.of(context).push(
                     PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => const Wishlist(),
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                      const Wishlist(),
                       transitionsBuilder: (context, animation, secondaryAnimation, child) {
                         const begin = Offset(1.0, 0.0);
                         const end = Offset.zero;
@@ -743,19 +767,30 @@ class _StudentDashboardState extends State<StudentDashboard> {
             ],
           );
         }
+
+        // If there are pending reservations
         return Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                'Pending: ${reservations.length}, Confirmed: ${confirmReservation.length}',
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
             const Padding(
               padding: EdgeInsets.all(8),
-              child: ReservationList(),
+              child: ReservationList(), // Assumes default shows pending
             ),
+
             Align(
               alignment: Alignment.center,
               child: _buildFilterButton(
                 'View all Reservations',
                     () => Navigator.of(context).push(
                   PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) => const Wishlist(),
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                    const Wishlist(),
                     transitionsBuilder: (context, animation, secondaryAnimation, child) {
                       const begin = Offset(1.0, 0.0);
                       const end = Offset.zero;
@@ -776,6 +811,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
       },
     );
   }
+
 
   Widget _buildPaymentSection(Size size) {
     return Column(

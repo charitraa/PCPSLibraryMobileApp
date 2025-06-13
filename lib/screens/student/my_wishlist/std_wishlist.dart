@@ -153,16 +153,12 @@ class _WishlistState extends State<Wishlist> {
                                 );
                               },
                               title: reservationData.bookInfo?.title ?? '',
-                              author: authors ?? '',
-                              image: reservationData.bookInfo?.coverPhoto !=
-                                      null
-                                  ? "${BaseUrl.imageDisplay}/${reservationData.bookInfo?.coverPhoto.toString()}"
-                                  : '',
+
                               genre: reservationData.reservationDate != null
                                   ? parseDate(reservationData.reservationDate
                                       .toString())
                                   : '',
-                              available: reservationData.book?.status ?? '',
+                              status: reservationData.book?.status ?? '', image: '',
                             );
                           },
                         );
