@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:library_management_sys/data/network/BaseApiService.dart';
 import 'package:library_management_sys/data/network/NetworkApiService.dart';
 import 'package:library_management_sys/endpoints/attribute_endpoints.dart';
-import 'package:library_management_sys/model/Publisher_model.dart';
+import 'package:library_management_sys/model/publisher_model.dart';
 import 'package:library_management_sys/model/author_model.dart';
 import 'package:library_management_sys/model/genre_model.dart';
 import 'package:library_management_sys/utils/utils.dart';

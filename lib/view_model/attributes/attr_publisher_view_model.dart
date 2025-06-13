@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/model/Publisher_model.dart';
+import 'package:library_management_sys/model/publisher_model.dart';
 import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
 import '../../repository/attributes_repository.dart';
@@ -51,13 +51,14 @@ class AttrPublisherViewModel with ChangeNotifier {
       _currentPage = 1;
       _publisherList.clear();
       final Map<String, dynamic>? response =
-      await _booksRepo.fetchPublisher(_filter, 1, _limit, context);
+          await _booksRepo.fetchPublisher(_filter, 1, _limit, context);
 
       if (response != null && response['publisher'] != null) {
         _publisherList.addAll(response['publisher'] as List<Publisher>);
       } else {
         _logger.w("No publishers received in response");
-        Utils.flushBarErrorMessage("No publishers received from server", context);
+        Utils.flushBarErrorMessage(
+            "No publishers received from server", context);
       }
       if (response != null && response['next'] != null) {
         _currentPage++;
@@ -75,8 +76,8 @@ class AttrPublisherViewModel with ChangeNotifier {
     if (_isLoading) return;
     setLoading(true);
     try {
-      final Map<String, dynamic>? response =
-      await _booksRepo.fetchPublisher(_filter, _currentPage, _limit, context);
+      final Map<String, dynamic>? response = await _booksRepo.fetchPublisher(
+          _filter, _currentPage, _limit, context);
 
       if (response != null && response['publisher'] != null) {
         _publisherList.addAll(response['publisher'] as List<Publisher>);
@@ -85,7 +86,8 @@ class AttrPublisherViewModel with ChangeNotifier {
         }
       } else {
         _logger.w("No additional publishers received for page $_currentPage");
-        Utils.flushBarErrorMessage("No publishers received from server", context);
+        Utils.flushBarErrorMessage(
+            "No publishers received from server", context);
       }
       Future.microtask(() => notifyListeners());
     } catch (error) {
