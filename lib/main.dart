@@ -7,8 +7,10 @@ import 'package:library_management_sys/view_model/attributes/attr_author_view_mo
 import 'package:library_management_sys/view_model/attributes/attr_genre_view_model.dart';
 import 'package:library_management_sys/view_model/attributes/attr_publisher_view_model.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:library_management_sys/view_model/book_requests/request_view_model.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/books/comment_view_model.dart';
+import 'package:library_management_sys/view_model/books/online_books_view_model.dart';
 import 'package:library_management_sys/view_model/books/recommended_view_model.dart';
 import 'package:library_management_sys/view_model/notifications/notification_view_model.dart';
 import 'package:library_management_sys/view_model/reservations/reservation_view_model.dart';
@@ -40,6 +42,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RecommendedViewModel()),
         ChangeNotifierProvider(create: (_) => MyBooksViewModel()),
         ChangeNotifierProvider(create: (_) => PaymentViewModel()),
+        ChangeNotifierProvider(create: (_) => OnlineBooksViewModel()),
+        ChangeNotifierProvider(create: (_) => BookRequestViewModel()),
+
         ChangeNotifierProvider(create: (_) => MyDueViewModel()),
         ChangeNotifierProvider(create: (_) => NotificationViewModel(),
         ),

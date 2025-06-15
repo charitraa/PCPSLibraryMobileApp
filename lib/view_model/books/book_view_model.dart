@@ -127,7 +127,7 @@ class BooksViewModel with ChangeNotifier {
       _currentPage = 1;
       _booksList.clear();
       _frontList.clear();
-      final Map<String, dynamic>? response = await _booksRepo.fetchBooks(
+      final Map<String, dynamic> response = await _booksRepo.fetchBooks(
           _filter, _bookAuthor, _publisher, _bookGenre, 1, _limit, context);
 
       if (response != null && response['booksList'] != null) {
@@ -150,7 +150,7 @@ class BooksViewModel with ChangeNotifier {
     if (_isLoading) return;
     setLoading(true);
     try {
-      final Map<String, dynamic>? response = await _booksRepo.fetchBooks(
+      final Map<String, dynamic> response = await _booksRepo.fetchBooks(
           _filter, _bookAuthor, _publisher, _bookGenre, _currentPage, _limit, context);
 
       if (response != null && response['booksList'] != null) {

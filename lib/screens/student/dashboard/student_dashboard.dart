@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/resource/colors.dart';
+import 'package:library_management_sys/screens/student/book_request/book_request_screen.dart';
+import 'package:library_management_sys/screens/student/book_request/request_book.dart';
 import 'package:library_management_sys/screens/student/dashboard/confirm_reserved_list.dart';
 import 'package:library_management_sys/screens/student/in_app_notification/in_app_notification.dart';
 import 'package:library_management_sys/screens/student/my_books/my_book_widget.dart';
@@ -38,17 +40,22 @@ class _StudentDashboardState extends State<StudentDashboard> {
   }
 
   Future<void> _fetchData() async {
-    final paymentViewModel = Provider.of<PaymentViewModel>(context, listen: false);
+    final paymentViewModel =
+        Provider.of<PaymentViewModel>(context, listen: false);
     final dueViewModel = Provider.of<MyDueViewModel>(context, listen: false);
-    final booksViewModel = Provider.of<MyBooksViewModel>(context, listen: false);
-    final reservationViewModel = Provider.of<ReservationViewModel>(context, listen: false);
-    final notificationViewModel = Provider.of<NotificationViewModel>(context, listen: false);
+    final booksViewModel =
+        Provider.of<MyBooksViewModel>(context, listen: false);
+    final reservationViewModel =
+        Provider.of<ReservationViewModel>(context, listen: false);
+    final notificationViewModel =
+        Provider.of<NotificationViewModel>(context, listen: false);
 
     if (paymentViewModel.paymentList.isEmpty ||
         dueViewModel.duesList.isEmpty ||
         booksViewModel.booksList.isEmpty ||
         reservationViewModel.reservationList.isEmpty ||
         reservationViewModel.confirmReservation.isEmpty ||
+        reservationViewModel.cancelReservation.isEmpty ||
         notificationViewModel.notificationList.isEmpty) {
       setState(() => _isLoading = true);
       try {
@@ -58,12 +65,14 @@ class _StudentDashboardState extends State<StudentDashboard> {
           booksViewModel.fetchBooksList(context),
           reservationViewModel.fetchReservation(context),
           reservationViewModel.fetchConfirmReservation(context),
+          reservationViewModel.fetchCancelReservation(context),
           notificationViewModel.fetchNotifications(context),
         ]);
       } catch (e) {
         debugPrint('Error fetching data: $e');
         if (mounted) {
-          Utils.flushBarErrorMessage('Failed to load data. Please try again.', context);
+          Utils.flushBarErrorMessage(
+              'Failed to load data. Please try again.', context);
         }
       } finally {
         if (mounted) {
@@ -80,39 +89,38 @@ class _StudentDashboardState extends State<StudentDashboard> {
       body: _isLoading
           ? _buildSkeletonLoader(size)
           : SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          width: size.width,
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                _buildProfileSection(),
-                const SizedBox(height: 15),
-                _buildSectionHeader('Your Dues'),
-                const SizedBox(height: 10),
-                _buildDuesSection(size),
-                const SizedBox(height: 20),
-                _buildSectionHeader('My Books'),
-                _buildBooksSection(size),
-                const SizedBox(height: 20),
-                _buildSectionHeader('Request Book'),
-                const SizedBox(height: 10),
-                _buildRequestBookSection(size),
-                const SizedBox(height: 20),
-                _buildSectionHeader('Your Reservations'),
-                const SizedBox(height: 8),
-                _buildReservationsSection(size),
-                const SizedBox(height: 20),
-                _buildPaymentSection(size),
-                const SizedBox(height: 10),
-              ],
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                width: size.width,
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      _buildProfileSection(),
+                      const SizedBox(height: 15),
+                      _buildSectionHeader('Your Dues'),
+                      const SizedBox(height: 10),
+                      _buildDuesSection(size),
+                      const SizedBox(height: 20),
+                      _buildSectionHeader('My Books'),
+                      _buildBooksSection(size),
+                      const SizedBox(height: 20),
+                      _buildRequestBookSection(size),
+                      const SizedBox(height: 20),
+                      _buildSectionHeader('Your Reservations'),
+                      const SizedBox(height: 8),
+                      _buildReservationsSection(size),
+                      const SizedBox(height: 20),
+                      _buildPaymentSection(size),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -163,7 +171,11 @@ class _StudentDashboardState extends State<StudentDashboard> {
               ),
             ),
             // Dues Section
-            Container(width: 100, height: 16, margin: const EdgeInsets.symmetric(vertical: 8), color: Colors.white),
+            Container(
+                width: 100,
+                height: 16,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                color: Colors.white),
             SizedBox(
               height: 125,
               child: ListView.builder(
@@ -179,7 +191,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey[400]!, width: 0.5),
+                          border:
+                              Border.all(color: Colors.grey[400]!, width: 0.5),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -190,7 +203,11 @@ class _StudentDashboardState extends State<StudentDashboard> {
               ),
             ),
             // Books Section
-            Container(width: 120, height: 24, margin: const EdgeInsets.symmetric(vertical: 8), color: Colors.white),
+            Container(
+                width: 120,
+                height: 24,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                color: Colors.white),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -218,7 +235,11 @@ class _StudentDashboardState extends State<StudentDashboard> {
               ),
             ),
             // Request Book Section
-            Container(width: 140, height: 16, margin: const EdgeInsets.symmetric(vertical: 8), color: Colors.white),
+            Container(
+                width: 140,
+                height: 16,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                color: Colors.white),
             Container(
               width: size.width * 0.9,
               height: 80,
@@ -230,7 +251,11 @@ class _StudentDashboardState extends State<StudentDashboard> {
               ),
             ),
             // Reservations Section
-            Container(width: 140, height: 16, margin: const EdgeInsets.symmetric(vertical: 8), color: Colors.white),
+            Container(
+                width: 140,
+                height: 16,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                color: Colors.white),
             Container(
               width: size.width * 0.9,
               height: 60,
@@ -241,7 +266,11 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 border: Border.all(color: Colors.grey[400]!, width: 0.5),
               ),
             ),
-            Container(width: 120, height: 24, margin: const EdgeInsets.symmetric(vertical: 4), color: Colors.white),
+            Container(
+                width: 120,
+                height: 24,
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                color: Colors.white),
             // Payments Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -307,7 +336,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       height: 36,
                       fit: BoxFit.cover,
                       placeholder: (context, url) => _buildImageSkeleton(),
-                      errorWidget: (context, url, error) => const Icon(Icons.error, size: 24),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error, size: 24),
                     ),
                   ),
                 ),
@@ -343,12 +373,15 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   onTap: () {
                     Navigator.of(context).push(
                       PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) => NotificationPage(),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            NotificationPage(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
                           const begin = Offset(1.0, 0.0);
                           const end = Offset.zero;
                           const curve = Curves.easeInOut;
-                          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
                           var offsetAnimation = animation.drive(tween);
                           return SlideTransition(
                             position: offsetAnimation,
@@ -361,12 +394,14 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   child: Consumer<NotificationViewModel>(
                     builder: (context, notificationViewModel, child) {
                       int unreadCount = notificationViewModel.notificationList
-                          .where((notification) => !(notification.read ?? false))
+                          .where(
+                              (notification) => !(notification.read ?? false))
                           .length;
                       return Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          Icon(Icons.notifications, size: 24, color: AppColors.primary),
+                          Icon(Icons.notifications,
+                              size: 24, color: AppColors.primary),
                           if (unreadCount > 0)
                             Positioned(
                               right: -2,
@@ -377,7 +412,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                   color: Colors.red,
                                   shape: BoxShape.circle,
                                 ),
-                                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                                constraints: const BoxConstraints(
+                                    minWidth: 16, minHeight: 16),
                                 child: Center(
                                   child: Text(
                                     unreadCount.toString(),
@@ -428,7 +464,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     height: 36,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => _buildImageSkeleton(),
-                    errorWidget: (context, url, error) => const Icon(Icons.error, size: 24),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error, size: 24),
                   ),
                 ),
               ),
@@ -513,7 +550,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       decoration: BoxDecoration(
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[400]!, width: 0.5),
+                        border:
+                            Border.all(color: Colors.grey[400]!, width: 0.5),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -538,7 +576,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     SizedBox(
                       width: 80,
                       child: Text(
-                        due.penaltyType ?? '',
+                        due.penaltyType == 'PropertyDamage'
+                            ? 'Property Damage'
+                            : due.penaltyType ?? '',
                         maxLines: 2,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
@@ -577,14 +617,17 @@ class _StudentDashboardState extends State<StudentDashboard> {
             ),
             _buildFilterButton(
               'View',
-                  () => Navigator.of(context).push(
+              () => Navigator.of(context).push(
                 PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => const StudentNavBar(index: 3, reqIndex: 0),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const StudentNavBar(index: 3, reqIndex: 0),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
                     const begin = Offset(1.0, 0.0);
                     const end = Offset.zero;
                     const curve = Curves.easeInOut;
-                    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
                     var offsetAnimation = animation.drive(tween);
                     return SlideTransition(
                       position: offsetAnimation,
@@ -619,12 +662,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
                         ? "${BaseUrl.imageDisplay}/${book.book?.bookInfo?.coverPhoto}"
                         : '',
                     checkIn: book.checkInDate != null
-                        ? parseDate(
-                        book.checkInDate.toString())
+                        ? parseDate(book.checkInDate.toString())
                         : '',
                     due: book.dueDate != null
-                        ? parseDate(
-                        book.dueDate.toString())
+                        ? parseDate(book.dueDate.toString())
                         : '',
                     id: book.issueId ?? '',
                     status: book.book?.status ?? '',
@@ -649,63 +690,109 @@ class _StudentDashboardState extends State<StudentDashboard> {
   }
 
   Widget _buildRequestBookSection(Size size) {
-    return InkWell(
-      onTap: () {
-        Utils.flushBarErrorMessage('Request your favorite book now!', context);
-        // TODO: Add navigation to book request page
-      },
-      child: Container(
-        width: size.width * 0.9,
-        height: 80,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: AppColors.primary,
-            width: 1.5,
-            style: BorderStyle.solid,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.1),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Request Book',
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'poppins',
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            _buildFilterButton(
+              'View',
+                  () => Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                  const BookRequestScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(1.0, 0.0);
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOut;
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
+                    var offsetAnimation = animation.drive(tween);
+                    return SlideTransition(
+                      position: offsetAnimation,
+                      child: child,
+                    );
+                  },
+                ),
+              ),
+            )
           ],
         ),
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () => showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            builder: (context) => const BookRequestBottomSheet(),
+          ),
+          child: Container(
+            width: size.width * 0.9,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: AppColors.primary,
+                width: 1.5,
+                style: BorderStyle.solid,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.book, color: AppColors.primary, size: 24),
-                const SizedBox(width: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.book, color: AppColors.primary, size: 24),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Request a Book',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'poppins',
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
                 Text(
-                  'Request a Book',
+                  'Request any book of your choice!',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     fontFamily: 'poppins',
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
+                    color: AppColors.secondary,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              'Request any book of your choice!',
-              style: TextStyle(
-                fontSize: 12,
-                fontFamily: 'poppins',
-                color: AppColors.secondary,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -720,13 +807,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
-                height: 60,
-                child: _buildNoDataCard(
-                  size,
-                  'No Pending Reservations\nConfirmed: ${confirmReservation.length}',
-                ),
-              ),
               const SizedBox(height: 8),
               if (confirmReservation.isNotEmpty)
                 const Padding(
@@ -745,15 +825,17 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 alignment: Alignment.center,
                 child: _buildFilterButton(
                   'View all Reservations',
-                      () => Navigator.of(context).push(
+                  () => Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
-                      const Wishlist(),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          const Wishlist(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
                         const begin = Offset(1.0, 0.0);
                         const end = Offset.zero;
                         const curve = Curves.easeInOut;
-                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
                         var offsetAnimation = animation.drive(tween);
                         return SlideTransition(
                           position: offsetAnimation,
@@ -771,31 +853,25 @@ class _StudentDashboardState extends State<StudentDashboard> {
         // If there are pending reservations
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                'Pending: ${reservations.length}, Confirmed: ${confirmReservation.length}',
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
-            ),
             const Padding(
               padding: EdgeInsets.all(8),
               child: ReservationList(), // Assumes default shows pending
             ),
-
             Align(
               alignment: Alignment.center,
               child: _buildFilterButton(
                 'View all Reservations',
-                    () => Navigator.of(context).push(
+                () => Navigator.of(context).push(
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                    const Wishlist(),
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const Wishlist(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
                       const begin = Offset(1.0, 0.0);
                       const end = Offset.zero;
                       const curve = Curves.easeInOut;
-                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
                       var offsetAnimation = animation.drive(tween);
                       return SlideTransition(
                         position: offsetAnimation,
@@ -811,7 +887,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
       },
     );
   }
-
 
   Widget _buildPaymentSection(Size size) {
     return Column(
@@ -832,14 +907,17 @@ class _StudentDashboardState extends State<StudentDashboard> {
             ),
             _buildFilterButton(
               'View',
-                  () => Navigator.of(context).push(
+              () => Navigator.of(context).push(
                 PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => const StudentNavBar(index: 2, reqIndex: 0),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const StudentNavBar(index: 2, reqIndex: 0),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
                     const begin = Offset(1.0, 0.0);
                     const end = Offset.zero;
                     const curve = Curves.easeInOut;
-                    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
                     var offsetAnimation = animation.drive(tween);
                     return SlideTransition(
                       position: offsetAnimation,
@@ -874,7 +952,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       height: 80,
                       decoration: BoxDecoration(
                         color: AppColors.primary,
-                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
                       ),
                       alignment: Alignment.center,
                       child: Column(
@@ -882,7 +961,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                         children: [
                           Text(
                             payment.paymentType ?? '',
-                            style: const TextStyle(color: Colors.white, fontSize: 12),
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 12),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),

@@ -10,19 +10,22 @@ class ReservationModel {
   BookInfo? bookInfo;
   Book? book;
   User? user;
+  List<BookImage>? bookImages;
 
-  ReservationModel(
-      {this.reservationId,
-        this.userId,
-        this.reservationDate,
-        this.status,
-        this.bookId,
-        this.bookInfoId,
-        this.createdAt,
-        this.updatedAt,
-        this.bookInfo,
-        this.book,
-        this.user});
+  ReservationModel({
+    this.reservationId,
+    this.userId,
+    this.reservationDate,
+    this.status,
+    this.bookId,
+    this.bookInfoId,
+    this.createdAt,
+    this.updatedAt,
+    this.bookInfo,
+    this.book,
+    this.user,
+    this.bookImages,
+  });
 
   ReservationModel.fromJson(Map<String, dynamic> json) {
     reservationId = json['reservationId'];
@@ -34,31 +37,79 @@ class ReservationModel {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     bookInfo = json['bookInfo'] != null
-        ? new BookInfo.fromJson(json['bookInfo'])
+        ? BookInfo.fromJson(json['bookInfo'])
         : null;
-    book = json['book'] != null ? new Book.fromJson(json['book']) : null;
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    book = json['book'] != null ? Book.fromJson(json['book']) : null;
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
+
+    // Populate bookImages from bookInfo.bookImages
+    if (bookInfo != null && json['bookInfo']['bookImages'] != null) {
+      bookImages = <BookImage>[];
+      json['bookInfo']['bookImages'].forEach((v) {
+        bookImages!.add(BookImage.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['reservationId'] = reservationId;
+    data['userId'] = userId;
+    data['reservationDate'] = reservationDate;
+    data['status'] = status;
+    data['bookId'] = bookId;
+    data['bookInfoId'] = bookInfoId;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    if (bookInfo != null) {
+      data['bookInfo'] = bookInfo!.toJson();
+    }
+    if (book != null) {
+      data['book'] = book!.toJson();
+    }
+    if (user != null) {
+      data['user'] = user!.toJson();
+    }
+    if (bookImages != null) {
+      data['bookImages'] = bookImages!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+class BookImage {
+  String? bookImageId;
+  String? bookInfoId;
+  String? imageUrl;
+  bool? isProfile;
+  String? createdAt;
+  String? updatedAt;
+
+  BookImage(
+      {this.bookImageId,
+        this.bookInfoId,
+        this.imageUrl,
+        this.isProfile,
+        this.createdAt,
+        this.updatedAt,
+        });
+
+  BookImage.fromJson(Map<String, dynamic> json) {
+    bookImageId = json['bookImageId'];
+    bookInfoId = json['bookInfoId'];
+    imageUrl = json['imageUrl'];
+    isProfile = json['isProfile'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['reservationId'] = this.reservationId;
-    data['userId'] = this.userId;
-    data['reservationDate'] = this.reservationDate;
-    data['status'] = this.status;
-    data['bookId'] = this.bookId;
+    data['bookImageId'] = this.bookImageId;
     data['bookInfoId'] = this.bookInfoId;
+    data['imageUrl'] = this.imageUrl;
+    data['isProfile'] = this.isProfile;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
-    if (this.bookInfo != null) {
-      data['bookInfo'] = this.bookInfo!.toJson();
-    }
-    if (this.book != null) {
-      data['book'] = this.book!.toJson();
-    }
-    if (this.user != null) {
-      data['user'] = this.user!.toJson();
-    }
     return data;
   }
 }

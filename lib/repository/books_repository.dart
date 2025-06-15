@@ -65,6 +65,45 @@ class BooksRepository {
       return {"booksList": [], "next": null};
     }
   }
+  Future<Map<String, dynamic>> fetchOnlineBooks(
+      String? seed,
+      int page,
+      int limit,
+      BuildContext context) async {
+    String url = '${BookEndPoints.onlineBooks}?page=$page&pageSize=$limit';
+
+    if (seed != null && seed.isNotEmpty) {
+      url += '&seed=$seed';
+    }
+    try {
+      final dynamic response = await _apiService.getApiResponse(url);
+      if (response == null || response['data'] == null) {
+        logger.w("No data received from server for URL: $url");
+        Utils.flushBarErrorMessage("No data received from server", context);
+        return {"booksList": [], "next": null};
+      }
+
+      List<OnlineBooks> booksList = (response['data'] as List)
+          .map((e) => OnlineBooks.fromJson(e))
+          .toList();
+
+      if (kDebugMode) {
+        logger.d("Recommended books URL: $url");
+      }
+
+      final next = response['info']?['next'] ?? '';
+
+      return {"booksList": booksList, "next": next};
+    } on TimeoutException {
+      logger.e("Timeout: No internet connection for online books");
+      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      return {"booksList": [], "next": null};
+    } catch (error) {
+      logger.e("Error fetching online books: $error");
+      Utils.flushBarErrorMessage("Error: $error", context);
+      return {"booksList": [], "next": null};
+    }
+  }
 
   Future<Map<String, dynamic>> fetchBooks(
       String seed,
@@ -96,7 +135,15 @@ class BooksRepository {
         return {"booksList": [], "next": null};
       }
 
-      List<BooksModel> booksList = (response['data'] as List)
+      // Ensure response['data'] is a List
+      if (response['data'] is! List) {
+        logger.w("Expected List but got ${response['data'].runtimeType}");
+        Utils.flushBarErrorMessage("Invalid data format from server", context);
+        return {"booksList": [], "next": null};
+      }
+
+      List<BooksModel> booksList = (response['data'] as List<dynamic>)
+          .cast<Map<String, dynamic>>()
           .map((e) => BooksModel.fromJson(e))
           .toList();
 
@@ -106,7 +153,6 @@ class BooksRepository {
       }
 
       final next = response['info']?['next'] ?? '';
-
       return {"booksList": booksList, "next": next};
     } on TimeoutException {
       logger.e("Timeout: No internet connection for fetching books");
@@ -118,7 +164,6 @@ class BooksRepository {
       return {"booksList": [], "next": null};
     }
   }
-
   Future<BookInfoModel> getIndividualBooks(
       String uid, BuildContext context) async {
     try {

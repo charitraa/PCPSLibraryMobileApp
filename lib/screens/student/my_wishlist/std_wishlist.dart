@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/screens/student/my_wishlist/view_reservation.dart';
-import 'package:library_management_sys/screens/student/my_wishlist/wishlist_skeleton.dart';
-import 'package:library_management_sys/screens/student/my_wishlist/wishlist_widget.dart';
-import 'package:library_management_sys/utils/parse_date.dart';
-import 'package:library_management_sys/view_model/reservations/reservation_view_model.dart';
-import 'package:provider/provider.dart';
-
-import '../../../constant/base_url.dart';
+import 'package:flutter/services.dart'; // For HapticFeedback
+import 'package:library_management_sys/screens/student/dashboard/cancel_reservation_list.dart';
+import 'package:library_management_sys/screens/student/dashboard/confirm_reserved_list.dart';
+import 'package:library_management_sys/screens/student/dashboard/reservation_list.dart';
 import '../../../resource/colors.dart';
-import '../../../utils/format_date.dart';
-import '../../../widgets/book/review_skeleton.dart';
 
 class Wishlist extends StatefulWidget {
   const Wishlist({super.key});
@@ -18,176 +12,101 @@ class Wishlist extends StatefulWidget {
   State<Wishlist> createState() => _WishlistState();
 }
 
-class _WishlistState extends State<Wishlist> {
+class _WishlistState extends State<Wishlist> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late TabController _tabController;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
   }
-  int index = 1;
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text(
           "Reservations",
           style: TextStyle(fontFamily: 'poppins-black', color: Colors.black),
         ),
-        actions: const [
-          Image(
-            image: AssetImage('assets/images/pcpsLogo.png'),
-            width: 56,
-            height: 24,
-            fit: BoxFit.cover,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.primary),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          iconSize: 18,
+        ),
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: false, // Set to true if more tabs are added
+          labelColor: AppColors.primary,
+          unselectedLabelColor: Colors.grey.shade600,
+          labelStyle: const TextStyle(
+            fontFamily: 'poppins-medium',
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
           ),
-          SizedBox(width: 18)
+          unselectedLabelStyle: const TextStyle(
+            fontFamily: 'poppins-regular',
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+          indicator: UnderlineTabIndicator(
+            borderSide: BorderSide(
+              color: AppColors.primary,
+              width: 3,
+            ),
+          ),
+          indicatorPadding: const EdgeInsets.symmetric(horizontal: 16),
+          onTap: (index) {
+            HapticFeedback.lightImpact(); // Haptic feedback on tap
+          },
+          tabs: const [
+            Tab(
+              text: 'Pending',
+            ),
+            Tab(
+              text: 'Confirmed',
+            ),
+            Tab(
+              text: 'Cancelled',
+            ),
+          ],
+        ),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 18),
+            child: Image(
+              image: AssetImage('assets/images/pcpsLogo.png'),
+              width: 56,
+              height: 24,
+              fit: BoxFit.cover,
+            ),
+          ),
         ],
       ),
       body: SafeArea(
-        child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              width: size.width,
-              height: size.height,
-              child: Column(
-                children: [
+        child: TabBarView(
+          controller: _tabController,
+          children: const [
+            // Pending Tab
+            ReservationList(),
+            // Confirmed Tab
+            ConfirmReservationList(),
+            // Cancelled Tab
+            CancelReservationList(),
 
-                  Expanded(
-                    child: Consumer<ReservationViewModel>(
-                      builder: (context, viewModel, child) {
-                        if (viewModel.isLoading) {
-                          return const Column(
-                            children: [
-                              WishlistSkeleton(),
-                            ],
-                          );
-                        } else if (viewModel.reservationList.isEmpty) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child:  Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.disabled_visible_rounded,color: Colors.grey,),
-                                  Text(
-                                    'Oops! Looks like you haven’t made a reservation!!',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
 
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-                        return ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: viewModel.reservationList.length,
-                          itemBuilder: (context, index) {
-                            final reservationData =
-                                viewModel.reservationList[index];
-
-                            String authors = "";
-                            List<String> authorNames = reservationData
-                                .bookInfo!.bookAuthors!
-                                .map((bookAuthor) {
-                              return bookAuthor.author?.fullName ?? '';
-                            }).toList();
-                            authors += authorNames.join(", ");
-                            return WishlistWidget(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) => ViewReservation(
-                                        uid: reservationData.bookInfoId ?? '',
-                                        reserveId: reservationData.reservationId ?? '',
-                                        bookName: reservationData.bookInfo?.title ??
-                                            '',
-                                        author: authors ?? '',
-                                        edition: reservationData
-                                                .bookInfo?.editionStatement ??
-                                            '',
-                                        year: reservationData
-                                                .bookInfo?.publicationYear
-                                                .toString() ??
-                                            '',
-                                        pages: reservationData
-                                                .bookInfo?.numberOfPages
-                                                .toString() ??
-                                            '',
-                                        bookNo: reservationData
-                                                .bookInfo?.bookNumber
-                                                .toString() ??
-                                            '',
-                                        classNo: reservationData
-                                                .bookInfo?.classNumber ??
-                                            '',
-                                        series: reservationData
-                                                .bookInfo?.seriesStatement ??
-                                            '',
-                                        image: "${BaseUrl.imageDisplay}/${reservationData.bookInfo?.coverPhoto}" ?? '',
-                                        status: '',
-                                        subTitle: reservationData.bookInfo?.subTitle ?? ''),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      const begin = Offset(1.0, 0.0);
-                                      const end = Offset.zero;
-                                      const curve = Curves.easeInOut;
-                                      var tween = Tween(begin: begin, end: end)
-                                          .chain(CurveTween(curve: curve));
-                                      var offsetAnimation =
-                                          animation.drive(tween);
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              title: reservationData.bookInfo?.title ?? '',
-
-                              genre: reservationData.reservationDate != null
-                                  ? parseDate(reservationData.reservationDate
-                                      .toString())
-                                  : '',
-                              status: reservationData.book?.status ?? '', image: '',
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            )),
-      ),
-    );
-  }
-
-  Widget buildFilterButton(String title, VoidCallback onTap, int Tabndex) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        decoration: BoxDecoration(
-          color: index == Tabndex ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: AppColors.primary),
-        ),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: index == Tabndex ? Colors.white : Colors.black,
-            fontSize: 12,
-          ),
+          ],
         ),
       ),
     );

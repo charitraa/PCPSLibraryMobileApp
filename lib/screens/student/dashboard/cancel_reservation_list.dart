@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/model/reservation_model.dart';
+import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
 import 'package:provider/provider.dart';
+
 import '../../../constant/base_url.dart';
+import '../../../resource/colors.dart';
 import '../../../utils/parse_date.dart';
 import '../../../view_model/reservations/reservation_view_model.dart';
 import '../my_wishlist/view_reservation.dart';
 import '../my_wishlist/wishlist_skeleton.dart';
 import '../my_wishlist/wishlist_widget.dart';
 
-class ConfirmReservationList extends StatefulWidget {
-  const ConfirmReservationList({super.key});
+class CancelReservationList extends StatefulWidget {
+  const CancelReservationList({super.key});
 
   @override
-  State<ConfirmReservationList> createState() => _ConfirmReservationListState();
+  State<CancelReservationList> createState() => _CancelReservationListState();
 }
 
-class _ConfirmReservationListState extends State<ConfirmReservationList> {
+class _CancelReservationListState extends State<CancelReservationList> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ReservationViewModel>(
@@ -26,7 +29,7 @@ class _ConfirmReservationListState extends State<ConfirmReservationList> {
               WishlistSkeleton(),
             ],
           );
-        } else if (viewModel.confirmReservation.isEmpty) {
+        } else if (viewModel.cancelReservation.isEmpty) {
           return const Center(
             child: Padding(
               padding: EdgeInsets.all(16.0),
@@ -54,11 +57,11 @@ class _ConfirmReservationListState extends State<ConfirmReservationList> {
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: viewModel.confirmReservation.length > 2
+          itemCount: viewModel.cancelReservation.length > 2
               ? 3
-              : viewModel.confirmReservation.length,
+              : viewModel.cancelReservation.length,
           itemBuilder: (context, index) {
-            final reservationData = viewModel.confirmReservation[index];
+            final reservationData = viewModel.cancelReservation[index];
             String? filterImage;
 
             final List<BookImage> bookImages = reservationData.bookImages ?? [];
@@ -84,22 +87,22 @@ class _ConfirmReservationListState extends State<ConfirmReservationList> {
                             edition: reservationData.bookInfo?.editionStatement ??
                                 '',
                             year: reservationData.bookInfo?.publicationYear
-                                    .toString() ??
+                                .toString() ??
                                 '',
                             pages: reservationData.bookInfo?.numberOfPages
-                                    .toString() ??
+                                .toString() ??
                                 '',
                             bookNo: reservationData
-                                    .bookInfo?.bookNumber
-                                    .toString() ??
+                                .bookInfo?.bookNumber
+                                .toString() ??
                                 '',
                             classNo:
-                                reservationData.bookInfo?.classNumber ?? '',
+                            reservationData.bookInfo?.classNumber ?? '',
                             series:
-                                reservationData.bookInfo?.seriesStatement ?? '',
+                            reservationData.bookInfo?.seriesStatement ?? '',
                             image:
-                                "${BaseUrl.imageDisplay}/$filterImage" ??
-                                    '',
+                            "${BaseUrl.imageDisplay}/$filterImage}" ??
+                                '',
                             status: '',
                             subTitle: reservationData.bookInfo?.subTitle ?? ''),
                     transitionsBuilder:

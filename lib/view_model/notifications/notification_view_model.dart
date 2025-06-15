@@ -66,7 +66,7 @@ class NotificationViewModel with ChangeNotifier {
     if (_isLoading) return false;
     setLoading(true);
     try {
-      await _notificationRepo.marktNotification(context);
+      await _notificationRepo.markNotification(context);
       _notificationList.clear();
       await fetchNotifications(context);
       Future.microtask(() => notifyListeners());

@@ -271,6 +271,9 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                       height: 50,
                       width: double.infinity,
                       onChanged: (e) {},
+                      onReset: (){
+                        viewModel.resetBookList(context);
+                      },
                       onTap: () {
                         String searchValue = _controller.text;
                         viewModel.setFilter(searchValue, context);
