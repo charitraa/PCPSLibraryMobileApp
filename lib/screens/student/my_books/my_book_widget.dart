@@ -104,8 +104,8 @@ class MyBookWidget extends StatelessWidget {
                           Row(
                             children: [
                               const Text(
-                                'Reserved on : ',
-                                style: const TextStyle(
+                                'Check In Date : ',
+                                style:  TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 11,
                                 ),
@@ -125,7 +125,7 @@ class MyBookWidget extends StatelessWidget {
                             children: [
                               const Text(
                                 'Due Date : ',
-                                style: const TextStyle(
+                                style:  TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 11,
                                 ),
@@ -141,7 +141,16 @@ class MyBookWidget extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 4),
-
+                          if (status == 'Reserved') ...[
+                            const Text(
+                              "Note: Can't renew, reserved by others",
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ]
                         ],
                       ),
                     ),

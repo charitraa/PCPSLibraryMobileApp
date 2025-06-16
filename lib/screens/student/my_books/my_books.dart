@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/model/my_books_model.dart';
 import 'package:library_management_sys/screens/student/my_books/my_book_widget.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/wishlist_skeleton.dart';
 import 'package:library_management_sys/view_model/users/my_book_view_model.dart';
@@ -67,40 +68,28 @@ class _MyBooksState extends State<MyBooks> {
                               WishlistSkeleton(),
                             ],
                           );
-                        } else if (viewModel.booksList.isEmpty) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.disabled_visible_rounded,
-                                    color: Colors.grey,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "No books found! Time to add some to your collection!",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                        }else if (viewModel.booksList.isEmpty) {
+                          return Column(
+                            children: [_buildNoDataCard(size, 'No books found! Time to add some to your collection!!')],
                           );
                         }
+
                         return ListView.builder(
                           physics: const BouncingScrollPhysics(),
                           itemCount: viewModel.booksList.length,
                           itemBuilder: (context, index) {
+                            String? filterImage;
                             final reservationData = viewModel.booksList[index];
+                            final List<BookImages> bookImages = reservationData.book?.bookInfo?.bookImages ?? [];
 
+                            final profileImage = bookImages.firstWhere(
+                                  (image) => image.isProfile == true,
+                              orElse: () => BookImages(imageUrl: ''), // Ensure fallback
+                            );
+
+                            if (profileImage.imageUrl!.isNotEmpty) {
+                              filterImage = profileImage.imageUrl;
+                            }
                             return MyBookWidget(
                               onTap: () async {},
                               title:
@@ -108,7 +97,7 @@ class _MyBooksState extends State<MyBooks> {
                               image: reservationData
                                           .book?.bookInfo?.title !=
                                       null
-                                  ? "${BaseUrl.imageDisplay}/${reservationData.book?.bookInfo?.title.toString()}"
+                                  ? "${BaseUrl.imageDisplay}/$filterImage"
                                   : '',
                               checkIn: reservationData.checkInDate != null
                                   ? parseDate(
@@ -150,6 +139,34 @@ class _MyBooksState extends State<MyBooks> {
             fontSize: 12,
           ),
         ),
+      ),
+    );
+  }
+  Widget _buildNoDataCard(Size size, String message) {
+    return Container(
+      width: size.width * 0.9,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        border: Border.all(color: Colors.grey[400]!, width: 0.5),
+      ),
+      alignment: Alignment.center,
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.disabled_visible_rounded,),
+          SizedBox(height: 5,),
+          Text(
+            'Oops! Looks like you haven’t made a reservation!!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
       ),
     );
   }

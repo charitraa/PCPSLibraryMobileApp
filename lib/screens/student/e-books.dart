@@ -1,6 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/constant/base_url.dart';
 import 'package:library_management_sys/resource/colors.dart';
+import 'package:library_management_sys/view_model/books/online_books_view_model.dart';
+import 'package:library_management_sys/widgets/book/book_skeleton.dart';
+import 'package:library_management_sys/widgets/book/book_widget.dart';
+import 'package:library_management_sys/widgets/book/online_book_wid.dart';
+import 'package:library_management_sys/widgets/custom_search.dart';
+import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../widgets/explore/explore_header.dart';
 
 class Ebooks extends StatefulWidget {
   const Ebooks({super.key});
@@ -10,15 +21,77 @@ class Ebooks extends StatefulWidget {
 }
 
 class _EbooksState extends State<Ebooks> {
+  late ScrollController _scrollController;
+  late TextEditingController _searchController;
+  bool isLoadMore = false;
+  String message = '';
 
-  // Method to launch the URL
-  Future<void> _launchURL() async {
-    final Uri url = Uri.parse('https://classroom.google.com/c/NDYyOTc3NzM5ODky');
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _searchController = TextEditingController();
+    _scrollController.addListener(_scrollListener);
+    _fetchBooks();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      _loadMore();
+    }
+    if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        message = "Reached the top";
+      });
+    }
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      isLoadMore = true;
+    });
+    try {
+      await Provider.of<OnlineBooksViewModel>(context, listen: false)
+          .loadMoreBooks(context);
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error loading more books: $e");
+      }
+    } finally {
+      setState(() {
+        isLoadMore = false;
+      });
+    }
+  }
+
+  Future<void> _fetchBooks() async {
+    final booksViewModel = Provider.of<OnlineBooksViewModel>(context, listen: false);
+    await booksViewModel.fetchBooksList(context);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _launchBookUrl(String? bookUrl) async {
+    if (bookUrl == null || bookUrl.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No URL available for this book')),
+      );
+      return;
+    }
+
+    final Uri url = Uri.parse(bookUrl);
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not launch the E-Library link')),
+        const SnackBar(content: Text('Could not launch the book URL')),
       );
     }
   }
@@ -27,78 +100,124 @@ class _EbooksState extends State<Ebooks> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "E-Books",
-          style: TextStyle(fontFamily: 'Poppins', color: Colors.black),
-        ),
-        automaticallyImplyLeading: false,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 18),
-            child: Image(
-              image: AssetImage('assets/images/pcpsLogo.png'),
-              width: 56,
-              height: 24,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ],
-      ),
+
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 5),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: _launchURL,
-                child: Container(
-                  padding: const EdgeInsets.all(20.0),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 4),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.book,
-                        size: 50,
-                        color: Colors.white,
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        "Click to Access E-Library",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        "Access your course materials and books",
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+              const ExploreHeader(text: 'E-Books',),
+              const SizedBox(height: 5),
+              Text(
+                'Explore online books to read anytime, anywhere',
+                style: TextStyle(color: AppColors.primary),
+              ),
+              const SizedBox(height: 10),
+              Consumer<OnlineBooksViewModel>(
+                builder: (context, viewModel, child) {
+                  _searchController.text = viewModel.searchValue; // Sync with view model
+                  return CustomSearch(
+                    onReset: (){
+                      viewModel.resetBookList(context);
+                    },
+                    controller: _searchController,
+                    hintText: 'Search Books',
+                    outlinedColor: Colors.grey,
+                    focusedColor: AppColors.primary,
+                    height: 50,
+                    width: double.infinity,
+                    onChanged: (value) {
+
+                    },
+                    onTap: () {
+                      viewModel.setFilter(_searchController.text, context);
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 15),
+              Flexible(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    double itemWidth = (constraints.maxWidth - (10 * 2)) / 3;
+                    double itemHeight = 180;
+                    double aspectRatio = itemWidth / itemHeight;
+
+                    return Consumer<OnlineBooksViewModel>(
+                      builder: (context, value, child) {
+                        final books = value.booksList;
+
+                        if (value.isLoading && books.isEmpty) {
+                          return const BookSkeletonGrid();
+                        }
+
+                        if (books.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'No Books available.',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          );
+                        }
+
+                        return GridView.builder(
+                          padding: const EdgeInsets.only(bottom: 18),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 15,
+                            childAspectRatio: aspectRatio,
+                          ),
+                          itemCount: books.length + (isLoadMore ? 1 : 0),
+                          physics: const BouncingScrollPhysics(),
+                          controller: _scrollController,
+                          itemBuilder: (context, index) {
+                            if (index == books.length) {
+                              return _buildLoadMoreSkeleton();
+                            }
+                            final book = books[index];
+
+                            String? profileImageUrl;
+                            try {
+                              profileImageUrl = book.coverPhoto;
+                            } catch (e) {
+                              profileImageUrl = '';
+                            }
+                            return OnlineBookWid(
+                              bookImage:
+                              "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
+                              title: book.title ?? '',
+                              onTap: () {
+                                _launchBookUrl(book.resourceUrl); // Launch book URL
+                              },
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadMoreSkeleton() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        height: 150,
+        width: 100,
       ),
     );
   }

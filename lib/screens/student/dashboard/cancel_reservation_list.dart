@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/model/reservation_model.dart';
+import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
 import 'package:provider/provider.dart';
+
 import '../../../constant/base_url.dart';
+import '../../../resource/colors.dart';
 import '../../../utils/parse_date.dart';
 import '../../../view_model/reservations/reservation_view_model.dart';
 import '../my_wishlist/view_reservation.dart';
 import '../my_wishlist/wishlist_skeleton.dart';
 import '../my_wishlist/wishlist_widget.dart';
 
-class ReservationList extends StatefulWidget {
-  const ReservationList({super.key});
+class CancelReservationList extends StatefulWidget {
+  const CancelReservationList({super.key});
 
   @override
-  State<ReservationList> createState() => _ReservationListState();
+  State<CancelReservationList> createState() => _CancelReservationListState();
 }
 
-class _ReservationListState extends State<ReservationList> {
+class _CancelReservationListState extends State<CancelReservationList> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -28,23 +31,24 @@ class _ReservationListState extends State<ReservationList> {
               WishlistSkeleton(),
             ],
           );
-        } else if (viewModel.reservationList.isEmpty) {
-          return Column(
-            children: [
-              _buildNoDataCard(
-                  size, 'Oops! Looks like you haven’t made a reservation!!')
-            ],
+        } else if (viewModel.cancelReservation.isEmpty) {
+          return  Center(
+            child: Column(
+              children: [
+                _buildNoDataCard(
+                    size, 'You don’t have any cancelled reservations')
+              ],
+            ),
           );
         }
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: viewModel.reservationList.length > 2
+          itemCount: viewModel.cancelReservation.length > 2
               ? 3
-              : viewModel.reservationList.length,
+              : viewModel.cancelReservation.length,
           itemBuilder: (context, index) {
-            final reservationData = viewModel.reservationList[index];
-
+            final reservationData = viewModel.cancelReservation[index];
             String? filterImage;
 
             final List<BookImages> bookImages =
@@ -60,27 +64,7 @@ class _ReservationListState extends State<ReservationList> {
             }
             return WishlistWidget(
               onTap: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ViewReservation(
-                      uid: reservationData.bookInfoId ?? '',
-                      books: reservationData,
-                      image: filterImage ?? '',
-                    ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const begin = Offset(1.0, 0.0);
-                      const end = Offset.zero;
-                      const curve = Curves.easeInOut;
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-                      var offsetAnimation = animation.drive(tween);
-                      return SlideTransition(
-                          position: offsetAnimation, child: child);
-                    },
-                  ),
-                );
+
               },
               title: reservationData.bookInfo?.title ?? '',
               image: filterImage != null
@@ -91,14 +75,13 @@ class _ReservationListState extends State<ReservationList> {
                   : '----',
               status: reservationData.status ?? '',
               publicationYear:
-                  reservationData.bookInfo!.publicationYear.toString(),
+                  reservationData.bookInfo?.publicationYear.toString() ?? "",
             );
           },
         );
       },
     );
   }
-
   Widget _buildNoDataCard(Size size, String message) {
     return Container(
       width: size.width * 0.9,
@@ -131,4 +114,5 @@ class _ReservationListState extends State<ReservationList> {
       ),
     );
   }
+
 }

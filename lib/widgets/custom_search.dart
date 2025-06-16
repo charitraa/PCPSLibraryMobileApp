@@ -13,35 +13,57 @@ class CustomSearch extends StatefulWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final ValueChanged<String> onChanged;
-  final VoidCallback? onTap;
+  final VoidCallback? onTap,onReset;
 
-  const CustomSearch(
-      {super.key,
-      required this.hintText,
-      required this.outlinedColor,
-      this.obscureText,
-      required this.focusedColor,
-      required this.height,
-      required this.width,
-      this.keyboardType,
-      required this.onChanged,
-      this.hintStyle,
-      this.controller, this.onTap});
+  const CustomSearch({
+    super.key,
+    required this.hintText,
+    required this.outlinedColor,
+    this.obscureText,
+    required this.focusedColor,
+    required this.height,
+    required this.width,
+    this.keyboardType,
+    required this.onChanged,
+    this.hintStyle,
+    this.controller,
+    this.onTap, this.onReset,
+  });
 
   @override
   State<CustomSearch> createState() => _CustomTextfieldState();
 }
 
 class _CustomTextfieldState extends State<CustomSearch> {
+  late TextEditingController _internalController;
+
+  @override
+  void initState() {
+    super.initState();
+    _internalController = widget.controller ?? TextEditingController();
+    _internalController.addListener(() {
+      setState(() {}); // Rebuild to update clear icon visibility
+    });
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      _internalController.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: widget.height,
       width: widget.width,
       child: TextField(
-        controller: widget.controller,
+        controller: _internalController,
         onChanged: widget.onChanged,
         keyboardType: widget.keyboardType,
+        obscureText: widget.obscureText ?? false,
         decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: widget.hintStyle,
@@ -58,23 +80,45 @@ class _CustomTextfieldState extends State<CustomSearch> {
             Icons.list,
             color: Colors.grey,
           ),
-          suffixIcon:Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 6.0, vertical: 6),
-            child: GestureDetector(
-              onTap: widget.onTap,
-              child: Container(
-                width: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(8.0),
+          suffixIcon: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 6),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Clear icon (shown when text is present)
+                if (_internalController.text.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      _internalController.clear();
+                      widget.onReset!();
+                      widget.onChanged(''); // Notify parent of cleared text
+                    },
+                    child: const Icon(
+                      Icons.clear,
+                      color: Colors.grey,
+                      size: 22,
+                    ),
+                  ),
+                if (_internalController.text.isNotEmpty)
+                  const SizedBox(width: 8), // Space between icons
+                // Search icon
+                GestureDetector(
+                  onTap: widget.onTap,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: const Icon(
+                      Icons.search,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
                 ),
-                child: const Icon(
-                  Icons.search,
-                  color: Colors.white, // Icon color
-                  size: 20,
-                ),
-              ),
+              ],
             ),
           ),
           focusedBorder: OutlineInputBorder(
@@ -89,4 +133,3 @@ class _CustomTextfieldState extends State<CustomSearch> {
     );
   }
 }
-

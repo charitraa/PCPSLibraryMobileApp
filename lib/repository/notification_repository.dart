@@ -1,69 +1,78 @@
 import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:library_management_sys/data/network/BaseApiService.dart';
+import 'package:library_management_sys/data/network/NetworkApiService.dart';
 import 'package:library_management_sys/endpoints/notification_endpoints.dart';
-import '../data/network/BaseApiService.dart';
-import '../data/network/NetworkApiService.dart';
-import '../model/notification_model.dart';
-import '../utils/utils.dart';
+import 'package:library_management_sys/model/notification_model.dart';
+import 'package:library_management_sys/utils/utils.dart';
+import 'package:logger/logger.dart';
 
 class NotificationRepository {
   final BaseApiServices _apiServices = NetworkApiService();
+  final Logger _logger = Logger();
 
-  Future<Map<String,dynamic>> getNotification(BuildContext context, int page, int limit) async {
+  Future<Map<String, dynamic>> getNotification(
+      BuildContext context, int page, int limit) async {
+    String url = '${NotificationEndpoints.notification}?page=$page&pageSize=$limit';
     try {
-      String url='${NotificationEndpoints.notification}?page=$page&pageSize=$limit';
-      print(url);
-      dynamic response =
-      await _apiServices.getApiResponse(url);
+      if (kDebugMode) {
+        _logger.d("Fetch notifications URL: $url");
+      }
+      final dynamic response = await _apiServices.getApiResponse(url);
+      if (response == null || response['data'] == null) {
+        _logger.w("No data received from server for URL: $url");
+        Utils.flushBarErrorMessage("No notifications received from server", context);
+        return {"notifications": [], "next": null};
+      }
       if (response['error'] != null && response['error'] == true) {
+        _logger.w("Error fetching notifications: ${response['errorMessage'] ?? 'Unknown error'}");
         Utils.flushBarErrorMessage(
             response['errorMessage'] ?? "Unknown error", context);
-        throw Exception(response['errorMessage'] ?? "Unknown error");
-      }
-      List<NotificationModel> notifications = [];
-      if (response['data'] != null && response['data'] is List) {
-        notifications = (response['data'] as List)
-            .map((e) => NotificationModel.fromJson(e))
-            .toList();
+        return {"notifications": [], "next": null};
       }
 
-      final next= response['info']?['next'];
+      List<NotificationModel> notifications = (response['data'] as List)
+          .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+      final next = response['info']?['next'] ?? '';
 
-      return {"notifications":notifications,"next":next};
-    }on TimeoutException {
-      return Utils.noInternet("No internet connection. Please try again later.");
-    }  catch (e) {
-      print('Error: $e');
-      Utils.flushBarErrorMessage(e.toString(), context);
-      rethrow;
-    }
-  }
-
-  Future<void> marktNotification(BuildContext context) async {
-    try {
-      final date = DateTime.now();
-      final timestamp = date.millisecondsSinceEpoch.toString();
-
-      print(NotificationEndpoints.markNotifications + timestamp);
-
-      dynamic response = await _apiServices
-          .putUrlResponse(NotificationEndpoints.markNotifications + timestamp);
-
-      if (response['error'] != null && response['error'] == true) {
-        Utils.flushBarErrorMessage(
-            response['errorMessage'] ?? "Unknown error", context);
-        throw Exception(response['errorMessage'] ?? "Unknown error");
-      }
+      return {"notifications": notifications, "next": next};
     } on TimeoutException {
-      return Utils.noInternet("No internet connection. Please try again later.");
-    } catch (e) {
-      print('Error: $e');
-      Utils.flushBarErrorMessage(e.toString(), context);
-      rethrow; // Ensure the error propagates
+      _logger.e("Timeout: No internet connection for fetching notifications");
+      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      return {"notifications": [], "next": null};
+    } catch (error) {
+      _logger.e("Error fetching notifications: $error");
+      Utils.flushBarErrorMessage("Error fetching notifications: $error", context);
+      return {"notifications": [], "next": null};
     }
   }
 
+  Future<bool> markNotification(BuildContext context) async {
+    final date = DateTime.now();
+    final timestamp = date.millisecondsSinceEpoch.toString();
+    String url = "${NotificationEndpoints.markNotifications}$timestamp";
+    try {
+      if (kDebugMode) {
+        _logger.d("Mark notifications URL: $url");
+      }
+      final dynamic response = await _apiServices.putUrlResponse(url);
+      if (response['error'] != null && response['error'] == true) {
+        _logger.w("Error marking notifications: ${response['errorMessage'] ?? 'Unknown error'}");
+        Utils.flushBarErrorMessage(
+            response['errorMessage'] ?? "Unknown error", context);
+        return false;
+      }
+      return true;
+    } on TimeoutException {
+      _logger.e("Timeout: No internet connection for marking notifications");
+      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      return false;
+    } catch (error) {
+      _logger.e("Error marking notifications: $error");
+      Utils.flushBarErrorMessage("Error marking notifications: $error", context);
+      return false;
+    }
+  }
 }
-

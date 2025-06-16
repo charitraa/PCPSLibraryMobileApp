@@ -24,12 +24,12 @@ class NetworkApiService extends BaseApiServices {
 
     return headers;
   }
-
   @override
   Future getApiResponse(String url) async {
     final headers = await _getHeaders();
     dynamic responseJson;
     try {
+
       final response = await http
           .get(Uri.parse(url), headers: headers)
           .timeout(const Duration(seconds: 10));
@@ -88,6 +88,20 @@ class NetworkApiService extends BaseApiServices {
         print("Exception: $e");
       }
       throw FetchDataException("Error During Communication!!$e");
+    }
+    return responseJson;
+  }
+  @override
+  Future getPutApiResponse(String url, dynamic body) async {
+    final headers = await _getHeaders();
+    dynamic responseJson;
+    try {
+      Response response = await http
+          .put(Uri.parse(url), headers: headers, body: jsonEncode(body))
+          .timeout(const Duration(seconds: 10));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException("No internet Connection");
     }
     return responseJson;
   }

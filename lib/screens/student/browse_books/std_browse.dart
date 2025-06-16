@@ -198,7 +198,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
           width: size.width,
           child: Column(
             children: [
-              const ExploreHeader(),
+              const ExploreHeader(text: 'Explore',),
               const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -271,6 +271,9 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                       height: 50,
                       width: double.infinity,
                       onChanged: (e) {},
+                      onReset: (){
+                        viewModel.resetBookList(context);
+                      },
                       onTap: () {
                         String searchValue = _controller.text;
                         viewModel.setFilter(searchValue, context);

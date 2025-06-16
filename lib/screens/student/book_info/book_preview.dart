@@ -8,7 +8,7 @@ class BookPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.8), // Dark background for pop-up effect
+      backgroundColor: Colors.black.withOpacity(0.8),
       body: SafeArea(
         child: Stack(
           children: [

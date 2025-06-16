@@ -4,18 +4,19 @@ import 'package:provider/provider.dart';
 import '../../../constant/base_url.dart';
 import '../../../utils/parse_date.dart';
 import '../../../view_model/reservations/reservation_view_model.dart';
+import '../my_wishlist/confirm_reserve_wid.dart';
 import '../my_wishlist/view_reservation.dart';
 import '../my_wishlist/wishlist_skeleton.dart';
 import '../my_wishlist/wishlist_widget.dart';
 
-class ReservationList extends StatefulWidget {
-  const ReservationList({super.key});
+class ConfirmReservationList extends StatefulWidget {
+  const ConfirmReservationList({super.key});
 
   @override
-  State<ReservationList> createState() => _ReservationListState();
+  State<ConfirmReservationList> createState() => _ConfirmReservationListState();
 }
 
-class _ReservationListState extends State<ReservationList> {
+class _ConfirmReservationListState extends State<ConfirmReservationList> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -28,23 +29,22 @@ class _ReservationListState extends State<ReservationList> {
               WishlistSkeleton(),
             ],
           );
-        } else if (viewModel.reservationList.isEmpty) {
+        } else if (viewModel.confirmReservation.isEmpty) {
           return Column(
             children: [
               _buildNoDataCard(
-                  size, 'Oops! Looks like you haven’t made a reservation!!')
+                  size, 'You don’t have any confirmed reservations yet.')
             ],
           );
         }
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: viewModel.reservationList.length > 2
+          itemCount: viewModel.confirmReservation.length > 2
               ? 3
-              : viewModel.reservationList.length,
+              : viewModel.confirmReservation.length,
           itemBuilder: (context, index) {
-            final reservationData = viewModel.reservationList[index];
-
+            final reservationData = viewModel.confirmReservation[index];
             String? filterImage;
 
             final List<BookImages> bookImages =
@@ -58,16 +58,17 @@ class _ReservationListState extends State<ReservationList> {
             if (profileImage.imageUrl!.isNotEmpty) {
               filterImage = profileImage.imageUrl;
             }
-            return WishlistWidget(
+            return ConfirmReserveWid(
               onTap: () {
                 Navigator.of(context).push(
                   PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ViewReservation(
-                      uid: reservationData.bookInfoId ?? '',
-                      books: reservationData,
-                      image: filterImage ?? '',
-                    ),
+                    pageBuilder:
+                        (context, animation, secondaryAnimation) =>
+                            ViewReservation(
+                                uid: reservationData.bookInfoId ?? '',
+                                books: reservationData,
+                                image: filterImage ?? '',
+                               ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
                       const begin = Offset(1.0, 0.0);
@@ -77,28 +78,27 @@ class _ReservationListState extends State<ReservationList> {
                           .chain(CurveTween(curve: curve));
                       var offsetAnimation = animation.drive(tween);
                       return SlideTransition(
-                          position: offsetAnimation, child: child);
+                        position: offsetAnimation,
+                        child: child,
+                      );
                     },
                   ),
                 );
               },
+              reservationDate: reservationData.reservationDate!=null? parseDate(reservationData.reservationDate.toString()): '',
               title: reservationData.bookInfo?.title ?? '',
               image: filterImage != null
                   ? "${BaseUrl.imageDisplay}/$filterImage"
                   : '',
-              genre: reservationData.reservationDate != null
-                  ? parseDate(reservationData.reservationDate.toString())
-                  : '----',
-              status: reservationData.status ?? '',
-              publicationYear:
-                  reservationData.bookInfo!.publicationYear.toString(),
+              status: reservationData.book?.status ?? '',
+              id: '',
+              barcode: reservationData.book?.barcode ?? '',
             );
           },
         );
       },
     );
   }
-
   Widget _buildNoDataCard(Size size, String message) {
     return Container(
       width: size.width * 0.9,
@@ -109,19 +109,15 @@ class _ReservationListState extends State<ReservationList> {
         border: Border.all(color: Colors.grey[400]!, width: 0.5),
       ),
       alignment: Alignment.center,
-      child: const Column(
+      child:  Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.disabled_visible_rounded,
-          ),
-          SizedBox(
-            height: 5,
-          ),
+          const Icon(Icons.disabled_visible_rounded,),
+           SizedBox(height: 5,),
           Text(
-            'Oops! Looks like you haven’t made a reservation!!',
+            message,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Colors.grey,
