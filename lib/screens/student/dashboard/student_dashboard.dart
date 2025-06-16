@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/model/my_books_model.dart';
 import 'package:library_management_sys/resource/colors.dart';
 import 'package:library_management_sys/screens/student/book_request/book_request_screen.dart';
 import 'package:library_management_sys/screens/student/book_request/request_book.dart';
@@ -49,35 +50,32 @@ class _StudentDashboardState extends State<StudentDashboard> {
         Provider.of<ReservationViewModel>(context, listen: false);
     final notificationViewModel =
         Provider.of<NotificationViewModel>(context, listen: false);
-
-    if (paymentViewModel.paymentList.isEmpty ||
-        dueViewModel.duesList.isEmpty ||
-        booksViewModel.booksList.isEmpty ||
-        reservationViewModel.reservationList.isEmpty ||
-        reservationViewModel.confirmReservation.isEmpty ||
-        reservationViewModel.cancelReservation.isEmpty ||
-        notificationViewModel.notificationList.isEmpty) {
-      setState(() => _isLoading = true);
-      try {
-        await Future.wait([
-          paymentViewModel.fetchPayment(context),
-          dueViewModel.fetchDues(context),
-          booksViewModel.fetchBooksList(context),
-          reservationViewModel.fetchReservation(context),
-          reservationViewModel.fetchConfirmReservation(context),
-          reservationViewModel.fetchCancelReservation(context),
-          notificationViewModel.fetchNotifications(context),
-        ]);
-      } catch (e) {
-        debugPrint('Error fetching data: $e');
-        if (mounted) {
-          Utils.flushBarErrorMessage(
-              'Failed to load data. Please try again.', context);
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
+    setState(() => _isLoading = true);
+    try {
+      if (paymentViewModel.paymentList.isEmpty) {
+        await paymentViewModel.fetchPayment(context);
+      }
+      if (dueViewModel.duesList.isEmpty) {
+        await dueViewModel.fetchDues(context);
+      }
+      if (booksViewModel.booksList.isEmpty) {
+        await booksViewModel.fetchBooksList(context);
+      }
+      if (reservationViewModel.reservationList.isEmpty) {
+        await reservationViewModel.fetchReservation(context);
+      }
+      if (reservationViewModel.confirmReservation.isEmpty) {
+        await reservationViewModel.fetchConfirmReservation(context);
+      }
+      if (reservationViewModel.cancelReservation.isEmpty) {
+        await reservationViewModel.fetchCancelReservation(context);
+      }
+      if (notificationViewModel.notificationList.isEmpty) {
+        await notificationViewModel.fetchNotifications(context);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -91,7 +89,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
           : SafeArea(
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 width: size.width,
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -434,8 +432,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 const SizedBox(width: 8),
                 const Image(
                   image: AssetImage('assets/images/pcpsLogo.png'),
-                  width: 60,
-                  height: 20,
+                  width: 80,
+                  height: 40,
                   fit: BoxFit.contain,
                 ),
               ],
@@ -649,17 +647,30 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 child: _buildNoDataCard(size, 'No Books Currently Reading'),
               );
             }
+
             return CarouselSlider.builder(
               itemCount: books.length,
               itemBuilder: (context, index, realIndex) {
                 final book = books[index];
+                String? filterImage;
+
+                final List<BookImages> bookImages =
+                    book.book?.bookInfo?.bookImages ?? [];
+
+                final profileImage = bookImages.firstWhere(
+                  (image) => image.isProfile == true,
+                  orElse: () => BookImages(imageUrl: ''), // Ensure fallback
+                );
+
+                if (profileImage.imageUrl!.isNotEmpty) {
+                  filterImage = profileImage.imageUrl;
+                }
                 return Container(
                   width: size.width,
-                  padding: const EdgeInsets.all(2.0),
                   child: MyBookWidget(
                     title: book.book?.bookInfo?.title ?? '',
-                    image: book.book?.bookInfo?.coverPhoto != null
-                        ? "${BaseUrl.imageDisplay}/${book.book?.bookInfo?.coverPhoto}"
+                    image: filterImage != null
+                        ? "${BaseUrl.imageDisplay}/$filterImage"
                         : '',
                     checkIn: book.checkInDate != null
                         ? parseDate(book.checkInDate.toString())
@@ -674,7 +685,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 );
               },
               options: CarouselOptions(
-                height: 120,
+                height: 115,
                 autoPlay: books.length > 1,
                 autoPlayInterval: const Duration(seconds: 3),
                 autoPlayAnimationDuration: const Duration(milliseconds: 800),
@@ -707,10 +718,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
             ),
             _buildFilterButton(
               'View',
-                  () => Navigator.of(context).push(
+              () => Navigator.of(context).push(
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
-                  const BookRequestScreen(),
+                      const BookRequestScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     const begin = Offset(1.0, 0.0);
@@ -802,24 +813,17 @@ class _StudentDashboardState extends State<StudentDashboard> {
         final reservations = value.reservationList;
         final confirmReservation = value.confirmReservation;
 
-        // If there are no pending reservations
         if (reservations.isEmpty) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 8),
               if (confirmReservation.isNotEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Confirmed Reservations:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      ConfirmReservationList(),
-                    ],
-                  ),
+                const Column(
+                  children: [
+
+                    ConfirmReservationList(),
+                  ],
                 ),
               Align(
                 alignment: Alignment.center,

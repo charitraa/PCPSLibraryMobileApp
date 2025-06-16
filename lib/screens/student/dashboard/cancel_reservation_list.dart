@@ -64,11 +64,12 @@ class _CancelReservationListState extends State<CancelReservationList> {
             final reservationData = viewModel.cancelReservation[index];
             String? filterImage;
 
-            final List<BookImage> bookImages = reservationData.bookImages ?? [];
+            final List<BookImages> bookImages =
+                reservationData.bookInfo?.bookImages ?? [];
 
             final profileImage = bookImages.firstWhere(
-                  (image) => image.isProfile == true,
-              orElse: () => BookImage(imageUrl: ''), // Ensure fallback
+              (image) => image.isProfile == true,
+              orElse: () => BookImages(imageUrl: ''), // Ensure fallback
             );
 
             if (profileImage.imageUrl!.isNotEmpty) {
@@ -76,59 +77,18 @@ class _CancelReservationListState extends State<CancelReservationList> {
             }
             return WishlistWidget(
               onTap: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ViewReservation(
-                            uid: reservationData.bookInfoId ?? '',
-                            reserveId: reservationData.reservationId ?? '',
-                            bookName: reservationData.bookInfo?.title ?? '',
-                            author: 'minal' ?? '',
-                            edition: reservationData.bookInfo?.editionStatement ??
-                                '',
-                            year: reservationData.bookInfo?.publicationYear
-                                .toString() ??
-                                '',
-                            pages: reservationData.bookInfo?.numberOfPages
-                                .toString() ??
-                                '',
-                            bookNo: reservationData
-                                .bookInfo?.bookNumber
-                                .toString() ??
-                                '',
-                            classNo:
-                            reservationData.bookInfo?.classNumber ?? '',
-                            series:
-                            reservationData.bookInfo?.seriesStatement ?? '',
-                            image:
-                            "${BaseUrl.imageDisplay}/$filterImage}" ??
-                                '',
-                            status: '',
-                            subTitle: reservationData.bookInfo?.subTitle ?? ''),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const begin = Offset(1.0, 0.0);
-                      const end = Offset.zero;
-                      const curve = Curves.easeInOut;
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-                      var offsetAnimation = animation.drive(tween);
-                      return SlideTransition(
-                        position: offsetAnimation,
-                        child: child,
-                      );
-                    },
-                  ),
-                );
+
               },
               title: reservationData.bookInfo?.title ?? '',
-              image: reservationData.bookInfo?.coverPhoto != null
+              image: filterImage != null
                   ? "${BaseUrl.imageDisplay}/$filterImage"
                   : '',
               genre: reservationData.reservationDate != null
                   ? parseDate(reservationData.reservationDate.toString())
                   : '----',
               status: reservationData.status ?? '',
+              publicationYear:
+                  reservationData.bookInfo?.publicationYear.toString() ?? "",
             );
           },
         );

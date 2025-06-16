@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../constant/base_url.dart';
 import '../../../utils/parse_date.dart';
 import '../../../view_model/reservations/reservation_view_model.dart';
+import '../my_wishlist/confirm_reserve_wid.dart';
 import '../my_wishlist/view_reservation.dart';
 import '../my_wishlist/wishlist_skeleton.dart';
 import '../my_wishlist/wishlist_widget.dart';
@@ -61,47 +62,28 @@ class _ConfirmReservationListState extends State<ConfirmReservationList> {
             final reservationData = viewModel.confirmReservation[index];
             String? filterImage;
 
-            final List<BookImage> bookImages = reservationData.bookImages ?? [];
+            final List<BookImages> bookImages =
+                reservationData.bookInfo?.bookImages ?? [];
 
             final profileImage = bookImages.firstWhere(
-                  (image) => image.isProfile == true,
-              orElse: () => BookImage(imageUrl: ''), // Ensure fallback
+              (image) => image.isProfile == true,
+              orElse: () => BookImages(imageUrl: ''), // Ensure fallback
             );
 
             if (profileImage.imageUrl!.isNotEmpty) {
               filterImage = profileImage.imageUrl;
             }
-            return WishlistWidget(
+            return ConfirmReserveWid(
               onTap: () {
                 Navigator.of(context).push(
                   PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ViewReservation(
-                            uid: reservationData.bookInfoId ?? '',
-                            reserveId: reservationData.reservationId ?? '',
-                            bookName: reservationData.bookInfo?.title ?? '',
-                            author: 'minal' ?? '',
-                            edition: reservationData.bookInfo?.editionStatement ??
-                                '',
-                            year: reservationData.bookInfo?.publicationYear
-                                    .toString() ??
-                                '',
-                            pages: reservationData.bookInfo?.numberOfPages
-                                    .toString() ??
-                                '',
-                            bookNo: reservationData
-                                    .bookInfo?.bookNumber
-                                    .toString() ??
-                                '',
-                            classNo:
-                                reservationData.bookInfo?.classNumber ?? '',
-                            series:
-                                reservationData.bookInfo?.seriesStatement ?? '',
-                            image:
-                                "${BaseUrl.imageDisplay}/$filterImage" ??
-                                    '',
-                            status: '',
-                            subTitle: reservationData.bookInfo?.subTitle ?? ''),
+                    pageBuilder:
+                        (context, animation, secondaryAnimation) =>
+                            ViewReservation(
+                                uid: reservationData.bookInfoId ?? '',
+                                books: reservationData,
+                                image: filterImage ?? '',
+                               ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
                       const begin = Offset(1.0, 0.0);
@@ -118,14 +100,14 @@ class _ConfirmReservationListState extends State<ConfirmReservationList> {
                   ),
                 );
               },
+              reservationDate: reservationData.reservationDate!=null? parseDate(reservationData.reservationDate.toString()): '',
               title: reservationData.bookInfo?.title ?? '',
-              image: reservationData.bookInfo?.coverPhoto != null
+              image: filterImage != null
                   ? "${BaseUrl.imageDisplay}/$filterImage"
                   : '',
-              genre: reservationData.reservationDate != null
-                  ? parseDate(reservationData.reservationDate.toString())
-                  : '----',
-              status: reservationData.status ?? '',
+              status: reservationData.book?.status ?? '',
+              id: '',
+              barcode: reservationData.book?.barcode ?? '',
             );
           },
         );

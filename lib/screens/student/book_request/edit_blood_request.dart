@@ -97,8 +97,6 @@ class _EditBookRequestBottomSheetState extends State<EditBookRequestBottomSheet>
           .update(widget.reservationData.bookRequestId ?? '', updatedData, context);
       if (check && context.mounted) {
         widget.onSuccess();
-        Navigator.of(context).pop();
-
       }
     }
   }

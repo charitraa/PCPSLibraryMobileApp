@@ -1,9 +1,9 @@
 class MyBooksModel {
   String? issueId;
   String? checkInDate;
-  String? checkOutDate;
+  Null? checkOutDate;
   String? dueDate;
-  String? lastRenewedAt;
+  Null? lastRenewedAt;
   int? renewalCount;
   String? status;
   String? bookId;
@@ -69,7 +69,7 @@ class Book {
   String? bookId;
   String? barcode;
   String? status;
-  String? damagedOn;
+  Null? damagedOn;
   bool? isReference;
   String? bookInfoId;
   String? createdAt;
@@ -124,7 +124,6 @@ class BookInfo {
   String? title;
   String? subTitle;
   String? editionStatement;
-  String? coverPhoto;
   int? numberOfPages;
   int? publicationYear;
   String? seriesStatement;
@@ -132,6 +131,7 @@ class BookInfo {
   String? createdAt;
   String? updatedAt;
   String? publisherId;
+  List<BookImages>? bookImages;
 
   BookInfo(
       {this.bookInfoId,
@@ -139,14 +139,14 @@ class BookInfo {
         this.title,
         this.subTitle,
         this.editionStatement,
-        this.coverPhoto,
         this.numberOfPages,
         this.publicationYear,
         this.seriesStatement,
         this.addedDate,
         this.createdAt,
         this.updatedAt,
-        this.publisherId});
+        this.publisherId,
+        this.bookImages});
 
   BookInfo.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -154,7 +154,6 @@ class BookInfo {
     title = json['title'];
     subTitle = json['subTitle'];
     editionStatement = json['editionStatement'];
-    coverPhoto = json['coverPhoto'];
     numberOfPages = json['numberOfPages'];
     publicationYear = json['publicationYear'];
     seriesStatement = json['seriesStatement'];
@@ -162,6 +161,12 @@ class BookInfo {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     publisherId = json['publisherId'];
+    if (json['bookImages'] != null) {
+      bookImages = <BookImages>[];
+      json['bookImages'].forEach((v) {
+        bookImages!.add(new BookImages.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -171,7 +176,6 @@ class BookInfo {
     data['title'] = this.title;
     data['subTitle'] = this.subTitle;
     data['editionStatement'] = this.editionStatement;
-    data['coverPhoto'] = this.coverPhoto;
     data['numberOfPages'] = this.numberOfPages;
     data['publicationYear'] = this.publicationYear;
     data['seriesStatement'] = this.seriesStatement;
@@ -179,6 +183,46 @@ class BookInfo {
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
     data['publisherId'] = this.publisherId;
+    if (this.bookImages != null) {
+      data['bookImages'] = this.bookImages!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class BookImages {
+  String? bookImageId;
+  String? bookInfoId;
+  String? imageUrl;
+  bool? isProfile;
+  String? createdAt;
+  String? updatedAt;
+
+  BookImages(
+      {this.bookImageId,
+        this.bookInfoId,
+        this.imageUrl,
+        this.isProfile,
+        this.createdAt,
+        this.updatedAt});
+
+  BookImages.fromJson(Map<String, dynamic> json) {
+    bookImageId = json['bookImageId'];
+    bookInfoId = json['bookInfoId'];
+    imageUrl = json['imageUrl'];
+    isProfile = json['isProfile'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['bookImageId'] = this.bookImageId;
+    data['bookInfoId'] = this.bookInfoId;
+    data['imageUrl'] = this.imageUrl;
+    data['isProfile'] = this.isProfile;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
     return data;
   }
 }

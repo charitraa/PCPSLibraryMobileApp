@@ -99,11 +99,20 @@ class _WishlistState extends State<Wishlist> with SingleTickerProviderStateMixin
           controller: _tabController,
           children: const [
             // Pending Tab
-            ReservationList(),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: ReservationList(),
+            ),
             // Confirmed Tab
-            ConfirmReservationList(),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: ConfirmReservationList(),
+            ),
             // Cancelled Tab
-            CancelReservationList(),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CancelReservationList(),
+            ),
 
 
           ],

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/model/book_info_model.dart';
 import 'package:library_management_sys/model/reservation_model.dart';
-import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
 import 'package:provider/provider.dart';
-
 import '../../../constant/base_url.dart';
-import '../../../resource/colors.dart';
 import '../../../utils/parse_date.dart';
 import '../../../view_model/reservations/reservation_view_model.dart';
 import '../my_wishlist/view_reservation.dart';
@@ -64,11 +60,11 @@ class _ReservationListState extends State<ReservationList> {
 
             String? filterImage;
 
-            final List<BookImage> bookImages = reservationData.bookImages ?? [];
+            final List<BookImages> bookImages = reservationData.bookInfo?.bookImages ?? [];
 
             final profileImage = bookImages.firstWhere(
                   (image) => image.isProfile == true,
-              orElse: () => BookImage(imageUrl: ''), // Ensure fallback
+              orElse: () => BookImages(imageUrl: ''), // Ensure fallback
             );
 
             if (profileImage.imageUrl!.isNotEmpty) {
@@ -80,18 +76,8 @@ class _ReservationListState extends State<ReservationList> {
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) => ViewReservation(
                       uid: reservationData.bookInfoId ?? '',
-                      reserveId: reservationData.reservationId ?? '',
-                      bookName: reservationData.bookInfo?.title ?? '',
-                      author: 'minal',
-                      edition: reservationData.bookInfo?.editionStatement ?? '',
-                      year: reservationData.bookInfo?.publicationYear?.toString() ?? '',
-                      pages: reservationData.bookInfo?.numberOfPages?.toString() ?? '',
-                      bookNo: reservationData.bookInfo?.bookNumber?.toString() ?? '',
-                      classNo: reservationData.bookInfo?.classNumber ?? '',
-                      series: reservationData.bookInfo?.seriesStatement ?? '',
-                      image: "${BaseUrl.imageDisplay}/$filterImage",
-                      status: '',
-                      subTitle: reservationData.bookInfo?.subTitle ?? '',
+                      books: reservationData,
+                      image: filterImage ?? '',
                     ),
                     transitionsBuilder: (context, animation, secondaryAnimation, child) {
                       const begin = Offset(1.0, 0.0);
@@ -111,7 +97,7 @@ class _ReservationListState extends State<ReservationList> {
               genre: reservationData.reservationDate != null
                   ? parseDate(reservationData.reservationDate.toString())
                   : '----',
-              status: reservationData.status ?? '',
+              status: reservationData.status ?? '', publicationYear: reservationData.bookInfo!.publicationYear.toString(),
             );
           },
         )

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/model/my_books_model.dart';
 import 'package:library_management_sys/screens/student/my_books/my_book_widget.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/wishlist_skeleton.dart';
 import 'package:library_management_sys/view_model/users/my_book_view_model.dart';
@@ -99,8 +100,18 @@ class _MyBooksState extends State<MyBooks> {
                           physics: const BouncingScrollPhysics(),
                           itemCount: viewModel.booksList.length,
                           itemBuilder: (context, index) {
+                            String? filterImage;
                             final reservationData = viewModel.booksList[index];
+                            final List<BookImages> bookImages = reservationData.book?.bookInfo?.bookImages ?? [];
 
+                            final profileImage = bookImages.firstWhere(
+                                  (image) => image.isProfile == true,
+                              orElse: () => BookImages(imageUrl: ''), // Ensure fallback
+                            );
+
+                            if (profileImage.imageUrl!.isNotEmpty) {
+                              filterImage = profileImage.imageUrl;
+                            }
                             return MyBookWidget(
                               onTap: () async {},
                               title:
@@ -108,7 +119,7 @@ class _MyBooksState extends State<MyBooks> {
                               image: reservationData
                                           .book?.bookInfo?.title !=
                                       null
-                                  ? "${BaseUrl.imageDisplay}/${reservationData.book?.bookInfo?.title.toString()}"
+                                  ? "${BaseUrl.imageDisplay}/$filterImage"
                                   : '',
                               checkIn: reservationData.checkInDate != null
                                   ? parseDate(
