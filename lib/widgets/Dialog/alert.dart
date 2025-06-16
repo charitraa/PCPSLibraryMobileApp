@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/resource/colors.dart';
 
 class Alert extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
   final String title;
   final String content;
-  final List<Widget> actions;
+  final String buttonText;
+
+  final VoidCallback? onOkPressed;
+  final VoidCallback? onCancelPressed;
 
   const Alert({
     super.key,
@@ -13,7 +17,9 @@ class Alert extends StatelessWidget {
     required this.iconColor,
     required this.title,
     required this.content,
-    required this.actions,
+    this.onOkPressed,
+    this.onCancelPressed,
+    required this.buttonText,
   });
 
   @override
@@ -35,7 +41,30 @@ class Alert extends StatelessWidget {
         style: const TextStyle(fontSize: 16),
       ),
       actionsPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      actions: actions,
+      actions: [
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(buttonText),
+        ),
+      ],
     );
   }
 }
