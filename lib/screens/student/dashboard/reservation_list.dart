@@ -18,7 +18,9 @@ class ReservationList extends StatefulWidget {
 class _ReservationListState extends State<ReservationList> {
   @override
   Widget build(BuildContext context) {
-    return          Consumer<ReservationViewModel>(
+    final size = MediaQuery.of(context).size;
+
+    return Consumer<ReservationViewModel>(
       builder: (context, viewModel, child) {
         if (viewModel.isLoading) {
           return const Column(
@@ -27,26 +29,11 @@ class _ReservationListState extends State<ReservationList> {
             ],
           );
         } else if (viewModel.reservationList.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child:  Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.disabled_visible_rounded,color: Colors.grey,),
-                  Text(
-                    'Oops! Looks like you haven’t made a reservation!!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-
-                ],
-              ),
-            ),
+          return Column(
+            children: [
+              _buildNoDataCard(
+                  size, 'Oops! Looks like you haven’t made a reservation!!')
+            ],
           );
         }
         return ListView.builder(
@@ -60,10 +47,11 @@ class _ReservationListState extends State<ReservationList> {
 
             String? filterImage;
 
-            final List<BookImages> bookImages = reservationData.bookInfo?.bookImages ?? [];
+            final List<BookImages> bookImages =
+                reservationData.bookInfo?.bookImages ?? [];
 
             final profileImage = bookImages.firstWhere(
-                  (image) => image.isProfile == true,
+              (image) => image.isProfile == true,
               orElse: () => BookImages(imageUrl: ''), // Ensure fallback
             );
 
@@ -74,18 +62,22 @@ class _ReservationListState extends State<ReservationList> {
               onTap: () {
                 Navigator.of(context).push(
                   PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) => ViewReservation(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        ViewReservation(
                       uid: reservationData.bookInfoId ?? '',
                       books: reservationData,
                       image: filterImage ?? '',
                     ),
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
                       const begin = Offset(1.0, 0.0);
                       const end = Offset.zero;
                       const curve = Curves.easeInOut;
-                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
                       var offsetAnimation = animation.drive(tween);
-                      return SlideTransition(position: offsetAnimation, child: child);
+                      return SlideTransition(
+                          position: offsetAnimation, child: child);
                     },
                   ),
                 );
@@ -97,13 +89,46 @@ class _ReservationListState extends State<ReservationList> {
               genre: reservationData.reservationDate != null
                   ? parseDate(reservationData.reservationDate.toString())
                   : '----',
-              status: reservationData.status ?? '', publicationYear: reservationData.bookInfo!.publicationYear.toString(),
+              status: reservationData.status ?? '',
+              publicationYear:
+                  reservationData.bookInfo!.publicationYear.toString(),
             );
           },
-        )
-        ;
+        );
       },
     );
   }
 
+  Widget _buildNoDataCard(Size size, String message) {
+    return Container(
+      width: size.width * 0.9,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        border: Border.all(color: Colors.grey[400]!, width: 0.5),
+      ),
+      alignment: Alignment.center,
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.disabled_visible_rounded,
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Text(
+            'Oops! Looks like you haven’t made a reservation!!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

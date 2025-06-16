@@ -198,4 +198,5 @@ class _BookRequestBottomSheetState extends State<BookRequestBottomSheet> {
     if (value != null && value.length > 100) return "Edition statement is too long";
     return null;
   }
+
 }

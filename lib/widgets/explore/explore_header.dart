@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../resource/colors.dart';
 
 class ExploreHeader extends StatefulWidget {
-  const ExploreHeader({super.key});
+  final String text;
+  const ExploreHeader({super.key, required this.text});
 
   @override
   State<ExploreHeader> createState() => _ExploreHeaderState();
@@ -20,7 +21,7 @@ class _ExploreHeaderState extends State<ExploreHeader> {
           children: [
             const SizedBox(height: 10,),
             Text(
-              "Explore",
+              widget.text??"",
               style: TextStyle(
                   fontSize: 43,
                   color: AppColors.primary,

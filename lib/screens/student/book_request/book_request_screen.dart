@@ -260,16 +260,14 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
                     }).toList();
 
                     if (filteredRequests.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          "No requests match the selected filter.",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      );
+                      return
+                        Column(
+                          children: [
+                            _buildNoDataCard(
+                                size, 'No requests match the selected filter..')
+                          ],
+                        );
+
                     }
 
                     return ListView.builder(
@@ -373,4 +371,33 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
       ),
     );
   }
+  Widget _buildNoDataCard(Size size, String message) {
+    return Container(
+      width: size.width * 0.9,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        border: Border.all(color: Colors.grey[400]!, width: 0.5),
+      ),
+      alignment: Alignment.center,
+      child:  Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.disabled_visible_rounded,),
+          const SizedBox(height: 5,),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

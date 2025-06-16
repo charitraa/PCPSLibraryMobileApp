@@ -39,7 +39,7 @@ class _StudentNavBarState extends State<StudentNavBar> {
       const Ebooks(),
       StudentBrowseBooks(reqIndex: index,),
       const MyBooks(),
-      const UnauthorisedPage(),
+      const Profile(),
     ];
   }
 

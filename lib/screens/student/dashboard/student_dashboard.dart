@@ -812,7 +812,12 @@ class _StudentDashboardState extends State<StudentDashboard> {
       builder: (context, value, child) {
         final reservations = value.reservationList;
         final confirmReservation = value.confirmReservation;
-
+        if (reservations.isEmpty && confirmReservation.isEmpty) {
+          return SizedBox(
+            height: 60,
+            child: _buildNoDataCard(size, 'No Books Currently Reading'),
+          );
+        }
         if (reservations.isEmpty) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -821,7 +826,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
               if (confirmReservation.isNotEmpty)
                 const Column(
                   children: [
-
                     ConfirmReservationList(),
                   ],
                 ),

@@ -19,6 +19,8 @@ class ConfirmReservationList extends StatefulWidget {
 class _ConfirmReservationListState extends State<ConfirmReservationList> {
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Consumer<ReservationViewModel>(
       builder: (context, viewModel, child) {
         if (viewModel.isLoading) {
@@ -28,28 +30,11 @@ class _ConfirmReservationListState extends State<ConfirmReservationList> {
             ],
           );
         } else if (viewModel.confirmReservation.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.disabled_visible_rounded,
-                    color: Colors.grey,
-                  ),
-                  Text(
-                    'Oops! Looks like you haven’t made a reservation!!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          return Column(
+            children: [
+              _buildNoDataCard(
+                  size, 'You don’t have any confirmed reservations yet.')
+            ],
           );
         }
         return ListView.builder(
@@ -112,6 +97,34 @@ class _ConfirmReservationListState extends State<ConfirmReservationList> {
           },
         );
       },
+    );
+  }
+  Widget _buildNoDataCard(Size size, String message) {
+    return Container(
+      width: size.width * 0.9,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        border: Border.all(color: Colors.grey[400]!, width: 0.5),
+      ),
+      alignment: Alignment.center,
+      child:  Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.disabled_visible_rounded,),
+           SizedBox(height: 5,),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

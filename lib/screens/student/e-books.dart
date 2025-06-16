@@ -11,6 +11,8 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../widgets/explore/explore_header.dart';
+
 class Ebooks extends StatefulWidget {
   const Ebooks({super.key});
 
@@ -98,29 +100,20 @@ class _EbooksState extends State<Ebooks> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "E-Books",
-          style: TextStyle(fontFamily: 'Poppins', color: Colors.black),
-        ),
-        automaticallyImplyLeading: false,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 18),
-            child: Image(
-              image: AssetImage('assets/images/pcpsLogo.png'),
-              width: 56,
-              height: 24,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ],
-      ),
+
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 5),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const ExploreHeader(text: 'E-Books',),
+              const SizedBox(height: 5),
+              Text(
+                'Explore online books to read anytime, anywhere',
+                style: TextStyle(color: AppColors.primary),
+              ),
+              const SizedBox(height: 10),
               Consumer<OnlineBooksViewModel>(
                 builder: (context, viewModel, child) {
                   _searchController.text = viewModel.searchValue; // Sync with view model
