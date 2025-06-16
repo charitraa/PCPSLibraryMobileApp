@@ -34,7 +34,7 @@ class _ReplyCommentsState extends State<ReplyComments> {
   bool isLoading = false;
   final TextEditingController _commentController = TextEditingController();
   String comment = "";
- 
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -225,7 +225,7 @@ class _ReplyCommentsState extends State<ReplyComments> {
                                     isLoading = false;
                                   });
                                 }
-                              }, Colors.red, 12)
+                              }, Colors.red, 16)
                             ],
                           ),
                         ],
@@ -263,6 +263,7 @@ class _ReplyCommentsState extends State<ReplyComments> {
                       final replyData = widget.replies![index];
 
                       return RepliesWidget(
+                        uid: replyData.user.userId??'',
                         date: replyData.updatedAt != null
                             ? parseDate(replyData.updatedAt.toString())
                             : "",

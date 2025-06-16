@@ -98,9 +98,9 @@ class CommentsRepository {
     String url = "${CommentEndpoints.updateComment}/$uid";
     try {
       if (kDebugMode) {
-        _logger.d("Update comment URL: $url");
+        _logger.d("Update comment URL: $url and body $body");
       }
-      final dynamic response = await _apiService.getPostApiResponse(url, body);
+      final dynamic response = await _apiService.getPutApiResponse(url, body);
       if (response['error'] != null && response['error'] == true) {
         _logger.w("Error updating comment: ${response['errorMessage'] ?? 'Unknown error'}");
         Utils.flushBarErrorMessage(
