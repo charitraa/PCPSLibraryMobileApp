@@ -1,36 +1,35 @@
 import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-
 import '../../resource/colors.dart';
 import '../../view_model/books/comment_view_model.dart';
 
 class ReviewCard extends StatefulWidget {
   final String? image, name, text, date, uid;
   final double? rating;
-  final VoidCallback? onTap, onEdit,onDelete;
+  final VoidCallback? onTap, onEdit, onDelete;
   final int? length;
-  const ReviewCard(
-      {super.key,
-      required this.image,
-      required this.name,
-      required this.text,
-      this.rating,
-      this.length,
-      this.onTap,
-      this.date,
-      this.onDelete,
-      this.uid, this.onEdit});
+  const ReviewCard({
+    super.key,
+    required this.image,
+    required this.name,
+    required this.text,
+    this.rating,
+    this.length,
+    this.onTap,
+    this.date,
+    this.onDelete,
+    this.uid,
+    this.onEdit,
+  });
 
   @override
   State<ReviewCard> createState() => _ReviewCardState();
 }
 
 class _ReviewCardState extends State<ReviewCard> {
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -84,20 +83,18 @@ class _ReviewCardState extends State<ReviewCard> {
                           children: [
                             ...List.generate(
                               widget.rating!.toInt(),
-                              (index) => const Icon(
+                                  (index) => const Icon(
                                 Icons.star,
                                 color: Colors.amber,
                                 size: 14,
                               ),
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
+                            const SizedBox(width: 5),
                             Text(
                               widget.rating!.toString(),
                               style: const TextStyle(
                                   fontSize: 11, fontWeight: FontWeight.bold),
-                            )
+                            ),
                           ],
                         ),
                     ],
@@ -116,25 +113,39 @@ class _ReviewCardState extends State<ReviewCard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text("${widget.length.toString()} replies",
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.grey)),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Icon(Icons.chat, size: 16, color: AppColors.primary),
-                      const SizedBox(width: 5),
                       Text(
-                        "Reply",
-                        style:
-                            TextStyle(fontSize: 12, color: AppColors.primary),
+                        "${widget.length.toString()} replies",
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.grey),
                       ),
-                      const SizedBox(width: 10,),
-
+                      const SizedBox(width: 8),
+                      InkWell(
+                        onTap: widget.onTap,
+                        child: Container(
+                          height: 40,
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Row(
+                            children: [
+                              const Text('Reply'),
+                              const SizedBox(width: 5,),
+                              Icon(
+                                Icons.mark_unread_chat_alt_sharp,
+                                color: AppColors.primary,
+                                size: 22,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
                       Consumer<AuthViewModel>(
                         builder: (context, viewModel, child) {
                           final user = viewModel.currentUser;
-                          var logger=Logger();
+                          var logger = Logger();
                           logger.d("${widget.uid} :${user?.data?.userId}");
                           if (user?.data?.userId == widget.uid) {
                             return Row(
@@ -163,10 +174,12 @@ class _ReviewCardState extends State<ReviewCard> {
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           title: const Text('Confirm Delete'),
-                                          content: const Text('Are you sure you want to delete this item?'),
+                                          content: const Text(
+                                              'Are you sure you want to delete this item?'),
                                           actions: [
                                             TextButton(
-                                              onPressed: () => Navigator.of(context).pop(),
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
                                               child: const Text('Cancel'),
                                             ),
                                             TextButton(
@@ -174,7 +187,11 @@ class _ReviewCardState extends State<ReviewCard> {
                                                 widget.onDelete?.call();
                                                 Navigator.of(context).pop();
                                               },
-                                              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                              child: const Text(
+                                                'Delete',
+                                                style: TextStyle(
+                                                    color: Colors.red),
+                                              ),
                                             ),
                                           ],
                                         );
@@ -223,7 +240,7 @@ class _ReviewCardState extends State<ReviewCard> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                     errorWidget: (context, url, error) =>
-                        const Icon(Icons.error, size: 24),
+                    const Icon(Icons.error, size: 24),
                   ),
                 ),
               ),

@@ -64,7 +64,7 @@ class _BookInfoState extends State<BookInfo> {
             .fetchComments(widget.uid, context),
       ]);
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("Error loading data: $e");
     } finally {
       setState(() => _isLoading = false);
     }
@@ -175,7 +175,7 @@ class _BookInfoState extends State<BookInfo> {
                         );
                       }
                     } catch (e) {
-                      debugPrint(e.toString());
+                      debugPrint("Error reserving book: $e");
                     } finally {
                       setState(() => _isLoading = false);
                     }
@@ -340,7 +340,7 @@ class _BookInfoState extends State<BookInfo> {
                                 );
                               }
                             } catch (e) {
-                              debugPrint(e.toString());
+                              debugPrint("Error reserving book: $e");
                             } finally {
                               setState(() => _isLoading = false);
                             }
@@ -380,7 +380,7 @@ class _BookInfoState extends State<BookInfo> {
                       ),
                       const SizedBox(height: 5),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -580,6 +580,7 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                         ),
                       ),
+// Updated Carousel Section without Hero
                       Consumer<BooksViewModel>(
                         builder: (context, viewModel, child) {
                           final user = viewModel.currentUser;
@@ -597,6 +598,10 @@ class _BookInfoState extends State<BookInfo> {
                               ),
                             );
                           }
+
+// Filter out duplicate bookImages based on bookImageId or imageUrl
+                          final uniqueBookImages =
+                              user.bookImages!.toSet().toList();
 
                           return Container(
                             height: 100,
@@ -618,13 +623,11 @@ class _BookInfoState extends State<BookInfo> {
                               children: [
                                 CarouselSlider.builder(
                                   carouselController: carouselController,
-                                  itemCount: user.bookImages!.length,
+                                  itemCount: uniqueBookImages.length,
                                   itemBuilder: (context, index, realIndex) {
-                                    final bookImage = user.bookImages![index];
+                                    final bookImage = uniqueBookImages[index];
                                     final imageUrl =
                                         "${BaseUrl.imageDisplay}/${bookImage.imageUrl}";
-                                    final heroTag =
-                                        'book_image_${bookImage.bookImageId}_$index';
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 6.0),
@@ -633,10 +636,9 @@ class _BookInfoState extends State<BookInfo> {
                                           Navigator.of(context).push(
                                             PageRouteBuilder(
                                               pageBuilder: (context, animation,
-                                                  secondaryAnimation) =>
+                                                      secondaryAnimation) =>
                                                   BookPreview(
-                                                      imageUrl: imageUrl,
-                                                    ),
+                                                      imageUrl: imageUrl),
                                               transitionsBuilder: (context,
                                                   animation,
                                                   secondaryAnimation,
@@ -649,40 +651,36 @@ class _BookInfoState extends State<BookInfo> {
                                             ),
                                           );
                                         },
-                                        child: Hero(
-                                          tag: heroTag,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey.shade300,
-                                                  width: 1),
-                                              borderRadius:
-                                              BorderRadius.circular(8),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.1),
-                                                  blurRadius: 4,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ],
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                              BorderRadius.circular(8),
-                                              child: CachedNetworkImage(
-                                                imageUrl: imageUrl,
-                                                width: 70,
-                                                height: 90,
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    _buildImageSkeleton(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                const Icon(
-                                                    Icons.broken_image,
-                                                    color: Colors.grey),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.grey.shade300,
+                                                width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey
+                                                    .withOpacity(0.1),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 2),
                                               ),
+                                            ],
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            child: CachedNetworkImage(
+                                              imageUrl: imageUrl,
+                                              width: 70,
+                                              height: 90,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  _buildImageSkeleton(),
+                                              errorWidget: (context, url,
+                                                      error) =>
+                                                  const Icon(Icons.broken_image,
+                                                      color: Colors.grey),
                                             ),
                                           ),
                                         ),
@@ -691,20 +689,20 @@ class _BookInfoState extends State<BookInfo> {
                                   },
                                   options: CarouselOptions(
                                     height: 90,
-                                    autoPlay: user.bookImages!.length > 1,
+                                    autoPlay: uniqueBookImages.length > 1,
                                     autoPlayInterval:
-                                    const Duration(seconds: 1),
+                                        const Duration(seconds: 1),
                                     autoPlayAnimationDuration:
-                                    const Duration(milliseconds: 800),
+                                        const Duration(milliseconds: 800),
                                     viewportFraction: 0.22,
                                     enableInfiniteScroll:
-                                    user.bookImages!.length > 1,
+                                        uniqueBookImages.length > 1,
                                     pauseAutoPlayOnTouch: true,
                                     enlargeCenterPage: true,
                                     enlargeFactor: 0.2,
                                   ),
                                 ),
-                                if (user.bookImages!.length > 1)
+                                if (uniqueBookImages.length > 1)
                                   Positioned(
                                     left: 0,
                                     child: IconButton(
@@ -714,13 +712,13 @@ class _BookInfoState extends State<BookInfo> {
                                       onPressed: () {
                                         carouselController.previousPage(
                                           duration:
-                                          const Duration(milliseconds: 300),
+                                              const Duration(milliseconds: 300),
                                           curve: Curves.easeInOut,
                                         );
                                       },
                                     ),
                                   ),
-                                if (user.bookImages!.length > 1)
+                                if (uniqueBookImages.length > 1)
                                   Positioned(
                                     right: 0,
                                     child: IconButton(
@@ -730,7 +728,7 @@ class _BookInfoState extends State<BookInfo> {
                                       onPressed: () {
                                         carouselController.nextPage(
                                           duration:
-                                          const Duration(milliseconds: 300),
+                                              const Duration(milliseconds: 300),
                                           curve: Curves.easeInOut,
                                         );
                                       },
@@ -845,6 +843,7 @@ class _BookInfoState extends State<BookInfo> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           buildFilterButton('Send', () async {
+                            if (comment.trim().isEmpty) return;
                             setState(() => _isLoading = true);
                             try {
                               final check = await Provider.of<CommentViewModel>(
@@ -856,9 +855,13 @@ class _BookInfoState extends State<BookInfo> {
                                 await Provider.of<CommentViewModel>(context,
                                         listen: false)
                                     .fetchComments(widget.uid, context);
+                                setState(() {
+                                  comment = "";
+                                  _commentController.clear();
+                                });
                               }
                             } catch (e) {
-                              debugPrint(e.toString());
+                              debugPrint("Error posting comment: $e");
                             } finally {
                               setState(() => _isLoading = false);
                             }
@@ -894,10 +897,8 @@ class _BookInfoState extends State<BookInfo> {
                             shrinkWrap: true,
                             itemCount: itemCount,
                             itemBuilder: (context, index) {
-                              final completionData =
-                                  viewModel.commentsList[index];
                               final commentData = viewModel.commentsList[index];
-                              int length = commentData.replies!.length;
+                              int length = commentData.replies?.length ?? 0;
                               return ReviewCard(
                                 onEdit: () {
                                   _showEditCommentDialog(
@@ -908,13 +909,20 @@ class _BookInfoState extends State<BookInfo> {
                                   );
                                 },
                                 onDelete: () async {
-                                  final check = await viewModel.deleteComment(
-                                    commentData.commentId ?? '',
-                                    context,
-                                  );
-                                  if (check) {
-                                    await viewModel.fetchComments(
-                                        widget.uid ?? '', context);
+                                  setState(() => _isLoading = true);
+                                  try {
+                                    final check = await viewModel.deleteComment(
+                                      commentData.commentId ?? '',
+                                      context,
+                                    );
+                                    if (check) {
+                                      await viewModel.fetchComments(
+                                          widget.uid, context);
+                                    }
+                                  } catch (e) {
+                                    debugPrint("Error deleting comment: $e");
+                                  } finally {
+                                    setState(() => _isLoading = false);
                                   }
                                 },
                                 uid: commentData.userId,
@@ -922,12 +930,12 @@ class _BookInfoState extends State<BookInfo> {
                                     ? parseDate(
                                         commentData.updatedAt.toString())
                                     : "",
-                                image: completionData.user?.profilePicUrl !=
-                                        null
-                                    ? "${BaseUrl.imageDisplay}/${completionData.user?.profilePicUrl.toString()}"
+                                image: commentData.user?.profilePicUrl != null
+                                    ? "${BaseUrl.imageDisplay}/${commentData.user?.profilePicUrl}"
                                     : '',
-                                rating: completionData.user!.ratings!.isNotEmpty
-                                    ? (completionData.user!.ratings![0].rating
+                                rating: commentData.user?.ratings?.isNotEmpty ==
+                                        true
+                                    ? (commentData.user!.ratings![0].rating
                                             as int)
                                         .toDouble()
                                     : 0,
@@ -938,27 +946,26 @@ class _BookInfoState extends State<BookInfo> {
                                               secondaryAnimation) =>
                                           ReplyComments(
                                         uid: widget.uid,
-                                        replies: completionData.replies,
-                                        date: completionData.createdAt != null
-                                            ? parseDate(completionData.createdAt
+                                        replies: commentData.replies,
+                                        date: commentData.createdAt != null
+                                            ? parseDate(commentData.createdAt
                                                 .toString())
                                             : '',
-                                        commentId:
-                                            completionData.commentId ?? '',
-                                        name:
-                                            completionData.user?.fullName ?? '',
-                                        image: completionData
+                                        commentId: commentData.commentId ?? '',
+                                        name: commentData.user?.fullName ?? '',
+                                        image: commentData
                                                     .user?.profilePicUrl !=
                                                 null
-                                            ? "${BaseUrl.imageDisplay}/${completionData.user?.profilePicUrl.toString()}"
+                                            ? "${BaseUrl.imageDisplay}/${commentData.user?.profilePicUrl}"
                                             : '',
-                                        rating: completionData
-                                                .user!.ratings!.isNotEmpty
-                                            ? (completionData.user!.ratings![0]
+                                        rating: commentData.user?.ratings
+                                                    ?.isNotEmpty ==
+                                                true
+                                            ? (commentData.user!.ratings![0]
                                                     .rating as int)
                                                 .toDouble()
                                             : 0,
-                                        text: completionData.comment ?? '',
+                                        text: commentData.comment ?? '',
                                         length: length,
                                       ),
                                       transitionsBuilder: (context, animation,
@@ -979,8 +986,8 @@ class _BookInfoState extends State<BookInfo> {
                                     ),
                                   );
                                 },
-                                name: completionData.user?.fullName ?? '',
-                                text: completionData.comment ?? '',
+                                name: commentData.user?.fullName ?? '',
+                                text: commentData.comment ?? '',
                                 length: length,
                               );
                             },
@@ -1102,14 +1109,15 @@ class _BookInfoState extends State<BookInfo> {
       ),
     );
   }
-  void _showEditCommentDialog(
-      BuildContext context,
-      String initialComment,
-      String commentId,
-      CommentViewModel viewModel,
 
-      ) {
-    final TextEditingController _commentController = TextEditingController(text: initialComment);
+  void _showEditCommentDialog(
+    BuildContext context,
+    String initialComment,
+    String commentId,
+    CommentViewModel viewModel,
+  ) {
+    final TextEditingController _commentController =
+        TextEditingController(text: initialComment);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -1157,7 +1165,8 @@ class _BookInfoState extends State<BookInfo> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+                      borderSide:
+                          const BorderSide(color: Colors.blue, width: 1.5),
                     ),
                   ),
                   style: const TextStyle(
@@ -1173,14 +1182,21 @@ class _BookInfoState extends State<BookInfo> {
                     onPressed: () async {
                       final updatedComment = _commentController.text.trim();
                       if (updatedComment.isNotEmpty) {
-                        final check = await viewModel.updateComment(
-                          commentId,
-                          {"comment":updatedComment},
-                          context,
-                        );
-                        if (check) {
-                          await viewModel.fetchComments(widget.uid ?? '', context);
-                          Navigator.of(context).pop();
+                        setState(() => _isLoading = true);
+                        try {
+                          final check = await viewModel.updateComment(
+                            commentId,
+                            {"comment": updatedComment},
+                            context,
+                          );
+                          if (check) {
+                            await viewModel.fetchComments(widget.uid, context);
+                            Navigator.of(context).pop();
+                          }
+                        } catch (e) {
+                          debugPrint("Error updating comment: $e");
+                        } finally {
+                          setState(() => _isLoading = false);
                         }
                       }
                     },
@@ -1189,7 +1205,8 @@ class _BookInfoState extends State<BookInfo> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                     ),
                     child: const Text(
                       'Update',
@@ -1209,6 +1226,7 @@ class _BookInfoState extends State<BookInfo> {
       },
     );
   }
+
   Widget _buildImageSkeleton() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
