@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-
+import 'package:logger/logger.dart';
 
 import '../../data/response/api_response.dart';
 import '../../model/notification_model.dart';
 import '../../repository/notification_repository.dart';
-import '../../utils/utils.dart';
 
 class NotificationViewModel with ChangeNotifier {
   final List<NotificationModel> _notificationList = [];
   final NotificationRepository _notificationRepo = NotificationRepository();
   ApiResponse<NotificationModel> notificationData = ApiResponse.loading();
 
+  final Logger _logger = Logger();
+
   int _limit = 1;
   bool _isLoading = false;
-
 
   int get limit => _limit;
   bool get isLoading => _isLoading;
@@ -28,18 +28,17 @@ class NotificationViewModel with ChangeNotifier {
     if (_isLoading) return;
     setLoading(true);
     try {
-      _limit=1;
+      _limit = 1;
       _notificationList.clear();
-      final Map<String,dynamic> response =
-      await _notificationRepo.getNotification(context,_limit,10);
+      final Map<String, dynamic> response =
+      await _notificationRepo.getNotification(context, _limit, 10);
       _notificationList.addAll(response['notifications']);
-      if(response['next']!=null){
+      if (response['next'] != null) {
         _limit++;
       }
       Future.microtask(() => notifyListeners());
-    } catch (error) {
-      Utils.flushBarErrorMessage(
-          "Error fetching notifications: $error", context);
+    } catch (error, stackTrace) {
+      _logger.e("Error fetching notifications", error: error, stackTrace: stackTrace);
     } finally {
       setLoading(false);
     }
@@ -47,18 +46,16 @@ class NotificationViewModel with ChangeNotifier {
 
   Future<void> loadMoreNotifications(BuildContext context) async {
     try {
-      final Map<String,dynamic> response =
-      await _notificationRepo.getNotification(context,_limit,10);
-      if(_limit!=null){
-        print("${response['next']}=$_limit");
-
+      final Map<String, dynamic> response =
+      await _notificationRepo.getNotification(context, _limit, 10);
+      if (_limit != null) {
+        print("${response['next']} = $_limit");
         _notificationList.addAll(response['notifications']);
         _limit++;
       }
       Future.microtask(() => notifyListeners());
-    } catch (error) {
-      Utils.flushBarErrorMessage(
-          "Error fetching notifications: $error", context);
+    } catch (error, stackTrace) {
+      _logger.e("Error loading more notifications", error: error, stackTrace: stackTrace);
     }
   }
 
@@ -71,9 +68,8 @@ class NotificationViewModel with ChangeNotifier {
       await fetchNotifications(context);
       Future.microtask(() => notifyListeners());
       return true;
-    } catch (error) {
-      Utils.flushBarErrorMessage(
-          "Error marking notifications as read: $error", context);
+    } catch (error, stackTrace) {
+      _logger.e("Error marking notifications as read", error: error, stackTrace: stackTrace);
       return false;
     } finally {
       setLoading(false);

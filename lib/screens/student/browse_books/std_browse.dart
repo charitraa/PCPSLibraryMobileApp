@@ -109,8 +109,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
           .fetchGenresList(context),
       Provider.of<AttrAuthorViewModel>(context, listen: false)
           .fetchAuthorsList(context),
-      Provider.of<NotificationViewModel>(context, listen: false)
-          .fetchNotifications(context),
+
     ]);
   }
 

@@ -65,7 +65,6 @@ class AttrGenreViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e("Error fetching genres: $error");
-      Utils.flushBarErrorMessage("Error fetching genres: $error", context);
     } finally {
       setLoading(false);
     }
@@ -85,12 +84,10 @@ class AttrGenreViewModel with ChangeNotifier {
         }
       } else {
         _logger.w("No additional genres received for page $_currentPage");
-        Utils.flushBarErrorMessage("No genres received from server", context);
       }
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e("Error fetching more genres: $error");
-      Utils.flushBarErrorMessage("Error fetching genres: $error", context);
     } finally {
       setLoading(false);
     }

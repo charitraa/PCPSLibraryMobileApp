@@ -64,7 +64,6 @@ class BookRequestViewModel with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       _logger.e('Error fetching requests: $error');
-      Utils.flushBarErrorMessage("Error fetching requests: $error", context);
     } finally {
       setLoading(false);
     }
@@ -84,7 +83,6 @@ class BookRequestViewModel with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       _logger.e('Error loading more requests: $error');
-      Utils.flushBarErrorMessage("Error fetching requests: $error", context);
     }
   }
 
@@ -99,7 +97,6 @@ class BookRequestViewModel with ChangeNotifier {
       return user;
     } catch (e) {
       _logger.e('Error posting request: $e');
-      Utils.flushBarErrorMessage("Error: $e", context);
       return false;
     }
   }
@@ -115,7 +112,6 @@ class BookRequestViewModel with ChangeNotifier {
       return user;
     } catch (e) {
       _logger.e('Error deleting request: $e');
-      Utils.flushBarErrorMessage("Error: $e", context);
       return false;
     }
   }
@@ -131,7 +127,6 @@ class BookRequestViewModel with ChangeNotifier {
       return user;
     } catch (e) {
       _logger.e('Error updating request: $e');
-      Utils.flushBarErrorMessage("Error: $e", context);
       return false;
     }
   }

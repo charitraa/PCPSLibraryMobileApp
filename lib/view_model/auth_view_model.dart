@@ -70,14 +70,11 @@ class AuthViewModel with ChangeNotifier {
         );
       } else {
         _logger.w('Login response data is null');
-        Utils.flushBarErrorMessage("No user data received", context);
+
       }
     } catch (error) {
       _logger.e('Login error: $error');
-      String errorMessage = error.toString().contains('No internet connection')
-          ? 'No internet connection. Please try again.'
-          : 'Failed to login: $error';
-      Utils.flushBarErrorMessage(errorMessage, context);
+
     } finally {
       setLoading(false);
     }
@@ -98,10 +95,6 @@ class AuthViewModel with ChangeNotifier {
       }
     } catch (e) {
       _logger.e('getUser error: $e');
-      String errorMessage = e.toString().contains('No internet connection')
-          ? 'No internet connection. Please try again.'
-          : 'Failed to fetch user: $e';
-      Utils.flushBarErrorMessage(errorMessage, context);
       if (e.toString().contains('Unauthorized') || e.toString().contains('401')) {
         Navigator.pushReplacementNamed(context, RoutesName.login);
       }
@@ -130,10 +123,7 @@ class AuthViewModel with ChangeNotifier {
       }
     } catch (e) {
       _logger.e('Logout error: $e');
-      String errorMessage = e.toString().contains('No internet connection')
-          ? 'No internet connection. Please try again.'
-          : 'Failed to logout: $e';
-      Utils.flushBarErrorMessage(errorMessage, context);
+
     } finally {
       setLoading(false);
     }

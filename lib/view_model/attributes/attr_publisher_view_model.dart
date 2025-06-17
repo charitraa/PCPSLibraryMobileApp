@@ -66,7 +66,6 @@ class AttrPublisherViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e("Error fetching publishers: $error");
-      Utils.flushBarErrorMessage("Error fetching publishers: $error", context);
     } finally {
       setLoading(false);
     }
@@ -92,7 +91,6 @@ class AttrPublisherViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e("Error fetching more publishers: $error");
-      Utils.flushBarErrorMessage("Error fetching publishers: $error", context);
     } finally {
       setLoading(false);
     }

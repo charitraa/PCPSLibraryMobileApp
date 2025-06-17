@@ -82,7 +82,6 @@ class ReservationViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching reservations: $error");
-      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
     } finally {
       setLoading(false);
     }
@@ -107,7 +106,6 @@ class ReservationViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching reservations: $error");
-      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
     } finally {
       setLoading(false);
     }
@@ -133,7 +131,6 @@ class ReservationViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching reservations: $error");
-      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
     } finally {
       setLoading(false);
     }
@@ -156,7 +153,6 @@ class ReservationViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching more reservations: $error");
-      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
     } finally {
       setLoading(false);
     }
@@ -172,7 +168,6 @@ class ReservationViewModel with ChangeNotifier {
       return success;
     } catch (e) {
       logger.e("Error canceling reservation: $e");
-      Utils.flushBarErrorMessage("Error: $e", context);
       return false;
     }
   }

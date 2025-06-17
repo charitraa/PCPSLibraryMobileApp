@@ -141,7 +141,6 @@ class RecommendedViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching recommended books: $error");
-      Utils.flushBarErrorMessage("Error fetching books: $error", context);
     } finally {
       setLoading(false);
     }
@@ -165,7 +164,6 @@ class RecommendedViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching more recommended books: $error");
-      Utils.flushBarErrorMessage("Error fetching more books: $error", context);
     } finally {
       setLoading(false);
     }

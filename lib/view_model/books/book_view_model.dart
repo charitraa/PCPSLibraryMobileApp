@@ -140,7 +140,6 @@ class BooksViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching books: $error");
-      Utils.flushBarErrorMessage("Error fetching books: $error", context);
     } finally {
       setLoading(false);
     }
@@ -162,7 +161,6 @@ class BooksViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching more books: $error");
-      Utils.flushBarErrorMessage("Error fetching more books: $error", context);
     } finally {
       setLoading(false);
     }
@@ -179,7 +177,6 @@ class BooksViewModel with ChangeNotifier {
       setUser(ApiResponse.completed(user));
     } catch (e) {
       logger.e("Error getting individual book: $e");
-      Utils.flushBarErrorMessage("Error: $e", context);
       setUser(ApiResponse.error(e.toString()));
     }
   }
@@ -210,7 +207,6 @@ class BooksViewModel with ChangeNotifier {
       return success;
     } catch (e) {
       logger.e("Error rating book: $e");
-      Utils.flushBarErrorMessage("Error: $e", context);
       return false;
     }
   }

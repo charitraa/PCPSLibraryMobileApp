@@ -65,7 +65,6 @@ class OnlineBooksViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching books: $error");
-      Utils.flushBarErrorMessage("Error fetching books: $error", context);
     } finally {
       setLoading(false);
     }
@@ -77,8 +76,8 @@ class OnlineBooksViewModel with ChangeNotifier {
     try {
       final Map<String, dynamic> response = await _booksRepo.fetchOnlineBooks(
           _searchValue, _currentPage, _limit, context);
-
-      if (response != null && response['booksList'] != null) {
+   logger.w('check ${response['booksList']}');
+      if (response != null && response['booksList'] != null && response['booksList'] != []) {
         _booksList.addAll(response['booksList'] as List<OnlineBooks>);
         if (response['next'] != null) {
           _currentPage++;
@@ -87,7 +86,6 @@ class OnlineBooksViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching more books: $error");
-      Utils.flushBarErrorMessage("Error fetching more books: $error", context);
     } finally {
       setLoading(false);
     }

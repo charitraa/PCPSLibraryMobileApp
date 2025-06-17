@@ -41,14 +41,14 @@ class _StudentDashboardState extends State<StudentDashboard> {
 
   Future<void> _fetchData() async {
     final paymentViewModel =
-        Provider.of<PaymentViewModel>(context, listen: false);
+    Provider.of<PaymentViewModel>(context, listen: false);
     final dueViewModel = Provider.of<MyDueViewModel>(context, listen: false);
     final booksViewModel =
-        Provider.of<MyBooksViewModel>(context, listen: false);
+    Provider.of<MyBooksViewModel>(context, listen: false);
     final reservationViewModel =
-        Provider.of<ReservationViewModel>(context, listen: false);
+    Provider.of<ReservationViewModel>(context, listen: false);
     final notificationViewModel =
-        Provider.of<NotificationViewModel>(context, listen: false);
+    Provider.of<NotificationViewModel>(context, listen: false);
     setState(() => _isLoading = true);
     try {
       if (paymentViewModel.paymentList.isEmpty) {

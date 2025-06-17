@@ -41,15 +41,11 @@ class MyDueViewModel with ChangeNotifier {
         }
       } else {
         _logger.w('No dues received in response');
-        Utils.flushBarErrorMessage('No dues received from server', context);
       }
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e('Error fetching dues: $error');
-      String errorMessage = error.toString().contains('No internet connection')
-          ? 'No internet connection. Please try again.'
-          : 'Error fetching dues: $error';
-      Utils.flushBarErrorMessage(errorMessage, context);
+
     } finally {
       setLoading(false);
     }

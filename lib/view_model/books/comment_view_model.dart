@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/model/comment_model.dart';
 import 'package:library_management_sys/repository/comments_repository.dart';
+import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
 import '../../utils/utils.dart';
 
@@ -14,7 +15,7 @@ class CommentViewModel with ChangeNotifier {
     commentsData = response;
     Future.microtask(() => notifyListeners());
   }
-
+  final logger = Logger();
   bool _isLoading = false;
   String _filter = '';
 
@@ -69,13 +70,12 @@ class CommentViewModel with ChangeNotifier {
       final Map<String, dynamic> response = await _commentsRepo.fetchComments(
           uid, _filter, _currentPage, _limit, context);
       if (_currentPage != null) {
-        print("${response['next']}=$_currentPage");
         _commentList.addAll(response['comments']);
         _currentPage++;
       }
       notifyListeners();
     } catch (error) {
-      Utils.flushBarErrorMessage("Error fetching comments: $error", context);
+      logger.e("Error rating book: $error");
     }
   }
 
@@ -90,7 +90,8 @@ class CommentViewModel with ChangeNotifier {
       notifyListeners();
       return user;
     } catch (e) {
-      Utils.flushBarErrorMessage("Error: $e", context);
+      logger.e("Error : $e");
+
       return false;
     }
   }
@@ -106,7 +107,8 @@ class CommentViewModel with ChangeNotifier {
       notifyListeners();
       return user;
     } catch (e) {
-      Utils.flushBarErrorMessage("Error: $e", context);
+      logger.e("Error : $e");
+
       return false;
     }
   }
@@ -121,7 +123,7 @@ class CommentViewModel with ChangeNotifier {
       notifyListeners();
       return user;
     } catch (e) {
-      Utils.flushBarErrorMessage("Error: $e", context);
+      logger.e("Error : $e");
       return false;
     }
   }
@@ -137,7 +139,7 @@ class CommentViewModel with ChangeNotifier {
       notifyListeners();
       return user;
     } catch (e) {
-      Utils.flushBarErrorMessage("Error: $e", context);
+      logger.e("Error : $e");
       return false;
     }
   }
@@ -151,7 +153,7 @@ class CommentViewModel with ChangeNotifier {
       notifyListeners();
       return user;
     } catch (e) {
-      Utils.flushBarErrorMessage("Error: $e", context);
+      logger.e("Error : $e");
       return false;
     }
   }
@@ -167,7 +169,7 @@ class CommentViewModel with ChangeNotifier {
       notifyListeners();
       return user;
     } catch (e) {
-      Utils.flushBarErrorMessage("Error: $e", context);
+      logger.e("Error : $e");
       return false;
     }
   }

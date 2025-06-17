@@ -53,7 +53,6 @@ class PaymentViewModel with ChangeNotifier {
         _paymentList.addAll(response['reservations'] as List<PaymentModel>);
       } else {
         _logger.w('No payments received in response');
-        Utils.flushBarErrorMessage('No payments received from server', context);
       }
       if (response != null && response['next'] != null) {
         _currentPage++;
@@ -61,10 +60,7 @@ class PaymentViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e('Error fetching payments: $error');
-      String errorMessage = error.toString().contains('No internet connection')
-          ? 'No internet connection. Please try again.'
-          : 'Error fetching payments: $error';
-      Utils.flushBarErrorMessage(errorMessage, context);
+
     } finally {
       setLoading(false);
     }
@@ -88,10 +84,7 @@ class PaymentViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e('Error fetching more payments: $error');
-      String errorMessage = error.toString().contains('No internet connection')
-          ? 'No internet connection. Please try again.'
-          : 'Error fetching payments: $error';
-      Utils.flushBarErrorMessage(errorMessage, context);
+
     } finally {
       setLoading(false);
     }

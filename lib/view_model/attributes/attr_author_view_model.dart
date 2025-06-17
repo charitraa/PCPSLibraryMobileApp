@@ -65,7 +65,6 @@ class AttrAuthorViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e("Error fetching authors: $error");
-      Utils.flushBarErrorMessage("Error fetching authors: $error", context);
     } finally {
       setLoading(false);
     }
@@ -90,7 +89,6 @@ class AttrAuthorViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e("Error fetching more authors: $error");
-      Utils.flushBarErrorMessage("Error fetching authors: $error", context);
     } finally {
       setLoading(false);
     }

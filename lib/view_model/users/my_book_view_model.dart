@@ -41,15 +41,11 @@ class MyBooksViewModel with ChangeNotifier {
         }
       } else {
         _logger.w('No books received in response');
-        Utils.flushBarErrorMessage('No books received from server', context);
       }
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e('Error fetching books: $error');
-      String errorMessage = error.toString().contains('No internet connection')
-          ? 'No internet connection. Please try again.'
-          : 'Error fetching books: $error';
-      Utils.flushBarErrorMessage(errorMessage, context);
+
     } finally {
       setLoading(false);
     }
@@ -66,15 +62,11 @@ class MyBooksViewModel with ChangeNotifier {
         await fetchBooksList(context);
       } else {
         _logger.w('Failed to renew book for UID: $uid');
-        Utils.flushBarErrorMessage('Failed to renew book', context);
       }
       return success;
     } catch (error) {
       _logger.e('Error renewing book: $error');
-      String errorMessage = error.toString().contains('No internet connection')
-          ? 'No internet connection. Please try again.'
-          : 'Error renewing book: $error';
-      Utils.flushBarErrorMessage(errorMessage, context);
+
       return false;
     } finally {
       setLoading(false);
