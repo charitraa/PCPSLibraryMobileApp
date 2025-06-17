@@ -3,27 +3,39 @@ import 'package:flutter/material.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import '../../resource/colors.dart';
 
-class RepliesWidget extends StatefulWidget {
-  final String? image, name, text,date,uid;
+class RepliesWidget extends StatelessWidget {
+  final String image;
+  final String name;
+  final String text;
+  final String date;
+  final String uid;
   final double? rating;
-  final VoidCallback? onTap,onEdit,onDelete;
+  final VoidCallback? onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
   final int? length;
-  const RepliesWidget({super.key, required this.image, required this.name, required this.text, this.rating, this.length,  this.onTap, this.date, this.onEdit, this.onDelete, this.uid});
 
-  @override
-  State<RepliesWidget> createState() => _ReviewCardState();
-}
-
-class _ReviewCardState extends State<RepliesWidget> {
+  const RepliesWidget({
+    super.key,
+    required this.image,
+    required this.name,
+    required this.text,
+    required this.date,
+    required this.uid,
+    this.rating,
+    this.length,
+    this.onTap,
+    this.onEdit,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return   Padding(
+    return Padding(
       padding: const EdgeInsets.all(10),
       child: InkWell(
-        onTap: widget.onTap,
+        onTap: onTap,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -49,43 +61,71 @@ class _ReviewCardState extends State<RepliesWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        widget.name??'',
+                        name,
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(width: 10),
-
+                      if (rating != null && rating! > 0)
+                        Row(
+                          children: [
+                            ...List.generate(
+                              rating!.toInt(),
+                                  (index) => const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              rating!.toString(),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        const Text(
+                          "No rating available",
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    widget.date?? "",
-                    style: const TextStyle(
-                        fontSize: 12, color: Colors.grey),
+                    date,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    widget.text??'',
+                    text,
                     style: const TextStyle(fontSize: 12),
                   ),
+                  const SizedBox(height: 10),
                   Consumer<AuthViewModel>(
                     builder: (context, viewModel, child) {
                       final user = viewModel.currentUser;
-                      var logger=Logger();
-                      logger.d("${widget.uid} :${user?.data?.userId}");
-                      if (user?.data?.userId == widget.uid) {
+                      final logger = Logger();
+                      logger.d("Comparing UIDs: widget.uid=$uid, userId=${user?.data?.userId}");
+                      if (user?.data?.userId == uid) {
                         return Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             InkWell(
-                              onTap: widget.onEdit,
+                              onTap: onEdit,
                               child: Container(
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
                                   color: Colors.blue.shade100,
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
                                   Icons.edit,
@@ -102,18 +142,23 @@ class _ReviewCardState extends State<RepliesWidget> {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       title: const Text('Confirm Delete'),
-                                      content: const Text('Are you sure you want to delete this item?'),
+                                      content: const Text(
+                                          'Are you sure you want to delete this reply?'),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.of(context).pop(),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
                                           child: const Text('Cancel'),
                                         ),
                                         TextButton(
                                           onPressed: () {
-                                            widget.onDelete?.call();
+                                            onDelete?.call();
                                             Navigator.of(context).pop();
                                           },
-                                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                          child: const Text(
+                                            'Delete',
+                                            style: TextStyle(color: Colors.red),
+                                          ),
                                         ),
                                       ],
                                     );
@@ -125,7 +170,7 @@ class _ReviewCardState extends State<RepliesWidget> {
                                 height: 40,
                                 decoration: BoxDecoration(
                                   color: Colors.red.shade100,
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
                                   Icons.delete_forever,
@@ -136,9 +181,8 @@ class _ReviewCardState extends State<RepliesWidget> {
                             ),
                           ],
                         );
-                      } else {
-                        return const SizedBox();
                       }
+                      return const SizedBox();
                     },
                   ),
                 ],
@@ -152,14 +196,15 @@ class _ReviewCardState extends State<RepliesWidget> {
                 backgroundColor: Colors.grey[300],
                 child: ClipOval(
                   child: CachedNetworkImage(
-                    imageUrl: widget.image??'',
+                    imageUrl: image,
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => const Center(
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
-                    errorWidget: (context, url, error) => const Icon(Icons.error, size: 24),
+                    errorWidget: (context, url, error) =>
+                    const Icon(Icons.error, size: 24),
                   ),
                 ),
               ),
