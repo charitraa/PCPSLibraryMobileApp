@@ -46,7 +46,6 @@ class _BookInfoState extends State<BookInfo> {
   bool _isLoading = true;
   final TextEditingController _commentController = TextEditingController();
   String comment = "";
-  // Use CarouselSliderController from carousel_slider package
   final CarouselSliderController carouselController =
       CarouselSliderController();
 
@@ -605,7 +604,6 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                         ),
                       ),
-                      // Updated Carousel Section
                       Consumer<BooksViewModel>(
                         builder: (context, viewModel, child) {
                           final user = viewModel.currentUser;
@@ -649,6 +647,8 @@ class _BookInfoState extends State<BookInfo> {
                                     final bookImage = user.bookImages![index];
                                     final imageUrl =
                                         "${BaseUrl.imageDisplay}/${bookImage.imageUrl}";
+                                    final heroTag =
+                                        'book_image_${bookImage.bookImageId}_$index';
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 6.0),
@@ -659,21 +659,22 @@ class _BookInfoState extends State<BookInfo> {
                                               pageBuilder: (context, animation,
                                                       secondaryAnimation) =>
                                                   BookPreview(
-                                                      imageUrl: imageUrl),
+                                                imageUrl: imageUrl,
+                                              ),
                                               transitionsBuilder: (context,
                                                   animation,
                                                   secondaryAnimation,
                                                   child) {
                                                 return FadeTransition(
-                                                    opacity: animation,
-                                                    child: child);
+                                                  opacity: animation,
+                                                  child: child,
+                                                );
                                               },
                                             ),
                                           );
                                         },
                                         child: Hero(
-                                          tag: bookImage.imageUrl ??
-                                              'image_$index',
+                                          tag: heroTag,
                                           child: Container(
                                             decoration: BoxDecoration(
                                               border: Border.all(
@@ -924,6 +925,14 @@ class _BookInfoState extends State<BookInfo> {
                               final commentData = viewModel.commentsList[index];
                               int length = commentData.replies!.length;
                               return ReviewCard(
+                                onEdit: () {
+                                  _showEditCommentDialog(
+                                    context,
+                                    commentData.comment ?? '',
+                                    commentData.commentId ?? '',
+                                    viewModel,
+                                  );
+                                },
                                 onDelete: () async {
                                   final check = await viewModel.deleteComment(
                                     commentData.commentId ?? '',
@@ -1117,6 +1126,117 @@ class _BookInfoState extends State<BookInfo> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showEditCommentDialog(
+    BuildContext context,
+    String initialComment,
+    String commentId,
+    CommentViewModel viewModel,
+  ) {
+    final TextEditingController _commentController =
+        TextEditingController(text: initialComment);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Edit Comment',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: Colors.black87,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.grey),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _commentController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'Enter your comment',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey.shade400),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide:
+                          const BorderSide(color: Colors.blue, width: 1.5),
+                    ),
+                  ),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final updatedComment = _commentController.text.trim();
+                      if (updatedComment.isNotEmpty) {
+                        final check = await viewModel.updateComment(
+                          commentId,
+                          {"comment": updatedComment},
+                          context,
+                        );
+                        if (check) {
+                          await viewModel.fetchComments(
+                              widget.uid ?? '', context);
+                          Navigator.of(context).pop();
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade600,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                    ),
+                    child: const Text(
+                      'Update',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

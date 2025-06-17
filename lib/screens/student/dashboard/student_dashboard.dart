@@ -8,6 +8,7 @@ import 'package:library_management_sys/screens/student/book_request/request_book
 import 'package:library_management_sys/screens/student/dashboard/confirm_reserved_list.dart';
 import 'package:library_management_sys/screens/student/in_app_notification/in_app_notification.dart';
 import 'package:library_management_sys/screens/student/my_books/my_book_widget.dart';
+import 'package:library_management_sys/screens/student/payment/payment.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/utils/utils.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
@@ -523,75 +524,195 @@ class _StudentDashboardState extends State<StudentDashboard> {
   }
 
   Widget _buildDuesSection(Size size) {
-    return SizedBox(
-      height: 125,
-      child: Consumer<MyDueViewModel>(
-        builder: (context, value, child) {
-          final dues = value.duesList;
-          if (dues.isEmpty) {
-            return _buildNoDataCard(size, 'No Dues');
-          }
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(bottom: 8),
-            itemCount: dues.length,
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              final due = dues[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 70,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(8),
-                        border:
-                            Border.all(color: Colors.grey[400]!, width: 0.5),
-                      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 105,
+          child: Consumer<MyDueViewModel>(
+            builder: (context, value, child) {
+              final dues = value.duesList;
+              if (dues.isEmpty) {
+                return _buildNoDataCard(size, 'No Pending Dues');
+              }
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(bottom: 8, right: 8),
+                itemCount: dues.length,
+                physics: const BouncingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final due = dues[index];
+                  return GestureDetector(
+                    onTap: () => _showDueDetailsDialog(context, due),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            'Rs.',
-                            style: TextStyle(color: Colors.white, fontSize: 12),
-                          ),
-                          Text(
-                            due.amount.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                          Container(
+                            width: size.width * 0.35,
+                            height: 95,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Colors.red.shade600, Colors.red.shade400],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.3),
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          due.penaltyType == 'PropertyDamage'
+                                              ? 'Property Damage'
+                                              : due.penaltyType ?? 'Unknown',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.warning_rounded,
+                                        color: Colors.white.withOpacity(0.8),
+                                        size: 20,
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    "Rs. ${due.amount}",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                  Text(
+                                    due.createdAt != null
+                                        ? parseDate(due.createdAt.toString())
+                                        : 'N/A',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.8),
+                                      fontSize: 12,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: 80,
-                      child: Text(
-                        due.penaltyType == 'PropertyDamage'
-                            ? 'Property Damage'
-                            : due.penaltyType ?? '',
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showDueDetailsDialog(BuildContext context, dynamic due) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Due Details',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: Colors.black87,
                       ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.grey),
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ),
-              );
-            },
-          );
-        },
+                const Divider(),
+                _buildDetailRow('Type', due.penaltyType == 'PropertyDamage' ? 'Property Damage' : due.penaltyType ?? 'Unknown'),
+                _buildDetailRow('Amount', 'Rs. ${due.amount}'),
+                _buildDetailRow('Status', due.status ?? 'N/A'),
+                _buildDetailRow('Description', due.description ?? 'No description'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Poppins',
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Poppins',
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -904,21 +1025,21 @@ class _StudentDashboardState extends State<StudentDashboard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Payment History',
               style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'poppins',
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                fontFamily: 'Poppins',
+                color: Colors.black87,
+                fontWeight: FontWeight.w600,
               ),
             ),
             _buildFilterButton(
-              'View',
-              () => Navigator.of(context).push(
+              'View All',
+                  () => Navigator.of(context).push(
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
-                      const StudentNavBar(index: 2, reqIndex: 0),
+                  const Payment(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     const begin = Offset(1.0, 0.0);
@@ -937,53 +1058,89 @@ class _StudentDashboardState extends State<StudentDashboard> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         SizedBox(
-          height: 100,
+          height: 120,
           child: Consumer<PaymentViewModel>(
             builder: (context, value, child) {
-              final payments = value.paymentList;
+              final payments = value.paymentList.take(2).toList(); // Limit to 2 items
               if (payments.isEmpty) {
                 return _buildNoDataCard(size, 'No Payment History');
               }
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 8, right: 8),
                 itemCount: payments.length,
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
                   final payment = payments[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.only(left: 8, right: 8),
                     child: Container(
-                      width: size.width * 0.35,
+                      width: size.width * 0.42,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                      ),
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            payment.paymentType ?? '',
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "Rs. ${payment.amountPaid.toString()}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        gradient: LinearGradient(
+                          colors: [Colors.blue.shade600, Colors.blue.shade400],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
                           ),
                         ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  payment.paymentType ?? 'Unknown',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Icon(
+                                  Icons.receipt_long,
+                                  color: Colors.white.withOpacity(0.8),
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                            Text(
+                              "Rs. ${payment.amountPaid}",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            Text(
+                              parseDate(payment.createdAt.toString()),
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

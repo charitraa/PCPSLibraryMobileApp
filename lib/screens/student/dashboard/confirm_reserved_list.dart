@@ -85,13 +85,15 @@ class _ConfirmReservationListState extends State<ConfirmReservationList> {
                   ),
                 );
               },
+              year: reservationData.bookInfo?.publicationYear.toString()??'',
               reservationDate: reservationData.reservationDate!=null? parseDate(reservationData.reservationDate.toString()): '',
               title: reservationData.bookInfo?.title ?? '',
               image: filterImage != null
                   ? "${BaseUrl.imageDisplay}/$filterImage"
                   : '',
               status: reservationData.book?.status ?? '',
-              id: '',
+              id: reservationData.reservationId??'' ,
+
               barcode: reservationData.book?.barcode ?? '',
             );
           },

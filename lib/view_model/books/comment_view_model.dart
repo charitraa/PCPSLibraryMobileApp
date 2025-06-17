@@ -52,7 +52,6 @@ class CommentViewModel with ChangeNotifier {
       _commentList.clear();
       final Map<String, dynamic> response =
           await _commentsRepo.fetchComments(uid, _filter, 1, _limit, context);
-
       _commentList.addAll(response['comments']);
       if (response['next'] != null) {
         _currentPage++;
@@ -88,6 +87,7 @@ class CommentViewModel with ChangeNotifier {
         Utils.flushBarSuccessMessage(
             'You have successfully commented!!', context);
       }
+      notifyListeners();
       return user;
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);
@@ -103,6 +103,7 @@ class CommentViewModel with ChangeNotifier {
         Utils.flushBarSuccessMessage(
             'You have replied on this comment!!', context);
       }
+      notifyListeners();
       return user;
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);
@@ -117,6 +118,7 @@ class CommentViewModel with ChangeNotifier {
         Utils.flushBarSuccessMessage(
             'You have deleted the comments !!', context);
       }
+      notifyListeners();
       return user;
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);
@@ -132,6 +134,37 @@ class CommentViewModel with ChangeNotifier {
         Utils.flushBarSuccessMessage(
             'You have updated your comment!!', context);
       }
+      notifyListeners();
+      return user;
+    } catch (e) {
+      Utils.flushBarErrorMessage("Error: $e", context);
+      return false;
+    }
+  }
+
+  Future<bool> deleteReply(String uid, BuildContext context) async {
+    try {
+      final user = await _commentsRepo.deleteReply(uid, context);
+      if (user) {
+        Utils.flushBarSuccessMessage('You have deleted this reply!!', context);
+      }
+      notifyListeners();
+      return user;
+    } catch (e) {
+      Utils.flushBarErrorMessage("Error: $e", context);
+      return false;
+    }
+  }
+
+  Future<bool> updateReply(
+      String uid, dynamic body, BuildContext context) async {
+    try {
+      final user = await _commentsRepo.updateReply(uid, body, context);
+      if (user) {
+        Utils.flushBarSuccessMessage(
+            'You have updated your comment!!', context);
+      }
+      notifyListeners();
       return user;
     } catch (e) {
       Utils.flushBarErrorMessage("Error: $e", context);

@@ -93,7 +93,7 @@ class _CommentsState extends State<Comments> {
                 children: [
                   Text(
                     'Write Your Review',
-                    style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -186,14 +186,36 @@ class _CommentsState extends State<Comments> {
                         }
 
                         final commentData = viewModel.commentsList[index];
-                        int length=commentData.replies!.length;
-                       String? img=commentData.user!.profilePicUrl!=null?"${BaseUrl.imageDisplay}/${commentData.user!.profilePicUrl}":'';
-                       print(img);
-                       return Column(
+                        int length = commentData.replies!.length;
+                        String? img = commentData.user!.profilePicUrl != null
+                            ? "${BaseUrl.imageDisplay}/${commentData.user!.profilePicUrl}"
+                            : '';
+
+                        return Column(
                           children: [
-                            SizedBox(height: 10,),
                             ReviewCard(
-                              date: commentData.updatedAt!=null ?parseDate(commentData.updatedAt.toString()): "",
+                              uid: commentData.userId,
+                              onEdit: () {
+                                _showEditCommentDialog(
+                                  context,
+                                  commentData.comment ?? '',
+                                  commentData.commentId ?? '',
+                                  viewModel,
+                                );
+                              },
+                              onDelete: () async {
+                                final check = await viewModel.deleteComment(
+                                  commentData.commentId ?? '',
+                                  context,
+                                );
+                                if (check) {
+                                  await viewModel.fetchComments(
+                                      widget.uid ?? '', context);
+                                }
+                              },
+                              date: commentData.updatedAt != null
+                                  ? parseDate(commentData.updatedAt.toString())
+                                  : "",
                               image: commentData.user?.profilePicUrl != null
                                   ? img
                                   : '',
@@ -207,26 +229,25 @@ class _CommentsState extends State<Comments> {
                                 Navigator.of(context).push(
                                   PageRouteBuilder(
                                     pageBuilder: (context, animation,
-                                        secondaryAnimation) =>
+                                            secondaryAnimation) =>
                                         ReplyComments(
-                                          replies: commentData.replies,
-                                          uid:widget.uid,
-                                          commentId:commentData.commentId??'' ,
-                                          name: commentData.user?.fullName ?? '',
-                                          image: commentData
-                                              .user?.profilePicUrl !=
+                                      replies: commentData.replies,
+                                      uid: widget.uid,
+                                      commentId: commentData.commentId ?? '',
+                                      name: commentData.user?.fullName ?? '',
+                                      image: commentData.user?.profilePicUrl !=
                                               null
-                                              ? "${BaseUrl.imageDisplay}/${commentData.user?.profilePicUrl.toString()}"
-                                              : '',
-                                          rating: commentData
-                                              .user!.ratings!.isNotEmpty
+                                          ? "${BaseUrl.imageDisplay}/${commentData.user?.profilePicUrl.toString()}"
+                                          : '',
+                                      rating:
+                                          commentData.user!.ratings!.isNotEmpty
                                               ? (commentData.user!.ratings![0]
-                                              .rating as int)
-                                              .toDouble()
+                                                      .rating as int)
+                                                  .toDouble()
                                               : 0,
-                                          text: commentData.comment ?? '',
-                                          length: length,
-                                        ),
+                                      text: commentData.comment ?? '',
+                                      length: length,
+                                    ),
                                     transitionsBuilder: (context, animation,
                                         secondaryAnimation, child) {
                                       const begin = Offset(1.0, 0.0);
@@ -235,7 +256,7 @@ class _CommentsState extends State<Comments> {
                                       var tween = Tween(begin: begin, end: end)
                                           .chain(CurveTween(curve: curve));
                                       var offsetAnimation =
-                                      animation.drive(tween);
+                                          animation.drive(tween);
                                       return SlideTransition(
                                         position: offsetAnimation,
                                         child: child,
@@ -260,6 +281,117 @@ class _CommentsState extends State<Comments> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showEditCommentDialog(
+    BuildContext context,
+    String initialComment,
+    String commentId,
+    CommentViewModel viewModel,
+  ) {
+    final TextEditingController _commentController =
+        TextEditingController(text: initialComment);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Edit Comment',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: Colors.black87,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.grey),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _commentController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'Enter your comment',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey.shade400),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide:
+                          const BorderSide(color: Colors.blue, width: 1.5),
+                    ),
+                  ),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final updatedComment = _commentController.text.trim();
+                      if (updatedComment.isNotEmpty) {
+                        final check = await viewModel.updateComment(
+                          commentId,
+                          {"comment": updatedComment},
+                          context,
+                        );
+                        if (check) {
+                          await viewModel.fetchComments(
+                              widget.uid ?? '', context);
+                          Navigator.of(context).pop();
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade600,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                    ),
+                    child: const Text(
+                      'Update',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

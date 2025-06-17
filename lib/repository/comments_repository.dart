@@ -93,14 +93,13 @@ class CommentsRepository {
       return false;
     }
   }
-
   Future<bool> updateComments(String uid, dynamic body, BuildContext context) async {
     String url = "${CommentEndpoints.updateComment}/$uid";
     try {
       if (kDebugMode) {
-        _logger.d("Update comment URL: $url");
+        _logger.d("Update comment URL: $url and body $body");
       }
-      final dynamic response = await _apiService.getPostApiResponse(url, body);
+      final dynamic response = await _apiService.getPutApiResponse(url, body);
       if (response['error'] != null && response['error'] == true) {
         _logger.w("Error updating comment: ${response['errorMessage'] ?? 'Unknown error'}");
         Utils.flushBarErrorMessage(
@@ -121,6 +120,55 @@ class CommentsRepository {
 
   Future<bool> deleteComment(String uid, BuildContext context) async {
     String url = "${CommentEndpoints.deleteComment}/$uid";
+    try {
+      if (kDebugMode) {
+        _logger.d("Delete comment URL: $url");
+      }
+      final dynamic response = await _apiService.getDeleteApiResponse(url);
+      if (response['error'] != null && response['error'] == true) {
+        _logger.w("Error deleting comment: ${response['errorMessage'] ?? 'Unknown error'}");
+        Utils.flushBarErrorMessage(
+            response['errorMessage'] ?? "Unknown error", context);
+        return false;
+      }
+      return true;
+    } on TimeoutException {
+      _logger.e("Timeout: No internet connection for deleting comment");
+      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      return false;
+    } catch (error) {
+      _logger.e("Error deleting comment: $error");
+      Utils.flushBarErrorMessage("Error deleting comment: $error", context);
+      return false;
+    }
+  }
+  Future<bool> updateReply(String uid, dynamic body, BuildContext context) async {
+    String url = "${CommentEndpoints.updateReply}/$uid";
+    try {
+      if (kDebugMode) {
+        _logger.d("Update comment URL: $url and body $body");
+      }
+      final dynamic response = await _apiService.getPutApiResponse(url, body);
+      if (response['error'] != null && response['error'] == true) {
+        _logger.w("Error updating comment: ${response['errorMessage'] ?? 'Unknown error'}");
+        Utils.flushBarErrorMessage(
+            response['errorMessage'] ?? "Unknown error", context);
+        return false;
+      }
+      return true;
+    } on TimeoutException {
+      _logger.e("Timeout: No internet connection for updating comment");
+      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      return false;
+    } catch (error) {
+      _logger.e("Error updating comment: $error");
+      Utils.flushBarErrorMessage("Error updating comment: $error", context);
+      return false;
+    }
+  }
+
+  Future<bool> deleteReply(String uid, BuildContext context) async {
+    String url = "${CommentEndpoints.deleteReply}/$uid";
     try {
       if (kDebugMode) {
         _logger.d("Delete comment URL: $url");
