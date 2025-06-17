@@ -1,6 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
+
+import '../custom_shimmer_effect.dart';
 
 class ReplyWidget extends StatefulWidget {
   final String? image, name, text,date;
@@ -120,16 +121,21 @@ class _ReplyWidgetState extends State<ReplyWidget> {
                 radius: 18,
                 backgroundColor: Colors.grey[300],
                 child: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: widget.image??'',
+                  child:Image.network(
+                    widget.image ?? '',
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                    errorWidget: (context, url, error) => const Icon(Icons.error, size: 24),
-                  ),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return CustomShimmerLoading(
+                        radius: 18,
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.error, size: 24),
+                  )
                 ),
               ),
             ),

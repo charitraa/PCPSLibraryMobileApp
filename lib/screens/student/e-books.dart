@@ -5,7 +5,6 @@ import 'package:library_management_sys/resource/colors.dart';
 import 'package:library_management_sys/view_model/books/online_books_view_model.dart';
 import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:library_management_sys/widgets/book/book_skeleton.dart';
-import 'package:library_management_sys/widgets/book/book_widget.dart';
 import 'package:library_management_sys/widgets/book/online_book_wid.dart';
 import 'package:library_management_sys/widgets/custom_search.dart';
 import 'package:provider/provider.dart';

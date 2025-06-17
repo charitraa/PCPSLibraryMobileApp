@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/model/comment_model.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -264,18 +263,21 @@ class _ReplyCommentsState extends State<ReplyComments> {
                       radius: 18,
                       backgroundColor: Colors.grey[300],
                       child: ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: widget.image ?? '',
+                        child:widget.image!=''||widget.image !=''? Image.network(
+                          widget.image ?? '',
                           width: 40,
                           height: 40,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                            child:
-                            CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                          errorWidget: (context, url, error) =>
-                          const Icon(Icons.error, size: 24),
-                        ),
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.error, size: 24);
+                          },
+                        ):const Icon(Icons.error, color:Colors.red ,size: 24),
                       ),
                     ),
                   ),

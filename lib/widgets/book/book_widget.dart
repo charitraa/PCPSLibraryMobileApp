@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
+import '../custom_shimmer_effect.dart';
 
 class BookWidget extends StatefulWidget {
   final String bookImage, title, author;
@@ -46,14 +47,22 @@ class _BookWidgetState extends State<BookWidget> {
           children: [
             SizedBox(
               height: 122,
-              child: CachedNetworkImage(
-                imageUrl: widget.bookImage,
+              child: Image.network(
+                widget.bookImage,
                 width: 120,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CustomShimmerLoading(
+                      width: 120.0,
+                      height: 122,
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.error)),
               ),
             ),
             const SizedBox(height: 2),

@@ -1,10 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/resource/colors.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+
+import '../custom_shimmer_effect.dart';
 
 class RepliesWidget extends StatelessWidget {
   final String image;
@@ -186,15 +187,20 @@ class RepliesWidget extends StatelessWidget {
                 radius: 18,
                 backgroundColor: Colors.grey[300],
                 child: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: image,
+                  child: Image.network(
+                    image,
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                    errorWidget: (context, url, error) =>
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return CustomShimmerLoading(
+                        radius: 18,
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) =>
                         const Icon(Icons.error, size: 24),
                   ),
                 ),

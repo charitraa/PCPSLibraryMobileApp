@@ -1,9 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../constant/base_url.dart';
 import '../../../resource/colors.dart';
-import '../../../utils/parse_date.dart';
 import '../../../view_model/users/my_pay_view_model.dart';
 
 class Payment extends StatefulWidget {

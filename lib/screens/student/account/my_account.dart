@@ -1,10 +1,14 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:library_management_sys/widgets/form_widget/custom_button.dart';
 import 'package:provider/provider.dart';
-
+import 'package:shimmer/shimmer.dart';
 import '../../../constant/base_url.dart';
 import '../../../data/response/status.dart';
+import '../../student_nav.dart';
+import '../book_request/book_request_screen.dart';
+import '../my_wishlist/std_wishlist.dart';
+import '../payment/payment.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -22,7 +26,7 @@ class _ProfileState extends State<Profile> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          "Account",
+          "Profile",
           style: TextStyle(fontFamily: 'poppins-black', color: Colors.black),
         ),
         actions: const [
@@ -32,7 +36,7 @@ class _ProfileState extends State<Profile> {
             height: 24,
             fit: BoxFit.cover,
           ),
-          SizedBox(width: 18)
+          SizedBox(width: 18),
         ],
       ),
       body: SafeArea(
@@ -82,37 +86,68 @@ class _ProfileState extends State<Profile> {
                     } else if (user != null) {
                       return Column(
                         children: [
-                          Stack(
-                            alignment: Alignment.bottomRight,
-                            children: [
-                              CircleAvatar(
-                                radius: 70,
-                                backgroundImage: user.data?.profilePicUrl != null
-                                    ? NetworkImage(
-                                        "${BaseUrl.imageDisplay}/${user.data?.profilePicUrl}")
-                                    : const AssetImage(
-                                        'assets/images/pcps.jpg'),
-                              ),
-                            ],
+                          CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.transparent,
+                            child: ClipOval(
+                              child: user.data?.profilePicUrl != null||user.data?.profilePicUrl!=''
+                                  ? Image.network(
+                                      "${BaseUrl.imageDisplay}/${user.data?.profilePicUrl}",
+                                      width: 120,
+                                      height: 120,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return Shimmer.fromColors(
+                                          baseColor: Colors.grey[300]!,
+                                          highlightColor: Colors.grey[100]!,
+                                          child: Container(
+                                            width: 140,
+                                            height: 140,
+                                            color: Colors.grey[300],
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder: (context, error,
+                                              stackTrace) =>
+                                          CircleAvatar(
+                                            radius: 50,
+                                            backgroundColor: Colors.red[100],
+                                            child: const Center(
+                                              child: Icon(
+                                                Icons.error,
+                                                size: 50,
+                                              ),
+                                            ),
+                                          ))
+                                  : Image.asset(
+                                      'assets/images/pcps.jpg',
+                                      width: 140,
+                                      height: 140,
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            user.data?.fullName ?? '',
+                            user.data?.fullName ?? 'Unknown name',
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            user.data?.cardId ?? '',
+                            user.data?.cardId ?? 'Unknown ID',
                             style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                               color: Colors.grey,
                             ),
-                          ),const SizedBox(height: 5),
-
+                          ),
                         ],
                       );
                     } else {
@@ -132,19 +167,17 @@ class _ProfileState extends State<Profile> {
                                   color: Colors.blue,
                                   shape: BoxShape.circle,
                                 ),
-                                child: GestureDetector(
-                                  child: const Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                  size: 16,
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 20),
                           const Text(
-                            'Unkown name',
+                            'Unknown name',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -153,7 +186,7 @@ class _ProfileState extends State<Profile> {
                           ),
                           const SizedBox(height: 5),
                           const Text(
-                            "Unknown email",
+                            'Unknown ID',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
@@ -165,21 +198,119 @@ class _ProfileState extends State<Profile> {
                   },
                 ),
                 const SizedBox(height: 30),
-                Center(
-                  child: Column(
+                Expanded(
+                  child: ListView(
                     children: [
-                      buildProfileOption(Icons.logout, 'Logout', () async {
-                        try {
-                          await Provider.of<AuthViewModel>(context,
-                                  listen: false)
-                              .logout(context);
-                        } catch (e) {
-                          print("Logout failed: $e");
-                        }
-                      }),
+                      buildProfileOption(
+                        Icons.book,
+                        'Current Reading',
+                        () => Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const StudentNavBar(
+                              index: 3,
+                            ),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeInOut;
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      buildProfileOption(
+                        Icons.bookmark,
+                        'My Reservation',
+                        () => Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const Wishlist(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeInOut;
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      buildProfileOption(
+                        Icons.request_page,
+                        'My Request',
+                        () => Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const BookRequestScreen(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeInOut;
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      buildProfileOption(
+                          Icons.payment,
+                          'Payment History',
+                          () => Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      const Payment(),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.easeInOut;
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
+                                    var offsetAnimation =
+                                        animation.drive(tween);
+                                    return SlideTransition(
+                                      position: offsetAnimation,
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              )),
                     ],
                   ),
                 ),
+                CustomButton(
+                    text: 'Logout',
+                    onPressed: () async {
+                      await Provider.of<AuthViewModel>(context, listen: false)
+                          .logout(context);
+                    }),
+                const SizedBox(
+                  height: 8,
+                )
               ],
             ),
           ),
@@ -191,13 +322,22 @@ class _ProfileState extends State<Profile> {
   Widget buildProfileOption(
       IconData icon, String title, VoidCallback? callback) {
     return ListTile(
-      leading: Icon(icon, color: Colors.black),
+      leading: Icon(icon, color: Colors.black, size: 24),
       title: Text(
         title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.black,
+        ),
       ),
-      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+      trailing: const Icon(Icons.chevron_right, color: Colors.grey, size: 24),
       onTap: callback,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      tileColor: Colors.grey[50],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
     );
   }
 }

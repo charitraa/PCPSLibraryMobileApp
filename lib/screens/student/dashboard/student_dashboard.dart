@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/model/my_books_model.dart';
@@ -10,7 +9,6 @@ import 'package:library_management_sys/screens/student/in_app_notification/in_ap
 import 'package:library_management_sys/screens/student/my_books/my_book_widget.dart';
 import 'package:library_management_sys/screens/student/payment/payment.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
-import 'package:library_management_sys/utils/utils.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/view_model/notifications/notification_view_model.dart';
 import 'package:library_management_sys/view_model/users/my_book_view_model.dart';
@@ -329,14 +327,18 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   radius: 18,
                   backgroundColor: Colors.grey[300],
                   child: ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: image,
+                    child: Image.network(
+                      image,
                       width: 36,
                       height: 36,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => _buildImageSkeleton(),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error, size: 24),
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return _buildImageSkeleton();
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.error, size: 24);
+                      },
                     ),
                   ),
                 ),
@@ -457,16 +459,20 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 radius: 18,
                 backgroundColor: Colors.grey[300],
                 child: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: '',
+                  child: Image.network(
+                    '',
                     width: 36,
                     height: 36,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => _buildImageSkeleton(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error, size: 24),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return _buildImageSkeleton();
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.error, size: 24);
+                    },
                   ),
-                ),
+                )
               ),
               const SizedBox(width: 8),
               Column(
