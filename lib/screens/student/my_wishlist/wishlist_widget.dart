@@ -1,5 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import '../../../widgets/custom_shimmer_effect.dart';
 
 class WishlistWidget extends StatelessWidget {
   final String title,publicationYear;
@@ -45,16 +46,23 @@ class WishlistWidget extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
-                        child: CachedNetworkImage(
-                          imageUrl: image,
+                        child:Image.network(
+                          image,
                           width: 70,
                           height: 90,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child:CustomShimmerLoading(
+                                width: 70.0,
+                                height: 90,
+                                baseColor: Colors.grey[300]!,
+                                highlightColor: Colors.grey[100]!,
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
                         )),
                   ),
                   Expanded(

@@ -1,6 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/constant/base_url.dart';
 
 class NotificationItem extends StatelessWidget {
   final String image;
@@ -30,17 +28,18 @@ class NotificationItem extends StatelessWidget {
               radius: 18,
               backgroundColor: Colors.grey[300],
               child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: image,
+                child:Image.network(
+                  image,
                   width: 60,
                   height: 60,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2),
-                  ),
-                  errorWidget: (context, url, error) =>
-                  const Icon(Icons.error, size: 24),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.error, size: 24),
                 ),
               ),
             ),

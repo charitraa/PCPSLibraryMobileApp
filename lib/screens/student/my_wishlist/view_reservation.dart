@@ -1,8 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
-import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/model/reservation_model.dart';
 import 'package:library_management_sys/screens/student/book_info/book_preview.dart';
 import 'package:library_management_sys/screens/student/book_info/comments.dart';
@@ -17,7 +15,6 @@ import 'package:library_management_sys/widgets/book/book_info_row.dart';
 import 'package:library_management_sys/widgets/book/review_card.dart';
 import 'package:library_management_sys/widgets/book/review_skeleton.dart';
 import 'package:provider/provider.dart';
-import '../../../data/response/status.dart';
 import '../../../resource/colors.dart';
 import '../../../utils/parse_date.dart';
 import '../../../widgets/form_widget/custom_comment.dart';
@@ -102,15 +99,20 @@ class _ViewReservationState extends State<ViewReservation> {
                 height: 80,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    imageUrl: '${BaseUrl.imageDisplay}/${widget.image}',
+                  child: Image.network(
+                    '${BaseUrl.imageDisplay}/${widget.image}',
                     width: 40,
                     height: 80,
                     fit: BoxFit.contain,
-                    placeholder: (context, url) => _buildImageSkeleton(),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return _buildImageSkeleton();
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.error);
+                    },
                   ),
-                ),
+                )
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -224,13 +226,18 @@ class _ViewReservationState extends State<ViewReservation> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: CachedNetworkImage(
-                          imageUrl: "${BaseUrl.imageDisplay}/${widget.image}",
+                        child: Image.network(
+                          "${BaseUrl.imageDisplay}/${widget.image}",
                           width: 200,
                           height: 290,
                           fit: BoxFit.contain,
-                          placeholder: (context, url) => _buildImageSkeleton(),
-                          errorWidget: (context, url, error) => const Icon(Icons.error),
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return _buildImageSkeleton();
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.error);
+                          },
                         ),
                       ),
                     ),
@@ -664,16 +671,22 @@ class _ViewReservationState extends State<ViewReservation> {
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
-                                      child: CachedNetworkImage(
-                                        imageUrl: imageUrl,
+                                      child: Image.network(
+                                        imageUrl,
                                         width: 70,
                                         height: 90,
                                         fit: BoxFit.cover,
-                                        placeholder: (context, url) => _buildImageSkeleton(),
-                                        errorWidget: (context, url, error) => const Icon(
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if (loadingProgress == null) return child;
+                                          return _buildImageSkeleton();
+                                        },
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return const Icon(
                                             Icons.broken_image,
-                                            color: Colors.grey),
-                                      ),
+                                            color: Colors.grey,
+                                          );
+                                        },
+                                      )
                                     ),
                                   ),
                                 ),

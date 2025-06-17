@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
@@ -109,17 +108,24 @@ class _BookInfoState extends State<BookInfo> {
                 width: 40,
                 height: 80,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.image,
-                    width: 40,
-                    height: 80,
-                    fit: BoxFit.contain,
-                    placeholder: (context, url) => _buildImageSkeleton(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
-                ),
+                    borderRadius: BorderRadius.circular(8),
+                    child: widget.image != null || widget.image != ''
+                        ? Image.network(
+                            widget.image,
+                            width: 40,
+                            height: 80,
+                            fit: BoxFit.contain,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return _buildImageSkeleton();
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.error);
+                            },
+                          )
+                        : const Icon(
+                            Icons.error,
+                          )),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -218,18 +224,26 @@ class _BookInfoState extends State<BookInfo> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: CachedNetworkImage(
-                                imageUrl: widget.image,
-                                width: 200,
-                                height: 290,
-                                fit: BoxFit.contain,
-                                placeholder: (context, url) =>
-                                    _buildImageSkeleton(),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              ),
-                            ),
+                                borderRadius: BorderRadius.circular(8),
+                                child: widget.image != '' ||
+                                        widget.image != null
+                                    ? Image.network(
+                                        widget.image,
+                                        width: 40,
+                                        height: 80,
+                                        fit: BoxFit.contain,
+                                        loadingBuilder:
+                                            (context, child, loadingProgress) {
+                                          if (loadingProgress == null)
+                                            return child;
+                                          return _buildImageSkeleton();
+                                        },
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return const Icon(Icons.error);
+                                        },
+                                      )
+                                    : const Icon(Icons.error)),
                           ),
                         ],
                       ),
@@ -622,11 +636,8 @@ class _BookInfoState extends State<BookInfo> {
                               ),
                             );
                           }
-
-// Filter out duplicate bookImages based on bookImageId or imageUrl
                           final uniqueBookImages =
                               user.bookImages!.toSet().toList();
-
                           return Container(
                             height: 100,
                             width: size.width,
@@ -676,38 +687,49 @@ class _BookInfoState extends State<BookInfo> {
                                           );
                                         },
                                         child: Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.grey.shade300,
-                                                width: 1),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.1),
-                                                blurRadius: 4,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ],
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            child: CachedNetworkImage(
-                                              imageUrl: imageUrl,
-                                              width: 70,
-                                              height: 90,
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  _buildImageSkeleton(),
-                                              errorWidget: (context, url,
-                                                      error) =>
-                                                  const Icon(Icons.broken_image,
-                                                      color: Colors.grey),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300,
+                                                  width: 1),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.1),
+                                                  blurRadius: 4,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                        ),
+                                            child: imageUrl != null ||
+                                                    imageUrl != ''
+                                                ? ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    child: Image.network(
+                                                      imageUrl,
+                                                      width: 70,
+                                                      height: 90,
+                                                      fit: BoxFit.cover,
+                                                      loadingBuilder: (context,
+                                                          child,
+                                                          loadingProgress) {
+                                                        if (loadingProgress ==
+                                                            null) return child;
+                                                        return _buildImageSkeleton();
+                                                      },
+                                                      errorBuilder: (context,
+                                                          error, stackTrace) {
+                                                        return const Icon(
+                                                            Icons.broken_image,
+                                                            color: Colors.grey);
+                                                      },
+                                                    ),
+                                                  )
+                                                : const Icon(Icons.broken_image,
+                                                    color: Colors.grey)),
                                       ),
                                     );
                                   },

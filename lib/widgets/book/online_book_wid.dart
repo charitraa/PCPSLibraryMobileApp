@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
+import '../custom_shimmer_effect.dart';
 
 class OnlineBookWid extends StatefulWidget {
   final String bookImage, title;
   final VoidCallback? onTap;
   const OnlineBookWid(
-      {super.key,
-        required this.bookImage,
-        required this.title,
-          this.onTap});
+      {super.key, required this.bookImage, required this.title, this.onTap});
 
   @override
   State<OnlineBookWid> createState() => _BookWidgetState();
@@ -45,17 +43,25 @@ class _BookWidgetState extends State<OnlineBookWid> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 122,
-              child: CachedNetworkImage(
-                imageUrl: widget.bookImage,
-                width: 120,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-              ),
-            ),
+                height: 122,
+                child: Image.network(
+                  widget.bookImage,
+                  width: 120,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CustomShimmerLoading(
+                        width: 120.0,
+                        height: 122,
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error),
+                )),
             const SizedBox(height: 2),
             Text(
               truncatedTitle,
