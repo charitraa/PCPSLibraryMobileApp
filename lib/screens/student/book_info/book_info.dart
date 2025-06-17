@@ -45,7 +45,6 @@ class _BookInfoState extends State<BookInfo> {
   bool _isLoading = true;
   final TextEditingController _commentController = TextEditingController();
   String comment = "";
-  // Use CarouselSliderController from carousel_slider package
   final CarouselSliderController carouselController =
       CarouselSliderController();
 
@@ -581,7 +580,6 @@ class _BookInfoState extends State<BookInfo> {
                           ),
                         ),
                       ),
-                      // Updated Carousel Section
                       Consumer<BooksViewModel>(
                         builder: (context, viewModel, child) {
                           final user = viewModel.currentUser;
@@ -625,6 +623,8 @@ class _BookInfoState extends State<BookInfo> {
                                     final bookImage = user.bookImages![index];
                                     final imageUrl =
                                         "${BaseUrl.imageDisplay}/${bookImage.imageUrl}";
+                                    final heroTag =
+                                        'book_image_${bookImage.bookImageId}_$index';
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 6.0),
@@ -633,30 +633,31 @@ class _BookInfoState extends State<BookInfo> {
                                           Navigator.of(context).push(
                                             PageRouteBuilder(
                                               pageBuilder: (context, animation,
-                                                      secondaryAnimation) =>
+                                                  secondaryAnimation) =>
                                                   BookPreview(
-                                                      imageUrl: imageUrl),
+                                                      imageUrl: imageUrl,
+                                                    ),
                                               transitionsBuilder: (context,
                                                   animation,
                                                   secondaryAnimation,
                                                   child) {
                                                 return FadeTransition(
-                                                    opacity: animation,
-                                                    child: child);
+                                                  opacity: animation,
+                                                  child: child,
+                                                );
                                               },
                                             ),
                                           );
                                         },
                                         child: Hero(
-                                          tag: bookImage.imageUrl ??
-                                              'image_$index',
+                                          tag: heroTag,
                                           child: Container(
                                             decoration: BoxDecoration(
                                               border: Border.all(
                                                   color: Colors.grey.shade300,
                                                   width: 1),
                                               borderRadius:
-                                                  BorderRadius.circular(8),
+                                              BorderRadius.circular(8),
                                               boxShadow: [
                                                 BoxShadow(
                                                   color: Colors.grey
@@ -668,7 +669,7 @@ class _BookInfoState extends State<BookInfo> {
                                             ),
                                             child: ClipRRect(
                                               borderRadius:
-                                                  BorderRadius.circular(8),
+                                              BorderRadius.circular(8),
                                               child: CachedNetworkImage(
                                                 imageUrl: imageUrl,
                                                 width: 70,
@@ -678,9 +679,9 @@ class _BookInfoState extends State<BookInfo> {
                                                     _buildImageSkeleton(),
                                                 errorWidget:
                                                     (context, url, error) =>
-                                                        const Icon(
-                                                            Icons.broken_image,
-                                                            color: Colors.grey),
+                                                const Icon(
+                                                    Icons.broken_image,
+                                                    color: Colors.grey),
                                               ),
                                             ),
                                           ),
@@ -692,12 +693,12 @@ class _BookInfoState extends State<BookInfo> {
                                     height: 90,
                                     autoPlay: user.bookImages!.length > 1,
                                     autoPlayInterval:
-                                        const Duration(seconds: 1),
+                                    const Duration(seconds: 1),
                                     autoPlayAnimationDuration:
-                                        const Duration(milliseconds: 800),
+                                    const Duration(milliseconds: 800),
                                     viewportFraction: 0.22,
                                     enableInfiniteScroll:
-                                        user.bookImages!.length > 1,
+                                    user.bookImages!.length > 1,
                                     pauseAutoPlayOnTouch: true,
                                     enlargeCenterPage: true,
                                     enlargeFactor: 0.2,
@@ -713,7 +714,7 @@ class _BookInfoState extends State<BookInfo> {
                                       onPressed: () {
                                         carouselController.previousPage(
                                           duration:
-                                              const Duration(milliseconds: 300),
+                                          const Duration(milliseconds: 300),
                                           curve: Curves.easeInOut,
                                         );
                                       },
@@ -729,7 +730,7 @@ class _BookInfoState extends State<BookInfo> {
                                       onPressed: () {
                                         carouselController.nextPage(
                                           duration:
-                                              const Duration(milliseconds: 300),
+                                          const Duration(milliseconds: 300),
                                           curve: Curves.easeInOut,
                                         );
                                       },

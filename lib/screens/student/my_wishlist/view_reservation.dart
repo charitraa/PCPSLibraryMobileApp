@@ -587,11 +587,12 @@ class _ViewReservationState extends State<ViewReservation> {
                     ),
                   ),
                 ),
-                // Updated Carousel Section
                 Consumer<BooksViewModel>(
                   builder: (context, viewModel, child) {
                     final user = viewModel.currentUser;
-                    if (user == null || user.bookImages == null || user.bookImages!.isEmpty) {
+                    if (user == null ||
+                        user.bookImages == null ||
+                        user.bookImages!.isEmpty) {
                       return const SizedBox(
                         height: 100,
                         child: Center(
@@ -602,6 +603,9 @@ class _ViewReservationState extends State<ViewReservation> {
                         ),
                       );
                     }
+
+                    // Filter out duplicate bookImages based on bookImageId or imageUrl
+                    final uniqueBookImages = user.bookImages!.toSet().toList();
 
                     return Container(
                       height: 100,
@@ -623,10 +627,11 @@ class _ViewReservationState extends State<ViewReservation> {
                         children: [
                           CarouselSlider.builder(
                             carouselController: carouselController,
-                            itemCount: user.bookImages!.length,
+                            itemCount: uniqueBookImages.length,
                             itemBuilder: (context, index, realIndex) {
-                              final bookImage = user.bookImages![index];
+                              final bookImage = uniqueBookImages[index];
                               final imageUrl = "${BaseUrl.imageDisplay}/${bookImage.imageUrl}";
+                              final heroTag = 'book_image_${bookImage.bookImageId}_$index';
                               return Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 6.0),
                                 child: GestureDetector(
@@ -634,39 +639,40 @@ class _ViewReservationState extends State<ViewReservation> {
                                     Navigator.of(context).push(
                                       PageRouteBuilder(
                                         pageBuilder: (context, animation, secondaryAnimation) =>
-                                            BookPreview(imageUrl: imageUrl),
-                                        transitionsBuilder:
-                                            (context, animation, secondaryAnimation, child) {
-                                          return FadeTransition(opacity: animation, child: child);
+                                            BookPreview(imageUrl: imageUrl,),
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          return FadeTransition(
+                                            opacity: animation,
+                                            child: child,
+                                          );
                                         },
                                       ),
                                     );
                                   },
-                                  child: Hero(
-                                    tag: bookImage.imageUrl ?? 'image_$index',
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey.shade300, width: 1),
-                                        borderRadius: BorderRadius.circular(8),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.1),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: CachedNetworkImage(
-                                          imageUrl: imageUrl,
-                                          width: 70,
-                                          height: 90,
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) => _buildImageSkeleton(),
-                                          errorWidget: (context, url, error) =>
-                                          const Icon(Icons.broken_image, color: Colors.grey),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey.shade300, width: 1),
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
                                         ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: CachedNetworkImage(
+                                        imageUrl: imageUrl,
+                                        width: 70,
+                                        height: 90,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => _buildImageSkeleton(),
+                                        errorWidget: (context, url, error) => const Icon(
+                                            Icons.broken_image,
+                                            color: Colors.grey),
                                       ),
                                     ),
                                   ),
@@ -675,21 +681,23 @@ class _ViewReservationState extends State<ViewReservation> {
                             },
                             options: CarouselOptions(
                               height: 90,
-                              autoPlay: user.bookImages!.length > 1,
+                              autoPlay: uniqueBookImages.length > 1,
                               autoPlayInterval: const Duration(seconds: 1),
                               autoPlayAnimationDuration: const Duration(milliseconds: 800),
                               viewportFraction: 0.22,
-                              enableInfiniteScroll: user.bookImages!.length > 1,
+                              enableInfiniteScroll: uniqueBookImages.length > 1,
                               pauseAutoPlayOnTouch: true,
                               enlargeCenterPage: true,
                               enlargeFactor: 0.2,
                             ),
                           ),
-                          if (user.bookImages!.length > 1)
+                          if (uniqueBookImages.length > 1)
                             Positioned(
                               left: 0,
                               child: IconButton(
-                                icon: Icon(Icons.arrow_left, color: Colors.grey.shade600, size: 30),
+                                icon: Icon(Icons.arrow_left,
+                                    color: Colors.grey.shade600,
+                                    size: 30),
                                 onPressed: () {
                                   carouselController.previousPage(
                                     duration: const Duration(milliseconds: 300),
@@ -698,11 +706,13 @@ class _ViewReservationState extends State<ViewReservation> {
                                 },
                               ),
                             ),
-                          if (user.bookImages!.length > 1)
+                          if (uniqueBookImages.length > 1)
                             Positioned(
                               right: 0,
                               child: IconButton(
-                                icon: Icon(Icons.arrow_right, color: Colors.grey.shade600, size: 30),
+                                icon: Icon(Icons.arrow_right,
+                                    color: Colors.grey.shade600,
+                                    size: 30),
                                 onPressed: () {
                                   carouselController.nextPage(
                                     duration: const Duration(milliseconds: 300),

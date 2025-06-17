@@ -73,14 +73,19 @@ class _PaymentState extends State<Payment> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: const Text(
-          "Payment History",
+          "Receipts",
           style: TextStyle(
             fontFamily: 'Poppins',
             color: Colors.black87,
             fontWeight: FontWeight.w600,
           ),
-        ),
-        automaticallyImplyLeading: false,
+        ),leading: IconButton(
+      icon: Icon(Icons.arrow_back_ios, color: AppColors.primary),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+      iconSize: 18,
+    ),
         actions: const [
           Image(
             image: AssetImage('assets/images/pcpsLogo.png'),
