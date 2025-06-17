@@ -84,7 +84,7 @@ class _ReviewCardState extends State<ReviewCard> {
                           children: [
                             ...List.generate(
                               widget.rating!.toInt(),
-                                  (index) => const Icon(
+                              (index) => const Icon(
                                 Icons.star,
                                 color: Colors.amber,
                                 size: 14,
@@ -116,8 +116,8 @@ class _ReviewCardState extends State<ReviewCard> {
                     children: [
                       Text(
                         "${widget.length.toString()} replies",
-                        style: const TextStyle(
-                            fontSize: 12, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       const SizedBox(width: 8),
                       InkWell(
@@ -132,7 +132,9 @@ class _ReviewCardState extends State<ReviewCard> {
                           child: Row(
                             children: [
                               const Text('Reply'),
-                              const SizedBox(width: 5,),
+                              const SizedBox(
+                                width: 5,
+                              ),
                               Icon(
                                 Icons.mark_unread_chat_alt_sharp,
                                 color: AppColors.primary,
@@ -173,32 +175,16 @@ class _ReviewCardState extends State<ReviewCard> {
                                     final bool? confirm =
                                         await showDialog<bool>(
                                       context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: const Text('Confirm Delete'),
-                                          content: const Text(
-                                              'Are you sure you want to delete this item?'),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context).pop(),
-                                              child: const Text('Cancel'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                widget.onDelete?.call();
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text(
-                                                'Delete',
-                                                style: TextStyle(
-                                                    color: Colors.red),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
+                                      builder: (context) => Alert(
+                                        icon: Icons.reviews,
+                                        iconColor: AppColors.primary,
+                                        title: 'Remove Review',
+                                        content:
+                                            'Do you want to delete this review?',
+                                        buttonText: 'Yes, Delete',
+                                      ),
                                     );
+
                                     if (confirm != true) return;
                                     widget.onDelete?.call();
                                     // Navigator.of(context).pop();
@@ -245,7 +231,7 @@ class _ReviewCardState extends State<ReviewCard> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                     errorWidget: (context, url, error) =>
-                    const Icon(Icons.error, size: 24),
+                        const Icon(Icons.error, size: 24),
                   ),
                 ),
               ),

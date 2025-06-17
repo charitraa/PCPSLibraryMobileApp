@@ -25,13 +25,13 @@ class BooksRepository {
     String url = '';
     if (bookAuthor.isNotEmpty) {
       url =
-      '${BookEndPoints.bookUrl}?seed=$seed&bookAuthor=$bookAuthor&page=$page&pageSize=$limit';
+          '${BookEndPoints.bookUrl}?seed=$seed&bookAuthor=$bookAuthor&page=$page&pageSize=$limit';
     } else if (publisher.isNotEmpty) {
       url =
-      '${BookEndPoints.bookUrl}?seed=$seed&publisher=$publisher&page=$page&pageSize=$limit';
+          '${BookEndPoints.bookUrl}?seed=$seed&publisher=$publisher&page=$page&pageSize=$limit';
     } else if (bookGenres.isNotEmpty) {
       url =
-      '${BookEndPoints.bookUrl}?seed=$seed&bookGenres=$bookGenres&page=$page&pageSize=$limit';
+          '${BookEndPoints.bookUrl}?seed=$seed&bookGenres=$bookGenres&page=$page&pageSize=$limit';
     } else {
       url = '${BookEndPoints.bookUrl}?seed=$seed&page=$page&pageSize=$limit';
     }
@@ -57,7 +57,8 @@ class BooksRepository {
       return {"booksList": booksList, "next": next};
     } on TimeoutException {
       logger.e("Timeout: No internet connection for recommended books");
-      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      Utils.flushBarErrorMessage(
+          "No internet connection. Please try again later.", context);
       return {"booksList": [], "next": null};
     } catch (error) {
       logger.e("Error fetching recommended books: $error");
@@ -65,11 +66,9 @@ class BooksRepository {
       return {"booksList": [], "next": null};
     }
   }
+
   Future<Map<String, dynamic>> fetchOnlineBooks(
-      String? seed,
-      int page,
-      int limit,
-      BuildContext context) async {
+      String? seed, int page, int limit, BuildContext context) async {
     String url = '${BookEndPoints.onlineBooks}?page=$page&pageSize=$limit';
 
     if (seed != null && seed.isNotEmpty) {
@@ -96,7 +95,8 @@ class BooksRepository {
       return {"booksList": booksList, "next": next};
     } on TimeoutException {
       logger.e("Timeout: No internet connection for online books");
-      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      Utils.flushBarErrorMessage(
+          "No internet connection. Please try again later.", context);
       return {"booksList": [], "next": null};
     } catch (error) {
       logger.e("Error fetching online books: $error");
@@ -116,13 +116,13 @@ class BooksRepository {
     String url = '';
     if (bookAuthor.isNotEmpty) {
       url =
-      '${BookEndPoints.bookUrl}?seed=$seed&author=$bookAuthor&page=$page&pageSize=$limit';
+          '${BookEndPoints.bookUrl}?seed=$seed&author=$bookAuthor&page=$page&pageSize=$limit';
     } else if (publisher.isNotEmpty) {
       url =
-      '${BookEndPoints.bookUrl}?seed=$seed&publisher=$publisher&page=$page&pageSize=$limit';
+          '${BookEndPoints.bookUrl}?seed=$seed&publisher=$publisher&page=$page&pageSize=$limit';
     } else if (bookGenres.isNotEmpty) {
       url =
-      '${BookEndPoints.bookUrl}?seed=$seed&genre=$bookGenres&page=$page&pageSize=$limit';
+          '${BookEndPoints.bookUrl}?seed=$seed&genre=$bookGenres&page=$page&pageSize=$limit';
     } else {
       url = '${BookEndPoints.bookUrl}?seed=$seed&page=$page&pageSize=$limit';
     }
@@ -156,7 +156,8 @@ class BooksRepository {
       return {"booksList": booksList, "next": next};
     } on TimeoutException {
       logger.e("Timeout: No internet connection for fetching books");
-      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      Utils.flushBarErrorMessage(
+          "No internet connection. Please try again later.", context);
       return {"booksList": [], "next": null};
     } catch (error) {
       logger.e("Error fetching books: $error");
@@ -164,11 +165,12 @@ class BooksRepository {
       return {"booksList": [], "next": null};
     }
   }
+
   Future<BookInfoModel> getIndividualBooks(
       String uid, BuildContext context) async {
     try {
       final dynamic response =
-      await _apiService.getApiResponse("${BookEndPoints.bookUrl}/$uid");
+          await _apiService.getApiResponse("${BookEndPoints.bookUrl}/$uid");
       if (response == null) {
         logger.w("No data received for book UID: $uid");
         Utils.flushBarErrorMessage("No data received from server", context);
@@ -183,7 +185,8 @@ class BooksRepository {
       return BookInfoModel.fromJson(response);
     } on TimeoutException {
       logger.e("Timeout: No internet connection for fetching individual book");
-      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      Utils.flushBarErrorMessage(
+          "No internet connection. Please try again later.", context);
       throw Exception("No internet connection");
     } catch (e) {
       logger.e("Error getting individual book: $e");
@@ -198,7 +201,7 @@ class BooksRepository {
         logger.d("Reserving book with URL: ${BookEndPoints.reserveUrl}/$uid");
       }
       final dynamic response =
-      await _apiService.postUrlResponse("${BookEndPoints.reserveUrl}/$uid");
+          await _apiService.postUrlResponse("${BookEndPoints.reserveUrl}/$uid");
 
       if (response == null) {
         logger.w("Server did not respond for reservation UID: $uid");
@@ -207,8 +210,7 @@ class BooksRepository {
       }
       if (response['error'] != null) {
         logger.e("API error for reservation: ${response['error']}");
-        Utils.flushBarWarning(
-            response['error'] ?? "Unknown error", context);
+        Utils.flushBarWarning(response['error'] ?? "Unknown error", context);
         return false;
       }
       if (kDebugMode) {
@@ -217,7 +219,8 @@ class BooksRepository {
       return true;
     } on TimeoutException {
       logger.e("Timeout: No internet connection for reserving book");
-      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      Utils.flushBarErrorMessage(
+          "No internet connection. Please try again later.", context);
       return false;
     } catch (e) {
       logger.e("Error reserving book: $e");
@@ -249,7 +252,8 @@ class BooksRepository {
       return true;
     } on TimeoutException {
       logger.e("Timeout: No internet connection for rating book");
-      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      Utils.flushBarErrorMessage(
+          "No internet connection. Please try again later.", context);
       return false;
     } catch (e) {
       logger.e("Error rating book: $e");
@@ -284,7 +288,8 @@ class BooksRepository {
       return {"reservations": reservations, "next": next};
     } on TimeoutException {
       logger.e("Timeout: No internet connection for fetching reservations");
-      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      Utils.flushBarErrorMessage(
+          "No internet connection. Please try again later.", context);
       return {"reservations": [], "next": null};
     } catch (error) {
       logger.e("Error fetching reservations: $error");
@@ -296,11 +301,13 @@ class BooksRepository {
   Future<bool> cancelReservation(String uid, BuildContext context) async {
     try {
       if (kDebugMode) {
-        logger.d("Canceling reservation with URL: ${BookEndPoints.cancelReservation}/$uid");
+        logger.d(
+            "Canceling reservation with URL: ${BookEndPoints.cancelReservation}/$uid");
       }
+
       final dynamic response = await _apiService
           .getDeleteApiResponse("${BookEndPoints.cancelReservation}/$uid");
-
+      print("urls for cancel: ${BookEndPoints.cancelReservation}/$uid");
       if (response == null) {
         logger.w("Server did not respond for cancel reservation UID: $uid");
         Utils.flushBarErrorMessage("Server did not respond", context);
@@ -316,7 +323,8 @@ class BooksRepository {
       return true;
     } on TimeoutException {
       logger.e("Timeout: No internet connection for canceling reservation");
-      Utils.flushBarErrorMessage("No internet connection. Please try again later.", context);
+      Utils.flushBarErrorMessage(
+          "No internet connection. Please try again later.", context);
       return false;
     } catch (e) {
       logger.e("Error canceling reservation: $e");

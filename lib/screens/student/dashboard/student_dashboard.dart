@@ -553,7 +553,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
                             height: 95,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [Colors.red.shade600, Colors.red.shade400],
+                                colors: [
+                                  Colors.red.shade600,
+                                  Colors.red.shade400
+                                ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
@@ -571,10 +574,12 @@ class _StudentDashboardState extends State<StudentDashboard> {
                               padding: const EdgeInsets.all(12.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Flexible(
                                         child: Text(
@@ -643,7 +648,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
@@ -671,10 +676,15 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   ],
                 ),
                 const Divider(),
-                _buildDetailRow('Type', due.penaltyType == 'PropertyDamage' ? 'Property Damage' : due.penaltyType ?? 'Unknown'),
+                _buildDetailRow(
+                    'Type',
+                    due.penaltyType == 'PropertyDamage'
+                        ? 'Property Damage'
+                        : due.penaltyType ?? 'Unknown'),
                 _buildDetailRow('Amount', 'Rs. ${due.amount}'),
                 _buildDetailRow('Status', due.status ?? 'N/A'),
-                _buildDetailRow('Description', due.description ?? 'No description'),
+                _buildDetailRow(
+                    'Description', due.description ?? 'No description'),
               ],
             ),
           ),
@@ -934,9 +944,39 @@ class _StudentDashboardState extends State<StudentDashboard> {
         final reservations = value.reservationList;
         final confirmReservation = value.confirmReservation;
         if (reservations.isEmpty && confirmReservation.isEmpty) {
-          return SizedBox(
-            height: 60,
-            child: _buildNoDataCard(size, 'No Books Currently Reading'),
+          return Column(
+            children: [
+              SizedBox(
+                height: 60,
+                child: _buildNoDataCard(size, 'No Books Currently Reading'),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.center,
+                child: _buildFilterButton(
+                  'View all Reservations',
+                  () => Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const Wishlist(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOut;
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
           );
         }
         if (reservations.isEmpty) {
@@ -1036,10 +1076,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
             ),
             _buildFilterButton(
               'View All',
-                  () => Navigator.of(context).push(
+              () => Navigator.of(context).push(
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
-                  const Payment(),
+                      const Payment(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     const begin = Offset(1.0, 0.0);
@@ -1063,7 +1103,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
           height: 120,
           child: Consumer<PaymentViewModel>(
             builder: (context, value, child) {
-              final payments = value.paymentList.take(2).toList(); // Limit to 2 items
+              final payments =
+                  value.paymentList.take(2).toList(); // Limit to 2 items
               if (payments.isEmpty) {
                 return _buildNoDataCard(size, 'No Payment History');
               }

@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/resource/colors.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -72,7 +74,7 @@ class RepliesWidget extends StatelessWidget {
                           children: [
                             ...List.generate(
                               rating!.toInt(),
-                                  (index) => const Icon(
+                              (index) => const Icon(
                                 Icons.star,
                                 color: Colors.amber,
                                 size: 14,
@@ -113,7 +115,8 @@ class RepliesWidget extends StatelessWidget {
                     builder: (context, viewModel, child) {
                       final user = viewModel.currentUser;
                       final logger = Logger();
-                      logger.d("Comparing UIDs: widget.uid=$uid, userId=${user?.data?.userId}");
+                      logger.d(
+                          "Comparing UIDs: widget.uid=$uid, userId=${user?.data?.userId}");
                       if (user?.data?.userId == uid) {
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -136,34 +139,22 @@ class RepliesWidget extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             InkWell(
-                              onTap: () {
-                                showDialog(
+                              onTap: () async {
+                                final bool? confirm = await showDialog<bool>(
                                   context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text('Confirm Delete'),
-                                      content: const Text(
-                                          'Are you sure you want to delete this reply?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(),
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            onDelete?.call();
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text(
-                                            'Delete',
-                                            style: TextStyle(color: Colors.red),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
+                                  builder: (context) => Alert(
+                                    icon: Icons.reviews,
+                                    iconColor: AppColors.primary,
+                                    title: 'Remove Review',
+                                    content:
+                                        'Do you want to delete this review?',
+                                    buttonText: 'Yes, Delete',
+                                  ),
                                 );
+
+                                if (confirm != true) return;
+                                onDelete?.call();
+                                // Navigator.of(context).pop();
                               },
                               child: Container(
                                 width: 40,
@@ -204,7 +195,7 @@ class RepliesWidget extends StatelessWidget {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                     errorWidget: (context, url, error) =>
-                    const Icon(Icons.error, size: 24),
+                        const Icon(Icons.error, size: 24),
                   ),
                 ),
               ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:library_management_sys/screens/student/book_info/reply_comments.dart';
 import 'package:library_management_sys/utils/format_date.dart';
 import 'package:library_management_sys/utils/parse_date.dart';
+import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -114,7 +115,7 @@ class _CommentsState extends State<Comments> {
                 },
                 suffixicon: comment.isNotEmpty
                     ? InkWell(
-                        child: Icon(Icons.clear, color: Colors.grey),
+                        child: const Icon(Icons.clear, color: Colors.grey),
                         onTap: () {
                           setState(() {
                             comment = "";
@@ -204,6 +205,18 @@ class _CommentsState extends State<Comments> {
                                 );
                               },
                               onDelete: () async {
+                                final bool? confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => Alert(
+                                    icon: Icons.comment,
+                                    iconColor: AppColors.primary,
+                                    title: 'E-Book',
+                                    content:
+                                        'Do you want to redirect to this book?',
+                                    buttonText: 'Yes, Redirect',
+                                  ),
+                                );
+                                if (confirm != true) return;
                                 final check = await viewModel.deleteComment(
                                   commentData.commentId ?? '',
                                   context,

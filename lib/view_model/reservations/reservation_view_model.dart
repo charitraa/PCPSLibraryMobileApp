@@ -72,7 +72,8 @@ class ReservationViewModel with ChangeNotifier {
           _status, _filter, 1, _limit, context);
 
       if (response != null && response['reservations'] != null) {
-        _reservationList.addAll(response['reservations'] as List<ReservationModel>);
+        _reservationList
+            .addAll(response['reservations'] as List<ReservationModel>);
       } else {
         logger.w("No reservations received in response");
       }
@@ -82,11 +83,13 @@ class ReservationViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching reservations: $error");
-      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
+      Utils.flushBarErrorMessage(
+          "Error fetching reservations: $error", context);
     } finally {
       setLoading(false);
     }
   }
+
   Future<void> fetchConfirmReservation(BuildContext context) async {
     if (_isLoading) return;
     setLoading(true);
@@ -97,7 +100,8 @@ class ReservationViewModel with ChangeNotifier {
           'Confirmed', _filter, 1, _limit, context);
 
       if (response != null && response['reservations'] != null) {
-        _confirmReservation.addAll(response['reservations'] as List<ReservationModel>);
+        _confirmReservation
+            .addAll(response['reservations'] as List<ReservationModel>);
       } else {
         logger.w("No reservations received in response");
       }
@@ -107,7 +111,8 @@ class ReservationViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching reservations: $error");
-      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
+      Utils.flushBarErrorMessage(
+          "Error fetching reservations: $error", context);
     } finally {
       setLoading(false);
     }
@@ -123,7 +128,8 @@ class ReservationViewModel with ChangeNotifier {
           'Cancelled', _filter, 1, _limit, context);
 
       if (response != null && response['reservations'] != null) {
-        _cancelReservation.addAll(response['reservations'] as List<ReservationModel>);
+        _cancelReservation
+            .addAll(response['reservations'] as List<ReservationModel>);
       } else {
         logger.w("No reservations received in response");
       }
@@ -133,11 +139,13 @@ class ReservationViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching reservations: $error");
-      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
+      Utils.flushBarErrorMessage(
+          "Error fetching reservations: $error", context);
     } finally {
       setLoading(false);
     }
   }
+
   Future<void> loadMoreBooks(BuildContext context) async {
     if (_isLoading) return;
     setLoading(true);
@@ -146,7 +154,8 @@ class ReservationViewModel with ChangeNotifier {
           _status, _filter, _currentPage, _limit, context);
 
       if (response != null && response['reservations'] != null) {
-        _reservationList.addAll(response['reservations'] as List<ReservationModel>);
+        _reservationList
+            .addAll(response['reservations'] as List<ReservationModel>);
         if (response['next'] != null) {
           _currentPage++;
         }
@@ -156,7 +165,8 @@ class ReservationViewModel with ChangeNotifier {
       Future.microtask(() => notifyListeners());
     } catch (error) {
       logger.e("Error fetching more reservations: $error");
-      Utils.flushBarErrorMessage("Error fetching reservations: $error", context);
+      Utils.flushBarErrorMessage(
+          "Error fetching reservations: $error", context);
     } finally {
       setLoading(false);
     }
@@ -166,7 +176,8 @@ class ReservationViewModel with ChangeNotifier {
     try {
       final bool success = await _booksRepo.cancelReservation(uid, context);
       if (success) {
-        Utils.flushBarSuccessMessage('You have cancelled the reservation!!', context);
+        Utils.flushBarSuccessMessage(
+            'You have cancelled the reservation!!', context);
       }
       Future.microtask(() => notifyListeners());
       return success;

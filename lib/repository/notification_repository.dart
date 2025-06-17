@@ -63,8 +63,6 @@ class NotificationRepository {
         _logger.d("Mark notifications URL: $url");
       }
       final dynamic response = await _apiServices.putUrlResponse(url);
-      _logger.w(
-          "Error marking notifications: ${response['errorMessage'] ?? 'Unknown error'}");
       _logger.d("Response from marking notifications: $response");
       if (response['error'] != null && response['error'] == true) {
         _logger.w(

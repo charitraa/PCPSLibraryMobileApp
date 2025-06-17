@@ -41,15 +41,22 @@ class _BookRequestBottomSheetState extends State<BookRequestBottomSheet> {
             : _editionStatementController.text.trim(),
       };
 
-      final isSuccess = await Provider.of<BookRequestViewModel>(context, listen: false)
-          .postRequests(bookRequest, context);
+      final isSuccess =
+          await Provider.of<BookRequestViewModel>(context, listen: false)
+              .postRequests(bookRequest, context);
 
       if (context.mounted) {
         if (isSuccess) {
           Utils.flushBarSuccessMessage("Book Requested Successfully!", context);
-          Navigator.of(context).pop(); // Close on success
+          _titleController.text = '';
+          _authorsController.text = '';
+          _publisherController.text = '';
+          _publicationYearController.text = '';
+          _editionStatementController.text = '';
+          // Navigator.of(context).pop(); // Close on success
         } else {
-          Utils.flushBarErrorMessage("Failed to request book. Try again.", context);
+          Utils.flushBarErrorMessage(
+              "Failed to request book. Try again.", context);
           // Optionally close on failure: Navigator.of(context).pop();
         }
       }
@@ -148,7 +155,8 @@ class _BookRequestBottomSheetState extends State<BookRequestBottomSheet> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -186,17 +194,19 @@ class _BookRequestBottomSheetState extends State<BookRequestBottomSheet> {
   }
 
   String? _validatePublicationYear(String? value) {
-    if (value == null || value.trim().isEmpty) return "Publication year is required";
+    if (value == null || value.trim().isEmpty)
+      return "Publication year is required";
     final year = int.tryParse(value);
     if (year == null) return "Publication year must be a valid number";
     if (year < 1000) return "Publication year is not valid";
-    if (year > DateTime.now().year + 1) return "Publication year cannot be in the future";
+    if (year > DateTime.now().year + 1)
+      return "Publication year cannot be in the future";
     return null;
   }
 
   String? _validateEditionStatement(String? value) {
-    if (value != null && value.length > 100) return "Edition statement is too long";
+    if (value != null && value.length > 100)
+      return "Edition statement is too long";
     return null;
   }
-
 }

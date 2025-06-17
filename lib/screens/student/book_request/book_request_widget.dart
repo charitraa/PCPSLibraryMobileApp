@@ -18,10 +18,12 @@ class BookRequestWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPending = (reservationData.status?.toLowerCase() ?? '') == 'pending';
+    final isPending =
+        (reservationData.status?.toLowerCase() ?? '') == 'pending';
     final title = reservationData.title ?? 'Unknown Title';
-    final truncatedTitle =
-    title.split(' ').length > 5 ? "${title.split(' ').take(5).join(' ')}..." : title;
+    final truncatedTitle = title.split(' ').length > 5
+        ? "${title.split(' ').take(5).join(' ')}..."
+        : title;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
@@ -45,7 +47,8 @@ class BookRequestWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -64,7 +67,8 @@ class BookRequestWidget extends StatelessWidget {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: _getStatusColor(reservationData.status),
                                 borderRadius: BorderRadius.circular(5),
@@ -82,17 +86,20 @@ class BookRequestWidget extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           'Author(s): ${reservationData.authors ?? 'Unknown'}',
-                          style: const TextStyle(fontSize: 11, color: Colors.black87),
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.black87),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Publisher: ${reservationData.publisher ?? 'Unknown'}',
-                          style: const TextStyle(fontSize: 11, color: Colors.black87),
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.black87),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Requested: ${parseDate(reservationData.createdAt) ?? 'N/A'}',
-                          style: const TextStyle(fontSize: 11, color: Colors.black87),
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.black87),
                         ),
                         if (isPending) ...[
                           const SizedBox(height: 8),
@@ -118,29 +125,7 @@ class BookRequestWidget extends StatelessWidget {
                               const SizedBox(width: 10),
                               InkWell(
                                 onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text('Confirm Delete'),
-                                        content:
-                                        const Text('Are you sure you want to delete this book request?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.of(context).pop(),
-                                            child: const Text('Cancel'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              onDelete();
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
+                                  onDelete();
                                 },
                                 child: Container(
                                   width: 40,

@@ -8,6 +8,7 @@ class NotificationItem extends StatelessWidget {
   final String? subtitle;
   final String time;
   final String? action;
+  final bool isRead;
 
   const NotificationItem({
     super.key,
@@ -16,8 +17,10 @@ class NotificationItem extends StatelessWidget {
     this.subtitle,
     required this.time,
     this.action,
+    required this.isRead,
   });
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -25,71 +28,78 @@ class NotificationItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            leading: CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.grey[300],
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: image,
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2),
+          Container(
+            decoration: BoxDecoration(
+              color: isRead
+                  ? Colors.white
+                  : Colors.lightBlue.shade50, // 👈 light blue if unread
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: ListTile(
+              leading: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.grey[300],
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: image,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error, size: 24),
                   ),
-                  errorWidget: (context, url, error) =>
-                  const Icon(Icons.error, size: 24),
                 ),
               ),
-            ),
-            title: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+              title: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (subtitle != null)
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (subtitle != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        subtitle!,
+                        style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                      ),
+                    ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      subtitle!,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                      time,
+                      style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    time,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                  ),
-                ),
-              ],
+                ],
+              ),
+              trailing: action != null
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        action!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    )
+                  : null,
             ),
-            trailing: action != null
-                ? Container(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                action!,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            )
-                : null,
           ),
           const Divider(
             height: 1,
