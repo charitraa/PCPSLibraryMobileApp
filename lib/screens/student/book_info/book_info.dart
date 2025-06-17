@@ -879,6 +879,8 @@ class _BookInfoState extends State<BookInfo> {
                                 await Provider.of<CommentViewModel>(context,
                                         listen: false)
                                     .fetchComments(widget.uid, context);
+                                comment = "";
+                                _commentController.clear();
                               }
                             } catch (e) {
                               debugPrint(e.toString());

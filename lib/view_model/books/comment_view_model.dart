@@ -17,7 +17,6 @@ class CommentViewModel with ChangeNotifier {
 
   bool _isLoading = false;
   String _filter = '';
- 
 
   int _currentPage = 1;
   int _limit = 10;
@@ -45,15 +44,14 @@ class CommentViewModel with ChangeNotifier {
     }
   }
 
-
-  Future<void> fetchComments(String uid,BuildContext context) async {
+  Future<void> fetchComments(String uid, BuildContext context) async {
     if (_isLoading) return;
     setLoading(true);
     try {
       _currentPage = 1;
       _commentList.clear();
-      final Map<String, dynamic> response = await _commentsRepo.fetchComments(uid,
-          _filter, 1, _limit, context);
+      final Map<String, dynamic> response =
+          await _commentsRepo.fetchComments(uid, _filter, 1, _limit, context);
 
       _commentList.addAll(response['comments']);
       if (response['next'] != null) {
@@ -67,10 +65,10 @@ class CommentViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> loadMore(String uid,BuildContext context) async {
+  Future<void> loadMore(String uid, BuildContext context) async {
     try {
-      final Map<String, dynamic> response = await _commentsRepo.fetchComments(uid,_filter,
-          _currentPage, _limit, context);
+      final Map<String, dynamic> response = await _commentsRepo.fetchComments(
+          uid, _filter, _currentPage, _limit, context);
       if (_currentPage != null) {
         print("${response['next']}=$_currentPage");
         _commentList.addAll(response['comments']);
@@ -82,13 +80,13 @@ class CommentViewModel with ChangeNotifier {
     }
   }
 
-
-
-  Future<bool> postComment(String uid, dynamic body,BuildContext context) async {
+  Future<bool> postComment(
+      String uid, dynamic body, BuildContext context) async {
     try {
-      final user = await _commentsRepo.postComments(uid,body, context);
-      if(user){
-        Utils.flushBarSuccessMessage('You have successfully commented!!', context);
+      final user = await _commentsRepo.postComments(uid, body, context);
+      if (user) {
+        Utils.flushBarSuccessMessage(
+            'You have successfully commented!!', context);
       }
       return user;
     } catch (e) {
@@ -96,11 +94,14 @@ class CommentViewModel with ChangeNotifier {
       return false;
     }
   }
-  Future<bool> replyComment(String uid, dynamic body,BuildContext context) async {
+
+  Future<bool> replyComment(
+      String uid, dynamic body, BuildContext context) async {
     try {
-      final user = await _commentsRepo.replyComment(uid,body, context);
-      if(user){
-        Utils.flushBarSuccessMessage('You have replied on this comment!!', context);
+      final user = await _commentsRepo.replyComment(uid, body, context);
+      if (user) {
+        Utils.flushBarSuccessMessage(
+            'You have replied on this comment!!', context);
       }
       return user;
     } catch (e) {
@@ -108,11 +109,13 @@ class CommentViewModel with ChangeNotifier {
       return false;
     }
   }
-  Future<bool> deleteComment(String uid,BuildContext context) async {
+
+  Future<bool> deleteComment(String uid, BuildContext context) async {
     try {
       final user = await _commentsRepo.deleteComment(uid, context);
-      if(user){
-        Utils.flushBarSuccessMessage('You have replied on this comment!!', context);
+      if (user) {
+        Utils.flushBarSuccessMessage(
+            'You have deleted the comments !!', context);
       }
       return user;
     } catch (e) {
@@ -121,11 +124,13 @@ class CommentViewModel with ChangeNotifier {
     }
   }
 
-  Future<bool> updateComment(String uid,dynamic body,BuildContext context) async {
+  Future<bool> updateComment(
+      String uid, dynamic body, BuildContext context) async {
     try {
-      final user = await _commentsRepo.updateComments(uid,body, context);
-      if(user){
-        Utils.flushBarSuccessMessage('You have updated your comment!!', context);
+      final user = await _commentsRepo.updateComments(uid, body, context);
+      if (user) {
+        Utils.flushBarSuccessMessage(
+            'You have updated your comment!!', context);
       }
       return user;
     } catch (e) {
@@ -133,5 +138,4 @@ class CommentViewModel with ChangeNotifier {
       return false;
     }
   }
-
 }

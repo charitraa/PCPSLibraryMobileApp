@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +12,7 @@ import '../../view_model/books/comment_view_model.dart';
 class ReviewCard extends StatefulWidget {
   final String? image, name, text, date, uid;
   final double? rating;
-  final VoidCallback? onTap, onEdit,onDelete;
+  final VoidCallback? onTap, onEdit, onDelete;
   final int? length;
   const ReviewCard(
       {super.key,
@@ -23,14 +24,14 @@ class ReviewCard extends StatefulWidget {
       this.onTap,
       this.date,
       this.onDelete,
-      this.uid, this.onEdit});
+      this.uid,
+      this.onEdit});
 
   @override
   State<ReviewCard> createState() => _ReviewCardState();
 }
 
 class _ReviewCardState extends State<ReviewCard> {
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -129,12 +130,13 @@ class _ReviewCardState extends State<ReviewCard> {
                         style:
                             TextStyle(fontSize: 12, color: AppColors.primary),
                       ),
-                      const SizedBox(width: 10,),
-
+                      const SizedBox(
+                        width: 10,
+                      ),
                       Consumer<AuthViewModel>(
                         builder: (context, viewModel, child) {
                           final user = viewModel.currentUser;
-                          var logger=Logger();
+                          var logger = Logger();
                           logger.d("${widget.uid} :${user?.data?.userId}");
                           if (user?.data?.userId == widget.uid) {
                             return Row(
@@ -157,29 +159,22 @@ class _ReviewCardState extends State<ReviewCard> {
                                 ),
                                 const SizedBox(width: 10),
                                 InkWell(
-                                  onTap: () {
-                                    showDialog(
+                                  onTap: () async {
+                                    final bool? confirm =
+                                        await showDialog<bool>(
                                       context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: const Text('Confirm Delete'),
-                                          content: const Text('Are you sure you want to delete this item?'),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () => Navigator.of(context).pop(),
-                                              child: const Text('Cancel'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                widget.onDelete?.call();
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text('Delete', style: TextStyle(color: Colors.red)),
-                                            ),
-                                          ],
-                                        );
-                                      },
+                                      builder: (context) => Alert(
+                                        icon: Icons.delete,
+                                        iconColor: AppColors.primary,
+                                        title: 'Confirm Delete',
+                                        content:
+                                            'Are you sure you want to delete this item?',
+                                        buttonText: 'Delete',
+                                      ),
                                     );
+                                    if (confirm != true) return;
+                                    widget.onDelete?.call();
+                                    // Navigator.of(context).pop();
                                   },
                                   child: Container(
                                     width: 40,
