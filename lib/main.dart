@@ -44,7 +44,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PaymentViewModel()),
         ChangeNotifierProvider(create: (_) => OnlineBooksViewModel()),
         ChangeNotifierProvider(create: (_) => BookRequestViewModel()),
-
         ChangeNotifierProvider(create: (_) => MyDueViewModel()),
         ChangeNotifierProvider(create: (_) => NotificationViewModel(),
         ),

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/response/status.dart';
 import '../../resource/routes_name.dart';
 import '../../view_model/shared_pref_view_model.dart';
+import '../introduction_screen/introduction_screen.dart';
 class Flashingpage extends StatefulWidget {
   const Flashingpage({super.key});
 
@@ -28,7 +29,40 @@ class _FlashingpageState extends State<Flashingpage> {
   Future<void> _checkAuthentication() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     final String? session = sp.getString('session');
-
+    // final connectivityResult = await Connectivity().checkConnectivity();
+    // if (connectivityResult == ConnectivityResult.none) {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(builder: (_) => const MyPcpsIntroductionScreen()),
+    //   );
+    //   return;
+    // }
+    final prefs = await SharedPreferences.getInstance();
+    final bool hasSeenIntro = prefs.getBool('isIntro') ?? false;
+    if (!hasSeenIntro) {
+      await prefs.setBool('hasSeenIntro', false);
+    }
+    if (hasSeenIntro == false) {
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+          const MyIntroductionScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.easeInOut;
+            var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        ),
+      );
+      return;
+    }
     if (session != null) {
       final userDataViewModel = Provider.of<AuthViewModel>(context, listen: false);
       await userDataViewModel.getUser(context);
