@@ -466,19 +466,8 @@ class _BookInfoState extends State<BookInfo> {
                                 children: [
                                   Flexible(
                                     child: BookInfoRow(
-                                      title: 'Book Number',
-                                      value: widget.books.classNumber ?? '',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: BookInfoRow(
-                                      title: 'Class Number',
-                                      value: widget.books.classNumber ?? '',
+                                      title: 'Book & Class Number',
+                                      value: widget.books.callNumber ?? '',
                                     ),
                                   ),
                                 ],

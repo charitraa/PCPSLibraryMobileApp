@@ -1,6 +1,6 @@
 class BookInfoModel {
   String? bookInfoId;
-  String? classNumber;
+  String? callNumber;
   String? title;
   String? subTitle;
   String? editionStatement;
@@ -10,7 +10,6 @@ class BookInfoModel {
   String? addedDate;
   String? createdAt;
   String? updatedAt;
-  Null? deletedAt;
   String? publisherId;
   Publisher? publisher;
   Score? score;
@@ -29,7 +28,7 @@ class BookInfoModel {
 
   BookInfoModel(
       {this.bookInfoId,
-        this.classNumber,
+        this.callNumber,
         this.title,
         this.subTitle,
         this.editionStatement,
@@ -39,7 +38,6 @@ class BookInfoModel {
         this.addedDate,
         this.createdAt,
         this.updatedAt,
-        this.deletedAt,
         this.publisherId,
         this.publisher,
         this.score,
@@ -58,7 +56,7 @@ class BookInfoModel {
 
   BookInfoModel.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
-    classNumber = json['classNumber'];
+    callNumber = json['callNumber'];
     title = json['title'];
     subTitle = json['subTitle'];
     editionStatement = json['editionStatement'];
@@ -68,7 +66,6 @@ class BookInfoModel {
     addedDate = json['addedDate'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    deletedAt = json['deletedAt'];
     publisherId = json['publisherId'];
     publisher = json['publisher'] != null
         ? new Publisher.fromJson(json['publisher'])
@@ -131,7 +128,7 @@ class BookInfoModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['bookInfoId'] = this.bookInfoId;
-    data['classNumber'] = this.classNumber;
+    data['classNumber'] = this.callNumber;
     data['title'] = this.title;
     data['subTitle'] = this.subTitle;
     data['editionStatement'] = this.editionStatement;
@@ -141,7 +138,6 @@ class BookInfoModel {
     data['addedDate'] = this.addedDate;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
-    data['deletedAt'] = this.deletedAt;
     data['publisherId'] = this.publisherId;
     if (this.publisher != null) {
       data['publisher'] = this.publisher!.toJson();

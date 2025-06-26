@@ -1,6 +1,6 @@
 class BooksModel {
   String? bookInfoId;
-  String? classNumber;
+  String? callNumber;
   String? title;
   String? subTitle;
   String? editionStatement;
@@ -21,7 +21,7 @@ class BooksModel {
 
   BooksModel(
       {this.bookInfoId,
-        this.classNumber,
+        this.callNumber,
         this.title,
         this.subTitle,
         this.editionStatement,
@@ -42,7 +42,7 @@ class BooksModel {
 
   BooksModel.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
-    classNumber = json['classNumber'];
+    callNumber = json['callNumber'];
     title = json['title'];
     subTitle = json['subTitle'];
     editionStatement = json['editionStatement'];
@@ -97,7 +97,7 @@ class BooksModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['bookInfoId'] = this.bookInfoId;
-    data['classNumber'] = this.classNumber;
+    data['callNumber'] = this.callNumber;
     data['title'] = this.title;
     data['subTitle'] = this.subTitle;
     data['editionStatement'] = this.editionStatement;

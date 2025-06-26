@@ -447,8 +447,8 @@ class _ViewReservationState extends State<ViewReservation> {
                           children: [
                             Flexible(
                               child: BookInfoRow(
-                                title: 'Class Number',
-                                value: widget.books.bookInfo?.classNumber ?? '',
+                                  title: 'Book & Class Number',
+                                value: widget.books.bookInfo?.callNumber ?? '',
                               ),
                             ),
                           ],
