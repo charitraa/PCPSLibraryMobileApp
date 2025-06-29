@@ -119,10 +119,20 @@ class _BookInfoState extends State<BookInfo> {
                               if (loadingProgress == null) return child;
                               return _buildImageSkeleton();
                             },
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.error);
-                            },
-                          )
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 40,
+                        height: 80,
+                        color: AppColors.primary,
+                        child: const Center(
+                          child: Icon(
+                            Icons.book,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                        ),
+                      ),
+
+                    )
                         : const Icon(
                             Icons.error,
                           )),
@@ -238,10 +248,19 @@ class _BookInfoState extends State<BookInfo> {
                                             return child;
                                           return _buildImageSkeleton();
                                         },
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return const Icon(Icons.error);
-                                        },
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      width: 40,
+                                      height: 80,
+                                      color: AppColors.primary,
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.book,
+                                          color: Colors.white,
+                                          size: 40,
+                                        ),
+                                      ),
+                                    ),
+
                                       )
                                     : const Icon(Icons.error)),
                           ),

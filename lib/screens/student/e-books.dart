@@ -152,12 +152,7 @@ class _EbooksState extends State<Ebooks> {
                         }
 
                         if (books.isEmpty) {
-                          return const Center(
-                            child: Text(
-                              'No Books available.',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
-                            ),
-                          );
+                          return _buildNoDataCard(size,'Oops! No online books have been added yet!');
                         }
 
                         return GridView.builder(
@@ -220,4 +215,33 @@ class _EbooksState extends State<Ebooks> {
       ),
     );
   }
+  Widget _buildNoDataCard(Size size, String message) {
+    return Container(
+      width: size.width * 0.9,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        border: Border.all(color: Colors.grey[400]!, width: 0.5),
+      ),
+      alignment: Alignment.center,
+      child:  Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.disabled_visible_rounded,),
+          const SizedBox(height: 5,),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

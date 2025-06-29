@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/resource/colors.dart';
 
 import '../custom_shimmer_effect.dart';
 
@@ -62,7 +63,18 @@ class _BookWidgetState extends State<BookWidget> {
                     ),
                   );
                 },
-                errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.error)),
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 120,
+                  height: 122,
+                  color: AppColors.primary,
+                  child: const Center(
+                    child: Icon(
+                      Icons.book,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 2),

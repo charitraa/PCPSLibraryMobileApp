@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../resource/colors.dart';
 import '../custom_shimmer_effect.dart';
 
 class OnlineBookWid extends StatefulWidget {
@@ -59,8 +60,20 @@ class _BookWidgetState extends State<OnlineBookWid> {
                       ),
                     );
                   },
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.error),
+
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 120,
+                    height: 122,
+                    color: AppColors.primary,
+                    child: const Center(
+                      child: Icon(
+                        Icons.book,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                    ),
+                  ),
+
                 )),
             const SizedBox(height: 2),
             Text(

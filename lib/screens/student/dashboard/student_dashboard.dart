@@ -130,172 +130,188 @@ class _StudentDashboardState extends State<StudentDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 10),
             // Profile Section
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
                       Container(
-                        width: 36,
-                        height: 36,
+                        width: 40,
+                        height: 40,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(width: 80, height: 12, color: Colors.white),
-                          const SizedBox(height: 4),
-                          Container(width: 50, height: 10, color: Colors.white),
+                          Container(width: 100, height: 14, color: Colors.white),
+                          const SizedBox(height: 6),
+                          Container(width: 60, height: 12, color: Colors.white),
                         ],
                       ),
                     ],
                   ),
                   Row(
                     children: [
-                      Container(width: 24, height: 24, color: Colors.white),
-                      const SizedBox(width: 8),
-                      Container(width: 60, height: 20, color: Colors.white),
+                      Container(width: 28, height: 28, color: Colors.white),
+                      const SizedBox(width: 12),
+                      Container(width: 80, height: 24, color: Colors.white),
                     ],
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 15),
             // Dues Section
-            Container(
-                width: 100,
-                height: 16,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                color: Colors.white),
-            SizedBox(
-              height: 125,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 3,
-                itemBuilder: (_, __) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 80,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border:
-                              Border.all(color: Colors.grey[400]!, width: 0.5),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(width: 120, height: 18, color: Colors.white),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 110,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 3,
+                      itemBuilder: (_, __) => Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: Container(
+                          width: size.width * 0.35,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey[400]!, width: 0.5),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Container(width: 80, height: 20, color: Colors.white),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            // Books Section
-            Container(
-                width: 120,
-                height: 24,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                color: Colors.white),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(width: 100, height: 14, color: Colors.white),
-                Container(width: 50, height: 24, color: Colors.white),
-              ],
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 180,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 3,
-                itemBuilder: (_, __) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Container(
-                    width: 200,
-                    height: 160,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-            // Request Book Section
-            Container(
-                width: 140,
-                height: 16,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                color: Colors.white),
-            Container(
-              width: size.width * 0.9,
-              height: 80,
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[400]!, width: 0.5),
-              ),
-            ),
-            // Reservations Section
-            Container(
-                width: 140,
-                height: 16,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                color: Colors.white),
-            Container(
-              width: size.width * 0.9,
-              height: 60,
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[400]!, width: 0.5),
-              ),
-            ),
-            Container(
-                width: 120,
-                height: 24,
-                margin: const EdgeInsets.symmetric(vertical: 4),
-                color: Colors.white),
-            // Payments Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(width: 100, height: 14, color: Colors.white),
-                Container(width: 50, height: 24, color: Colors.white),
-              ],
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 100,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 2,
-                itemBuilder: (_, __) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Container(
-                    width: size.width * 0.35,
-                    height: 80,
+            const SizedBox(height: 20),
+            // Books Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(width: 150, height: 28, color: Colors.white),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(width: 120, height: 16, color: Colors.white),
+                      Container(width: 60, height: 24, color: Colors.white),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: size.width - 30,
+                    height: 120,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.grey[400]!, width: 0.5),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
+            const SizedBox(height: 20),
+            // Request Book Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(width: 150, height: 18, color: Colors.white),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: size.width - 30,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[400]!, width: 0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Reservations Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(width: 150, height: 18, color: Colors.white),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: size.width - 30,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[400]!, width: 0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Payment Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(width: 150, height: 18, color: Colors.white),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(width: 120, height: 16, color: Colors.white),
+                      Container(width: 60, height: 24, color: Colors.white),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 110,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 2,
+                      itemBuilder: (_, __) => Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: Container(
+                          width: size.width * 0.42,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey[400]!, width: 0.5),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -774,7 +790,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 child: _buildNoDataCard(size, 'No Books Currently Reading'),
               );
             }
-
             return CarouselSlider.builder(
               itemCount: books.length,
               itemBuilder: (context, index, realIndex) {

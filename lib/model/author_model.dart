@@ -1,35 +1,32 @@
 class Author {
-  final String authorId;
-  final String title;
-  final String fullName;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  String? authorId;
+  String? title;
+  String? fullName;
+  String? createdAt;
+  String? updatedAt;
 
-  Author({
-    required this.authorId,
-    required this.title,
-    required this.fullName,
-    required this.createdAt,
-    required this.updatedAt,
-    this.deletedAt,
-  });
+  Author(
+      {this.authorId,
+        this.title,
+        this.fullName,
+        this.createdAt,
+        this.updatedAt});
 
-  factory Author.fromJson(Map<String, dynamic> json) => Author(
-    authorId: json["authorId"],
-    title: json["title"],
-    fullName: json["fullName"],
-    createdAt: json["createdAt"],
-    updatedAt: json["updatedAt"],
-    deletedAt: json["deletedAt"],
-  );
+  Author.fromJson(Map<String, dynamic> json) {
+    authorId = json['authorId'];
+    title = json['title'];
+    fullName = json['fullName'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+  }
 
-  Map<String, dynamic> toJson() => {
-    "authorId": authorId,
-    "title": title,
-    "fullName": fullName,
-    "createdAt": createdAt,
-    "updatedAt": updatedAt,
-    "deletedAt": deletedAt,
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['authorId'] = this.authorId;
+    data['title'] = this.title;
+    data['fullName'] = this.fullName;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    return data;
+  }
 }

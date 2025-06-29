@@ -113,8 +113,6 @@ class _WishlistState extends State<Wishlist> with SingleTickerProviderStateMixin
               padding: EdgeInsets.all(8.0),
               child: CancelReservationList(),
             ),
-
-
           ],
         ),
       ),

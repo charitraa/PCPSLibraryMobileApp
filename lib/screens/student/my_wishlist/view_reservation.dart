@@ -108,9 +108,19 @@ class _ViewReservationState extends State<ViewReservation> {
                       if (loadingProgress == null) return child;
                       return _buildImageSkeleton();
                     },
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.error);
-                    },
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 40,
+                      height: 80,
+                      color: AppColors.primary,
+                      child: const Center(
+                        child: Icon(
+                          Icons.book,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      ),
+                    ),
+
                   ),
                 )
               ),
@@ -235,9 +245,19 @@ class _ViewReservationState extends State<ViewReservation> {
                             if (loadingProgress == null) return child;
                             return _buildImageSkeleton();
                           },
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.error);
-                          },
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: 200,
+                            height: 290,
+                            color: AppColors.primary,
+                            child: const Center(
+                              child: Icon(
+                                Icons.book,
+                                color: Colors.white,
+                                size: 40,
+                              ),
+                            ),
+                          ),
+
                         ),
                       ),
                     ),

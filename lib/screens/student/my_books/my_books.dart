@@ -152,15 +152,15 @@ class _MyBooksState extends State<MyBooks> {
         border: Border.all(color: Colors.grey[400]!, width: 0.5),
       ),
       alignment: Alignment.center,
-      child: const Column(
+      child:  Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.disabled_visible_rounded,),
-          SizedBox(height: 5,),
+          const Icon(Icons.disabled_visible_rounded,),
+          const SizedBox(height: 5,),
           Text(
-            'Oops! Looks like you haven’t made a reservation!!',
+            message,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Colors.grey,

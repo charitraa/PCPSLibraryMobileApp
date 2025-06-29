@@ -124,8 +124,8 @@ class _DropDownFieldState extends State<CustomAuthor> {
                     return DropdownMenuItem<String>(
                       value: author.authorId,
                       child: Text(
-                        author.fullName.split(' ').take(3).join(' ') +
-                            (author.fullName.split(' ').length > 2
+                        author.fullName!.split(' ').take(3).join(' ') +
+                            (author.fullName!.split(' ').length > 2
                                 ? '...'
                                 : ''),
                         style: const TextStyle(fontSize: 14),
