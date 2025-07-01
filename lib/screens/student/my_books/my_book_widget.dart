@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../resource/colors.dart';
 import '../../../widgets/custom_shimmer_effect.dart';
 
 
@@ -72,9 +73,19 @@ class MyBookWidget extends StatelessWidget {
                         );
 
                       },
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.error);
-                      },
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 120,
+                        height: 122,
+                        color: AppColors.primary,
+                        child: const Center(
+                          child: Icon(
+                            Icons.book,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                        ),
+                      ),
+
                     ),
                   ),
                 ),

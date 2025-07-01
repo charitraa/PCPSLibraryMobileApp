@@ -4,7 +4,6 @@ import 'package:library_management_sys/model/comment_model.dart';
 import 'package:library_management_sys/repository/comments_repository.dart';
 import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
-import '../../utils/utils.dart';
 
 class CommentViewModel with ChangeNotifier {
   final List<CommentModel> _commentList = [];
@@ -52,14 +51,14 @@ class CommentViewModel with ChangeNotifier {
       _currentPage = 1;
       _commentList.clear();
       final Map<String, dynamic> response =
-          await _commentsRepo.fetchComments(uid, _filter, 1, _limit, context);
+      await _commentsRepo.fetchComments(uid, _filter, 1, _limit, context);
       _commentList.addAll(response['comments']);
       if (response['next'] != null) {
         _currentPage++;
       }
       notifyListeners();
     } catch (error) {
-      Utils.flushBarErrorMessage("Error fetching comments: $error", context);
+      logger.e("Error fetching comments: $error");
     } finally {
       setLoading(false);
     }
@@ -75,7 +74,7 @@ class CommentViewModel with ChangeNotifier {
       }
       notifyListeners();
     } catch (error) {
-      logger.e("Error rating book: $error");
+      logger.e("Error loading more comments: $error");
     }
   }
 
@@ -84,14 +83,12 @@ class CommentViewModel with ChangeNotifier {
     try {
       final user = await _commentsRepo.postComments(uid, body, context);
       if (user) {
-        Utils.flushBarSuccessMessage(
-            'You have successfully commented!!', context);
+        logger.i('Successfully posted comment');
       }
       notifyListeners();
       return user;
     } catch (e) {
-      logger.e("Error : $e");
-
+      logger.e("Error posting comment: $e");
       return false;
     }
   }
@@ -101,14 +98,12 @@ class CommentViewModel with ChangeNotifier {
     try {
       final user = await _commentsRepo.replyComment(uid, body, context);
       if (user) {
-        Utils.flushBarSuccessMessage(
-            'You have replied on this comment!!', context);
+        logger.i('Successfully replied to comment');
       }
       notifyListeners();
       return user;
     } catch (e) {
-      logger.e("Error : $e");
-
+      logger.e("Error replying to comment: $e");
       return false;
     }
   }
@@ -117,13 +112,12 @@ class CommentViewModel with ChangeNotifier {
     try {
       final user = await _commentsRepo.deleteComment(uid, context);
       if (user) {
-        Utils.flushBarSuccessMessage(
-            'You have deleted the comments !!', context);
+        logger.i('Successfully deleted comment');
       }
       notifyListeners();
       return user;
     } catch (e) {
-      logger.e("Error : $e");
+      logger.e("Error deleting comment: $e");
       return false;
     }
   }
@@ -133,13 +127,12 @@ class CommentViewModel with ChangeNotifier {
     try {
       final user = await _commentsRepo.updateComments(uid, body, context);
       if (user) {
-        Utils.flushBarSuccessMessage(
-            'You have updated your comment!!', context);
+        logger.i('Successfully updated comment');
       }
       notifyListeners();
       return user;
     } catch (e) {
-      logger.e("Error : $e");
+      logger.e("Error updating comment: $e");
       return false;
     }
   }
@@ -148,12 +141,12 @@ class CommentViewModel with ChangeNotifier {
     try {
       final user = await _commentsRepo.deleteReply(uid, context);
       if (user) {
-        Utils.flushBarSuccessMessage('You have deleted this reply!!', context);
+        logger.i('Successfully deleted reply');
       }
       notifyListeners();
       return user;
     } catch (e) {
-      logger.e("Error : $e");
+      logger.e("Error deleting reply: $e");
       return false;
     }
   }
@@ -163,13 +156,12 @@ class CommentViewModel with ChangeNotifier {
     try {
       final user = await _commentsRepo.updateReply(uid, body, context);
       if (user) {
-        Utils.flushBarSuccessMessage(
-            'You have updated your comment!!', context);
+        logger.i('Successfully updated reply');
       }
       notifyListeners();
       return user;
     } catch (e) {
-      logger.e("Error : $e");
+      logger.e("Error updating reply: $e");
       return false;
     }
   }

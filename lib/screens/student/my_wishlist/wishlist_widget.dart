@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/resource/colors.dart';
 
 import '../../../widgets/custom_shimmer_effect.dart';
 
@@ -62,7 +63,19 @@ class WishlistWidget extends StatelessWidget {
                               ),
                             );
                           },
-                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              width: 70,
+                              height: 90,
+                              color: Colors.deepOrange,
+                              child: const Center(
+                                child: Icon(
+                                  Icons.book,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                              ),
+                            ),
+
                         )),
                   ),
                   Expanded(

@@ -79,12 +79,10 @@ class PaymentViewModel with ChangeNotifier {
         }
       } else {
         _logger.w('No additional payments received for page $_currentPage');
-        Utils.flushBarErrorMessage('No payments received from server', context);
       }
       Future.microtask(() => notifyListeners());
     } catch (error) {
       _logger.e('Error fetching more payments: $error');
-
     } finally {
       setLoading(false);
     }

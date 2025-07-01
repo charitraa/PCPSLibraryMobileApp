@@ -105,8 +105,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
     await Future.wait([
       Provider.of<AttrPublisherViewModel>(context, listen: false)
           .fetchPublishersList(context),
-      Provider.of<AttrGenreViewModel>(context, listen: false)
-          .fetchGenresList(context),
+
       Provider.of<AttrAuthorViewModel>(context, listen: false)
           .fetchAuthorsList(context),
 
@@ -125,70 +124,72 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
     return Scaffold(
       key: _scaffoldKey,
       drawer: Drawer(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-              ),
-              child: Center(
-                child: Image.asset(
-                  'assets/images/pcpsLogo.png',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                ),
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/pcpsLogo.png',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Filter By',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  'Filter By',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: CustomGenres(
-                label: 'Filter by Genre',
-                wid: size.width,
-                onChanged: (value) {
-                  Provider.of<BooksViewModel>(context, listen: false)
-                      .setBookGenreGrp(value!, context);
-                  _scaffoldKey.currentState?.closeDrawer();
-                },
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SearchableGenreDropdown(
+                  label: 'Filter by Genre',
+                  maxWidth: size.width,
+                  onChanged: (value) {
+                    Provider.of<BooksViewModel>(context, listen: false)
+                        .setBookGenreGrp(value!, context);
+                    _scaffoldKey.currentState?.closeDrawer();
+                  },
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: CustomAuthor(
-                label: 'Filter by Author',
-                wid: size.width,
-                onChanged: (value) {
-                  Provider.of<BooksViewModel>(context, listen: false)
-                      .setBookAuthor(value!, context);
-                  _scaffoldKey.currentState?.closeDrawer();
-                },
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SearchableAuthorDropdown(
+                  label: 'Filter by Author',
+                  maxWidth: size.width,
+                  onChanged: (value) {
+                    Provider.of<BooksViewModel>(context, listen: false)
+                        .setBookAuthor(value!, context);
+                    _scaffoldKey.currentState?.closeDrawer();
+                  },
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: CustomPublisher(
-                label: 'Filter by Publisher',
-                wid: size.width,
-                onChanged: (value) {
-                  Provider.of<BooksViewModel>(context, listen: false)
-                      .setPublisher(value!, context);
-                  _scaffoldKey.currentState?.closeDrawer();
-                },
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SearchablePublisherDropdown(
+                  label: 'Filter by Publisher',
+                  maxWidth: size.width,
+                  onChanged: (value) {
+                    Provider.of<BooksViewModel>(context, listen: false)
+                        .setPublisher(value!, context);
+                    _scaffoldKey.currentState?.closeDrawer();
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       body: SafeArea(

@@ -4,55 +4,79 @@ import 'package:library_management_sys/view_model/attributes/attr_publisher_view
 import 'package:provider/provider.dart';
 
 import '../../resource/colors.dart';
+import '../../view_model/books/book_view_model.dart';
 
-class CustomPublisher extends StatefulWidget {
+class SearchablePublisherDropdown extends StatefulWidget {
   final String label;
-  final double wid;
+  final double maxWidth;
   final TextEditingController? controller;
   final Function(String?) onChanged;
 
-  const CustomPublisher({
+  const SearchablePublisherDropdown({
     super.key,
     required this.label,
-    required this.wid,
+    required this.maxWidth,
     this.controller,
     required this.onChanged,
   });
 
-  final border = const OutlineInputBorder(
-    borderSide: BorderSide(
-      width: 1.5,
-      color: Colors.grey,
-      style: BorderStyle.solid,
-      strokeAlign: BorderSide.strokeAlignCenter,
-    ),
-    borderRadius: BorderRadius.all(Radius.circular(5)),
-  );
-
   @override
-  State<CustomPublisher> createState() => _DropDownFieldState();
+  State<SearchablePublisherDropdown> createState() => _SearchablePublisherDropdownState();
 }
 
-class _DropDownFieldState extends State<CustomPublisher> {
-  String? selectedpublisher;
+class _SearchablePublisherDropdownState extends State<SearchablePublisherDropdown> {
+  String? selectedPublisher;
   bool isLoad = false;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  bool _isDropdownVisible = false;
 
-
-
-  Future<void> loadMore() async {
-    if (isLoad) return; // Prevent multiple requests
-    setState(() => isLoad = true);
-
+  Future<void> fetch() async {
     try {
       await Provider.of<AttrPublisherViewModel>(context, listen: false)
-          .loadMorePublishers(context);
+          .fetchPublishersList(context);
     } catch (e) {
-      if (kDebugMode) {
-        print("Error loading more publishers: $e");
-      }
+      if (kDebugMode) print("Error loading publishers: $e");
     } finally {
       setState(() => isLoad = false);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final publisherViewModel = Provider.of<AttrPublisherViewModel>(context, listen: false);
+    if (publisherViewModel.searchValue.isNotEmpty) {
+      _searchController.text = publisherViewModel.searchValue;
+      _isDropdownVisible = true;
+    }
+    fetch();
+    _searchController.addListener(() {
+      final searchText = _searchController.text;
+      Provider.of<AttrPublisherViewModel>(context, listen: false)
+          .setFilter(searchText, context);
+      setState(() {
+        _isDropdownVisible = searchText.isNotEmpty;
+        if (searchText.isEmpty && selectedPublisher == null) {
+          if (widget.controller != null) {
+            widget.controller!.clear();
+          }
+          widget.onChanged(null);
+        }
+      });
+    });
+    _searchFocusNode.addListener(() {
+      if (_searchFocusNode.hasFocus) {
+        setState(() => _isDropdownVisible = true);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,99 +84,123 @@ class _DropDownFieldState extends State<CustomPublisher> {
     final publisherViewModel = context.watch<AttrPublisherViewModel>();
     final publishers = publisherViewModel.publishersList;
 
-    if (publishers.isEmpty) {
-      return const Center(child: Text('No publishers available'));
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double containerWidth =
+        constraints.maxWidth > widget.maxWidth ? widget.maxWidth : constraints.maxWidth;
+        final double fontScale = constraints.maxWidth < 400 ? 0.9 : 1.0;
+        final double paddingScale = constraints.maxWidth < 400 ? 4.0 : 8.0;
 
-    String? initialValue = selectedpublisher ??
-        (widget.controller?.text.isNotEmpty == true &&
-            publishers.any((g) => g.publisherId == widget.controller?.text)
-            ? widget.controller?.text
-            : null);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Container(
-          width: widget.wid,
-          child: publisherViewModel.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : publishers.isEmpty
-              ? const Center(child: Text('No publishers available'))
-              : DropdownButtonHideUnderline(
-            child: ButtonTheme(
-              alignedDropdown: true,
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) {
-                  if (scrollInfo.metrics.pixels ==
-                      scrollInfo.metrics.maxScrollExtent &&
-                      !isLoad) {
-                    loadMore(); // Load more publishers when scrolled to the bottom
-                  }
-                  return false;
-                },
-                child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                      BorderSide(width: 1.5, color: AppColors.primary),
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(5)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 1.5,
-                        color: AppColors.primary,
-                      ),
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(5)),
-                    ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.label,
+              style: TextStyle(
+                fontSize: 14 * fontScale,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: paddingScale),
+            // Search Field
+            Container(
+              width: containerWidth,
+              child: TextField(
+                controller: _searchController,
+                focusNode: _searchFocusNode,
+                decoration: InputDecoration(
+                  hintText: 'Search publishers...',
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: paddingScale * 2,
+                    vertical: paddingScale,
                   ),
-                  value: initialValue,
-                  hint: const Text('Select a publisher'),
-                  items: publishers.map((publisher) {
-                    return DropdownMenuItem<String>(
-                      value: publisher.publisherId,
-                      child: Text(
-                        (publisher.publisherName?.split(' ').take(3).join(' ') ?? '') +
-                            (publisher.publisherName != null && publisher.publisherName!.split(' ').length > 3 ? '...' : ''),
-                        style: const TextStyle(fontSize: 14),
-                      )
-
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedpublisher = newValue;
-                    });
-                    if (widget.controller != null) {
-                      widget.controller!.text = newValue ?? '';
-                    }
-                    widget.onChanged(newValue);
-                  },
-                  menuMaxHeight: 300, // Ensure dropdown is scrollable
-                  dropdownColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1.5, color: AppColors.primary),
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1.5, color: AppColors.primary),
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () async {
+                      _searchController.clear();
+                      Provider.of<BooksViewModel>(context, listen: false)
+                          .setPublisher('', context);
+                      setState(() {
+                        selectedPublisher = null;
+                        _isDropdownVisible = true;
+                        _searchFocusNode.unfocus();
+                      });
+                      if (widget.controller != null) {
+                        widget.controller!.clear();
+                      }
+                      widget.onChanged(null);
+                    },
+                  )
+                      : null,
                 ),
               ),
             ),
-          ),
-        ),
-        if (isLoad)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Center(child: CircularProgressIndicator()),
-          ),
-      ],
+            SizedBox(height: paddingScale),
+            // Dropdown Results
+            if (_isDropdownVisible)
+              Container(
+                width: containerWidth,
+                constraints: BoxConstraints(
+                  maxHeight: constraints.maxHeight * 0.4,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.primary, width: 1.5),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  color: Colors.white,
+                ),
+                child: publisherViewModel.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : publishers.isEmpty
+                    ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('No publishers available'),
+                )
+                    : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: publishers.length,
+                  itemBuilder: (context, index) {
+                    final publisher = publishers[index];
+                    return ListTile(
+                      title: Text(
+                        publisher.publisherName ?? '',
+                        style: TextStyle(fontSize: 14 * fontScale),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          selectedPublisher = publisher.publisherId;
+                          _isDropdownVisible = false;
+                          _searchController.text = publisher.publisherName ?? '';
+                          _searchFocusNode.unfocus();
+                        });
+                        if (widget.controller != null) {
+                          widget.controller!.text = publisher.publisherId!;
+                        }
+                        widget.onChanged(publisher.publisherId);
+                      },
+                    );
+                  },
+                ),
+              ),
+            if (isLoad && _isDropdownVisible)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: paddingScale),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+          ],
+        );
+      },
     );
   }
 }

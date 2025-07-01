@@ -66,7 +66,6 @@ class MyBooksViewModel with ChangeNotifier {
       return success;
     } catch (error) {
       _logger.e('Error renewing book: $error');
-
       return false;
     } finally {
       setLoading(false);

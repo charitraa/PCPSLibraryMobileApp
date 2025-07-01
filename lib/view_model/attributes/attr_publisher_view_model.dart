@@ -57,8 +57,7 @@ class AttrPublisherViewModel with ChangeNotifier {
         _publisherList.addAll(response['publisher'] as List<Publisher>);
       } else {
         _logger.w("No publishers received in response");
-        Utils.flushBarErrorMessage(
-            "No publishers received from server", context);
+
       }
       if (response != null && response['next'] != null) {
         _currentPage++;
@@ -85,8 +84,7 @@ class AttrPublisherViewModel with ChangeNotifier {
         }
       } else {
         _logger.w("No additional publishers received for page $_currentPage");
-        Utils.flushBarErrorMessage(
-            "No publishers received from server", context);
+
       }
       Future.microtask(() => notifyListeners());
     } catch (error) {

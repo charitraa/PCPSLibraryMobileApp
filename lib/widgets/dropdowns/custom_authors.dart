@@ -1,54 +1,42 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/view_model/attributes/attr_author_view_model.dart';
+import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:provider/provider.dart';
-
 import '../../resource/colors.dart';
 
-class CustomAuthor extends StatefulWidget {
+class SearchableAuthorDropdown extends StatefulWidget {
   final String label;
-  final double wid;
+  final double maxWidth;
   final TextEditingController? controller;
   final Function(String?) onChanged;
 
-  const CustomAuthor({
+  const SearchableAuthorDropdown({
     super.key,
     required this.label,
-    required this.wid,
+    required this.maxWidth,
     this.controller,
     required this.onChanged,
   });
 
-  final border = const OutlineInputBorder(
-    borderSide: BorderSide(
-      width: 1.5,
-      color: Colors.grey,
-      style: BorderStyle.solid,
-      strokeAlign: BorderSide.strokeAlignCenter,
-    ),
-    borderRadius: BorderRadius.all(Radius.circular(5)),
-  );
-
   @override
-  State<CustomAuthor> createState() => _DropDownFieldState();
+  State<SearchableAuthorDropdown> createState() => _SearchableAuthorDropdownState();
 }
 
-class _DropDownFieldState extends State<CustomAuthor> {
-  String? selectedRegion;
+class _SearchableAuthorDropdownState extends State<SearchableAuthorDropdown> {
+  String? selectedAuthor;
   bool isLoad = false;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  bool _isDropdownVisible = false;
 
-
-
-  Future<void> loadMore() async {
-    if (isLoad) return;
-    setState(() => isLoad = true);
-
+  Future<void> fetch() async {
     try {
       await Provider.of<AttrAuthorViewModel>(context, listen: false)
-          .loadMoreAuthors(context);
+          .fetchAuthorsList(context);
     } catch (e) {
       if (kDebugMode) {
-        print("Error loading more authors: $e");
+        print("Error loading Authors: $e");
       }
     } finally {
       setState(() => isLoad = false);
@@ -56,104 +44,153 @@ class _DropDownFieldState extends State<CustomAuthor> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    final authorViewModel = Provider.of<AttrAuthorViewModel>(context, listen: false);
+    if (authorViewModel.searchValue.isNotEmpty) {
+      _searchController.text = authorViewModel.searchValue;
+      _isDropdownVisible = true;
+    }
+    fetch();
+    _searchController.addListener(() async {
+      final searchText = _searchController.text;
+      final genreViewModel = Provider.of<AttrAuthorViewModel>(context, listen: false);
+      genreViewModel.setFilter(searchText, context);
+      await genreViewModel.fetchAuthorsList(context);
+      setState(() {
+        _isDropdownVisible = searchText.isNotEmpty;
+        if (searchText.isEmpty && selectedAuthor == null) {
+          widget.controller?.clear();
+          widget.onChanged(null);
+        }
+      });
+    });
+
+    _searchFocusNode.addListener(() {
+      if (_searchFocusNode.hasFocus) {
+        setState(() => _isDropdownVisible = true);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authorViewModel = context.watch<AttrAuthorViewModel>();
     final authors = authorViewModel.authorsList;
 
-    if (authors.isEmpty) {
-      return const Center(child: Text('No Authors available'));
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double containerWidth =
+        constraints.maxWidth > widget.maxWidth ? widget.maxWidth : constraints.maxWidth;
+        final double fontScale = constraints.maxWidth < 400 ? 0.9 : 1.0;
+        final double paddingScale = constraints.maxWidth < 400 ? 4.0 : 8.0;
 
-    String? initialValue = selectedRegion ??
-        (widget.controller?.text.isNotEmpty == true &&
-            authors.any((h) => h.authorId == widget.controller?.text)
-            ? widget.controller?.text
-            : null);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Container(
-          width: widget.wid,
-          child: authorViewModel.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : authors.isEmpty
-              ? const Center(child: Text('No authors available'))
-              : DropdownButtonHideUnderline(
-            child: ButtonTheme(
-              alignedDropdown: true,
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) {
-                  if (scrollInfo.metrics.pixels ==
-                      scrollInfo.metrics.maxScrollExtent &&
-                      !isLoad) {
-                    loadMore(); // Load more authors when scrolled to the bottom
-                  }
-                  return false;
-                },
-                child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                      BorderSide(width: 1.5, color: AppColors.primary),
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(5)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 1.5,
-                        color: AppColors.primary,
-                      ),
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(5)),
-                    ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.label,
+              style: TextStyle(
+                fontSize: 14 * fontScale,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: paddingScale),
+            // Search TextField
+            Container(
+              width: containerWidth,
+              child: TextField(
+                controller: _searchController,
+                focusNode: _searchFocusNode,
+                decoration: InputDecoration(
+                  hintText: 'Search Authors...',
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: paddingScale * 2,
+                    vertical: paddingScale,
                   ),
-                  value: initialValue,
-                  hint: const Text('Select an author'),
-                  items: authors.map((author) {
-                    return DropdownMenuItem<String>(
-                      value: author.authorId,
-                      child: Text(
-                        author.fullName!.split(' ').take(3).join(' ') +
-                            (author.fullName!.split(' ').length > 2
-                                ? '...'
-                                : ''),
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedRegion = newValue;
-                    });
-                    if (widget.controller != null) {
-                      widget.controller!.text = newValue ?? '';
-                    }
-                    widget.onChanged(newValue);
-                  },
-                  menuMaxHeight: 300, // Ensure dropdown is scrollable
-                  dropdownColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1.5, color: AppColors.primary),
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1.5, color: AppColors.primary),
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () async{
+                      _searchController.clear();
+                      Provider.of<BooksViewModel>(context, listen: false)
+                          .setBookAuthor('', context);
+                    },
+                  )
+                      : null,
                 ),
               ),
             ),
-          ),
-        ),
-        if (isLoad)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Center(child: CircularProgressIndicator()),
-          ),
-      ],
+            SizedBox(height: paddingScale),
+            // Search Results List
+            if (_isDropdownVisible)
+              Container(
+                width: containerWidth,
+                constraints: BoxConstraints(
+                  maxHeight: constraints.maxHeight * 0.4,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.primary, width: 1.5),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  color: Colors.white,
+                ),
+                child: authorViewModel.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : authors.isEmpty
+                    ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('No authors available'),
+                )
+                    : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: authors.length,
+                  itemBuilder: (context, index) {
+                    final author = authors[index];
+                    return ListTile(
+                      title: Text(
+                        author.fullName ?? '',
+                        style: TextStyle(fontSize: 14 * fontScale),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          selectedAuthor = author.authorId;
+                          _isDropdownVisible = false;
+                          _searchController.text = author.fullName ?? '';
+                          _searchFocusNode.unfocus();
+                        });
+                        widget.controller?.text = author.authorId ?? '';
+                        widget.onChanged(author.authorId);
+                      },
+                    );
+                  },
+                ),
+              ),
+            if (isLoad && _isDropdownVisible)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: paddingScale),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+          ],
+        );
+      },
     );
   }
 }

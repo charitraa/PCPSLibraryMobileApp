@@ -47,7 +47,13 @@ class _BookRequestBottomSheetState extends State<BookRequestBottomSheet> {
       if (context.mounted) {
         if (isSuccess) {
           Utils.flushBarSuccessMessage("Book Requested Successfully!", context);
-          Navigator.of(context).pop(); // Close on success
+          _titleController.text="";
+          _authorsController.text="";
+          _publisherController.text="";
+          _publicationYearController.text="";
+          _editionStatementController.text="";
+
+
         } else {
           Utils.flushBarErrorMessage("Failed to request book. Try again.", context);
           // Optionally close on failure: Navigator.of(context).pop();

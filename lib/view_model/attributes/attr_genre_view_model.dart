@@ -35,11 +35,11 @@ class AttrGenreViewModel with ChangeNotifier {
   String _searchValue = '';
   String get searchValue => _searchValue;
 
-  void setFilter(String value, BuildContext context) {
+  void setFilter(String value, BuildContext context) async{
     if (_filter != value) {
       _filter = value;
       _searchValue = value;
-      fetchGenresList(context);
+
       notifyListeners();
     }
   }

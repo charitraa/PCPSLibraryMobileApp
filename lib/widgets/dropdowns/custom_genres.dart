@@ -1,52 +1,42 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/view_model/attributes/attr_genre_view_model.dart';
+import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:provider/provider.dart';
-
 import '../../resource/colors.dart';
 
-class CustomGenres extends StatefulWidget {
+class SearchableGenreDropdown extends StatefulWidget {
   final String label;
-  final double wid;
+  final double maxWidth;
   final TextEditingController? controller;
   final Function(String?) onChanged;
 
-  const CustomGenres({
+  const SearchableGenreDropdown({
     super.key,
     required this.label,
-    required this.wid,
+    required this.maxWidth,
     this.controller,
     required this.onChanged,
   });
 
-  final border = const OutlineInputBorder(
-    borderSide: BorderSide(
-      width: 1.5,
-      color: Colors.grey,
-      style: BorderStyle.solid,
-      strokeAlign: BorderSide.strokeAlignCenter,
-    ),
-    borderRadius: BorderRadius.all(Radius.circular(5)),
-  );
-
   @override
-  State<CustomGenres> createState() => _DropDownFieldState();
+  State<SearchableGenreDropdown> createState() => _SearchableGenreDropdownState();
 }
 
-class _DropDownFieldState extends State<CustomGenres> {
+class _SearchableGenreDropdownState extends State<SearchableGenreDropdown> {
   String? selectedGenre;
   bool isLoad = false;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  bool _isDropdownVisible = false;
 
-  Future<void> loadMore() async {
-    if (isLoad) return; // Prevent multiple requests
-    setState(() => isLoad = true);
-
+  Future<void> fetch() async {
     try {
       await Provider.of<AttrGenreViewModel>(context, listen: false)
-          .loadMoreGenres(context);
+          .fetchGenresList(context);
     } catch (e) {
       if (kDebugMode) {
-        print("Error loading more genres: $e");
+        print("Error loading genres: $e");
       }
     } finally {
       setState(() => isLoad = false);
@@ -54,104 +44,158 @@ class _DropDownFieldState extends State<CustomGenres> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    final genreViewModel = Provider.of<AttrGenreViewModel>(context, listen: false);
+
+    if (genreViewModel.searchValue.isNotEmpty) {
+      _searchController.text = genreViewModel.searchValue;
+      _isDropdownVisible = true;
+    }
+
+    fetch();
+
+    _searchController.addListener(() async {
+      final searchText = _searchController.text;
+      final genreViewModel = Provider.of<AttrGenreViewModel>(context, listen: false);
+
+      genreViewModel.setFilter(searchText, context);
+      await genreViewModel.fetchGenresList(context);
+
+      setState(() {
+        _isDropdownVisible = searchText.isNotEmpty;
+        if (searchText.isEmpty && selectedGenre == null) {
+          widget.controller?.clear();
+          widget.onChanged(null);
+        }
+      });
+    });
+
+    _searchFocusNode.addListener(() {
+      if (_searchFocusNode.hasFocus) {
+        setState(() => _isDropdownVisible = true);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final genreViewModel = context.watch<AttrGenreViewModel>();
     final genres = genreViewModel.genresList;
 
-    if (genres.isEmpty) {
-      return const Center(child: Text('No genres available'));
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double containerWidth =
+        constraints.maxWidth > widget.maxWidth ? widget.maxWidth : constraints.maxWidth;
+        final double fontScale = constraints.maxWidth < 400 ? 0.9 : 1.0;
+        final double paddingScale = constraints.maxWidth < 400 ? 4.0 : 8.0;
 
-    String? initialValue = selectedGenre ??
-        (widget.controller?.text.isNotEmpty == true &&
-            genres.any((g) => g.genreId == widget.controller?.text)
-            ? widget.controller?.text
-            : null);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Container(
-          width: widget.wid,
-          child: genreViewModel.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : genres.isEmpty
-              ? const Center(child: Text('No genres available'))
-              : DropdownButtonHideUnderline(
-            child: ButtonTheme(
-              alignedDropdown: true,
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) {
-                  if (scrollInfo.metrics.pixels ==
-                      scrollInfo.metrics.maxScrollExtent &&
-                      !isLoad) {
-                    loadMore(); // Load more genres when scrolled to the bottom
-                  }
-                  return false;
-                },
-                child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                      BorderSide(width: 1.5, color: AppColors.primary),
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(5)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 1.5,
-                        color: AppColors.primary,
-                      ),
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(5)),
-                    ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.label,
+              style: TextStyle(
+                fontSize: 14 * fontScale,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: paddingScale),
+            // Search TextField
+            Container(
+              width: containerWidth,
+              child: TextField(
+                controller: _searchController,
+                focusNode: _searchFocusNode,
+                decoration: InputDecoration(
+                  hintText: 'Search genres...',
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: paddingScale * 2,
+                    vertical: paddingScale,
                   ),
-                  value: initialValue,
-                  hint: const Text('Select a genre'),
-                  items: genres.map((genre) {
-                    return DropdownMenuItem<String>(
-                      value: genre.genreId,
-                      child: Text(
-                        genre.genre!.split(' ').take(3).join(' ') +
-                            (genre.genre!.split(' ').length > 2
-                                ? '...'
-                                : ''),
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedGenre = newValue;
-                    });
-                    if (widget.controller != null) {
-                      widget.controller!.text = newValue ?? '';
-                    }
-                    widget.onChanged(newValue);
-                  },
-                  menuMaxHeight: 300, // Ensure dropdown is scrollable
-                  dropdownColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1.5, color: AppColors.primary),
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1.5, color: AppColors.primary),
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () async{
+                      _searchController.clear();
+                      Provider.of<BooksViewModel>(context, listen: false)
+                          .setBookGenreGrp('', context);
+                    },
+                  )
+                      : null,
                 ),
               ),
             ),
-          ),
-        ),
-        if (isLoad)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Center(child: CircularProgressIndicator()),
-          ),
-      ],
+            SizedBox(height: paddingScale),
+            // Search Results List
+            if (_isDropdownVisible)
+              Container(
+                width: containerWidth,
+                constraints: BoxConstraints(
+                  maxHeight: constraints.maxHeight * 0.4,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.primary, width: 1.5),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  color: Colors.white,
+                ),
+                child: genreViewModel.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : genres.isEmpty
+                    ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('No genres available'),
+                )
+                    : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: genres.length,
+                  itemBuilder: (context, index) {
+                    final genre = genres[index];
+                    return ListTile(
+                      title: Text(
+                        genre.genre ?? '',
+                        style: TextStyle(fontSize: 14 * fontScale),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          selectedGenre = genre.genreId;
+                          _isDropdownVisible = false;
+                          _searchController.text = genre.genre ?? '';
+                          _searchFocusNode.unfocus();
+                        });
+                        widget.controller?.text = genre.genreId ?? '';
+                        widget.onChanged(genre.genreId);
+                      },
+                    );
+                  },
+                ),
+              ),
+            if (isLoad && _isDropdownVisible)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: paddingScale),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+          ],
+        );
+      },
     );
   }
 }
