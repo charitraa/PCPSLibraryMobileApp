@@ -30,7 +30,6 @@ class StudentBrowseBooks extends StatefulWidget {
 
 class _BrowseBooksState extends State<StudentBrowseBooks> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  int index = 1;
   late ScrollController _scrollController;
   bool isLoadMore = false;
   String message = '';
@@ -38,7 +37,6 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
   @override
   void initState() {
     super.initState();
-    index = widget.reqIndex ?? 0;
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
     _fetchBooks();
@@ -62,13 +60,9 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
       isLoadMore = true;
     });
     try {
-      if (index == 0) {
-        await Provider.of<RecommendedViewModel>(context, listen: false)
-            .loadMoreBooks(context);
-      } else {
+
         await Provider.of<BooksViewModel>(context, listen: false)
             .loadMoreBooks(context);
-      }
     } catch (e) {
       if (kDebugMode) {
         print("Error loading more books: $e");
@@ -85,21 +79,14 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
         .resetBookList(context);
   }
 
-  Future<void> _resetRecommended() async {
-    await Provider.of<RecommendedViewModel>(context, listen: false)
-        .resetBookList(context);
-  }
+
 
   Future<void> _fetchBooks() async {
     final booksViewModel = Provider.of<BooksViewModel>(context, listen: false);
-    final recommendedViewModel =
-    Provider.of<RecommendedViewModel>(context, listen: false);
+
 
     if (booksViewModel.booksList.isEmpty) {
       await booksViewModel.fetchBooksList(context);
-    }
-    if (recommendedViewModel.booksList.isEmpty) {
-      await recommendedViewModel.fetchBooksList(context);
     }
 
     await Future.wait([
@@ -216,23 +203,15 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                   Row(
                     children: [
                       buildFilterButton("All Books", () {
-                        setState(() {
-                          index = 1;
-                        });
                         _resetBooks();
                       }, 1),
                       const SizedBox(width: 8),
 
-                      buildFilterButton("Recommended", () {
-                        setState(() {
-                          index = 0;
-                        });
-                        _resetRecommended();
-                      }, 0),
+
 
                     ],
                   ),
-                  if (index == 1) ...[
+
                     InkWell(
                       onTap: () {
                         _scaffoldKey.currentState?.openDrawer();
@@ -254,169 +233,13 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                         ),
                       ),
                     )
-                  ]
+
                 ],
               ),
               const SizedBox(height: 10),
-              if (index == 0) ...[
-                Consumer<RecommendedViewModel>(
-                  builder: (context, viewModel, child) {
-                    final TextEditingController _controller =
-                    TextEditingController(text: viewModel.searchValue);
-                    return CustomSearch(
-                      controller: _controller,
-                      hintText: 'Search Books',
-                      outlinedColor: Colors.grey,
-                      focusedColor: AppColors.primary,
-                      height: 50,
-                      width: double.infinity,
-                      onChanged: (e) {},
-                      onReset: (){
-                        viewModel.resetBookList(context);
-                      },
-                      onTap: () {
-                        String searchValue = _controller.text;
-                        viewModel.setFilter(searchValue, context);
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Suggested Reads for You',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Flexible(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      double itemWidth = (constraints.maxWidth - (10 * 2)) / 3;
-                      double itemHeight = 190;
-                      double aspectRatio = itemWidth / itemHeight;
 
-                      return Consumer<RecommendedViewModel>(
-                        builder: (context, value, child) {
-                          final books = value.booksList;
 
-                          if (value.isLoading && books.isEmpty) {
-                            return const BookSkeletonGrid();
-                          }
 
-                          if (books.isEmpty) {
-                            return const Center(
-                              child: Text(
-                                'No Books available.',
-                                style:
-                                TextStyle(fontSize: 16, color: Colors.grey),
-                              ),
-                            );
-                          }
-
-                          return GridView.builder(
-                            padding: const EdgeInsets.only(bottom: 18),
-                            gridDelegate:
-                            SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 15,
-                              childAspectRatio: aspectRatio,
-                            ),
-                            itemCount: books.length + (isLoadMore ? 1 : 0),
-                            physics: const BouncingScrollPhysics(),
-                            controller: _scrollController,
-                            itemBuilder: (context, index) {
-                              if (index == books.length) {
-                                return _buildLoadMoreSkeleton();
-                              }
-                              final BooksModel book = books[index];
-
-                              String authors = "By ";
-                              List<String> authorNames =
-                              book.bookAuthors!.map((bookAuthor) {
-                                return bookAuthor.author!.fullName ?? '';
-                              }).toList();
-                              authors += authorNames.join(", ");
-
-                              String genres = "";
-                              List<String>? genresMap =
-                              book.bookGenres?.map((bookGenres) {
-                                return bookGenres.genre!.genre ?? '';
-                              }).toList();
-                              genres += genresMap!.join(", ");
-
-                              String isbn = "";
-                              List<String> isbnMap = book.isbns!.map((isbn) {
-                                return isbn.isbn ?? '';
-                              }).toList();
-                              isbn += isbnMap.join(", ");
-
-                              String? profileImageUrl;
-                              try {
-                                profileImageUrl = book.bookImages!
-                                    .firstWhere((img) => img.isProfile == true)
-                                    .imageUrl;
-                              } catch (e) {
-                                profileImageUrl = '';
-                              }
-
-                              return BookWidget(
-                                bookImage:
-                                "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
-                                title: book.title ?? '',
-                                author:
-                                "By ${book.bookAuthors![0].author?.fullName}" ??
-                                    '',
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    PageRouteBuilder(
-                                      pageBuilder: (context, animation,
-                                          secondaryAnimation) =>
-                                          BookInfo(
-                                              uid: book.bookInfoId ?? '',
-                                              score: book.score != null
-                                                  ? (book.score?.score as int)
-                                                  .toDouble()
-                                                  : 0,
-                                              genre: genres ?? '',
-                                              isbn: isbn ?? '',
-                                              image:
-                                              "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
-                                              author: authors,
-                                              books: book),
-                                      transitionsBuilder: (context, animation,
-                                          secondaryAnimation, child) {
-                                        const begin = Offset(1.0, 0.0);
-                                        const end = Offset.zero;
-                                        const curve = Curves.easeInOut;
-                                        var tween = Tween(
-                                            begin: begin, end: end)
-                                            .chain(CurveTween(curve: curve));
-                                        var offsetAnimation =
-                                        animation.drive(tween);
-                                        return SlideTransition(
-                                          position: offsetAnimation,
-                                          child: child,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ] else ...[
                 Consumer<BooksViewModel>(
                   builder: (context, viewModel, child) {
                     final TextEditingController _controller =
@@ -557,7 +380,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                   ),
                 ),
               ]
-            ],
+
           ),
         ),
       ),
@@ -586,14 +409,14 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
         decoration: BoxDecoration(
-          color: index == tabIndex ? AppColors.primary : Colors.white,
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(5),
           border: Border.all(color: AppColors.primary, width: 1.0),
         ),
         child: Text(
           title,
           style: TextStyle(
-              color: index == tabIndex ? Colors.white : AppColors.primary,
+              color:  Colors.white ,
               fontSize: 12),
         ),
       ),

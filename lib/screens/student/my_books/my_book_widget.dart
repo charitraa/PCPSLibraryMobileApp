@@ -76,7 +76,7 @@ class MyBookWidget extends StatelessWidget {
                       errorBuilder: (context, error, stackTrace) => Container(
                         width: 120,
                         height: 122,
-                        color: AppColors.primary,
+                        color: Colors.green,
                         child: const Center(
                           child: Icon(
                             Icons.book,
