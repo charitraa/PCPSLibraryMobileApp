@@ -68,7 +68,7 @@ class _CancelReservationListState extends State<CancelReservationList> {
                   : '',
               genre: reservationData.reservationDate != null
                   ? parseDate(reservationData.reservationDate.toString())
-                  : '----',
+                  : 'Cancelled',
               status: reservationData.status ?? '',
               publicationYear:
                   reservationData.bookInfo?.publicationYear.toString() ?? "",

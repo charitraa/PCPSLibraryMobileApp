@@ -55,27 +55,37 @@ class ConfirmReserveWid extends StatelessWidget {
                     maxHeight: 90,
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child:Image.network(
-                      image,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CustomShimmerLoading(
-                            width: 70.0,
-                            height: 90,
-                            baseColor: Colors.grey[300]!,
-                            highlightColor: Colors.grey[100]!,
+                      borderRadius: BorderRadius.circular(5),
+                      child:Image.network(
+                        image,
+                        width: 70,
+                        height: 90,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child:CustomShimmerLoading(
+                              width: 70.0,
+                              height: 90,
+                              baseColor: Colors.grey[300]!,
+                              highlightColor: Colors.grey[100]!,
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 70,
+                          height: 90,
+                          color: Colors.deepOrange,
+                          child: const Center(
+                            child: Icon(
+                              Icons.book,
+                              color: Colors.white,
+                              size: 40,
+                            ),
                           ),
+                        ),
 
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.error);
-                      },
-                    ),
-                  ),
+                      )),
                 ),
               ),
               Expanded(

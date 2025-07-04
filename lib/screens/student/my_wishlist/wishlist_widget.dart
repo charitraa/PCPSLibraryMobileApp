@@ -63,18 +63,18 @@ class WishlistWidget extends StatelessWidget {
                               ),
                             );
                           },
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              width: 70,
-                              height: 90,
-                              color: Colors.deepOrange,
-                              child: const Center(
-                                child: Icon(
-                                  Icons.book,
-                                  color: Colors.white,
-                                  size: 40,
-                                ),
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: 70,
+                            height: 90,
+                            color: Colors.deepOrange,
+                            child: const Center(
+                              child: Icon(
+                                Icons.book,
+                                color: Colors.white,
+                                size: 40,
                               ),
                             ),
+                          ),
 
                         )),
                   ),

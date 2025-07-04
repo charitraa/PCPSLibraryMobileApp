@@ -415,7 +415,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
         ),
         child: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
               color:  Colors.white ,
               fontSize: 12),
         ),

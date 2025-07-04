@@ -88,7 +88,7 @@ class _ReservationListState extends State<ReservationList> {
                   : '',
               genre: reservationData.reservationDate != null
                   ? parseDate(reservationData.reservationDate.toString())
-                  : '----',
+                  : 'yet to be confirmed',
               status: reservationData.status ?? '',
               publicationYear:
                   reservationData.bookInfo!.publicationYear.toString(),
