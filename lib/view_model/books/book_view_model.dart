@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/model/books_model.dart';
@@ -14,6 +15,7 @@ class BooksViewModel with ChangeNotifier {
   ApiResponse<BookInfoModel> booksData = ApiResponse.loading();
   BookInfoModel? get currentUser => booksData.data;
   final logger = Logger();
+  Timer? _debounce; // Add Timer for debouncing
 
   void setUser(ApiResponse<BookInfoModel> response) {
     booksData = response;
@@ -47,8 +49,22 @@ class BooksViewModel with ChangeNotifier {
   String _searchValue = '';
   String get searchValue => _searchValue;
 
-  void setFilter(String value, BuildContext context) {
-    if (_filter != value) {
+  void setFilter(String value, BuildContext context, {bool debounce = false}) {
+    if (debounce) {
+      // Cancel any existing debounce timer
+      if (_debounce?.isActive ?? false) _debounce!.cancel();
+      // Start a new debounce timer
+      _debounce = Timer(const Duration(milliseconds: 500), () {
+        _filter = value;
+        _searchValue = value;
+        _bookGenre = '';
+        _publisher = '';
+        _bookAuthor = '';
+        fetchBooksList(context);
+        notifyListeners();
+      });
+    } else {
+      // Immediate execution for search button
       _filter = value;
       _searchValue = value;
       _bookGenre = '';
@@ -209,5 +225,11 @@ class BooksViewModel with ChangeNotifier {
       logger.e("Error rating book: $e");
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel(); // Cancel debounce timer on dispose
+    super.dispose();
   }
 }

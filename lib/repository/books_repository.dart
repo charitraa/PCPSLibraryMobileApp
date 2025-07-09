@@ -261,7 +261,7 @@ class BooksRepository {
   Future<Map<String, dynamic>> fetchReservation(String filter, String seed,
       int page, int limit, BuildContext context) async {
     String url =
-        '${BookEndPoints.reserveUrl}?status=$filter&seed=$seed&page=$page&pageSize=$limit';
+        '${BookEndPoints.reserveUrl}/my?status=$filter&seed=$seed&page=$page&pageSize=$limit';
     try {
       if (kDebugMode) {
         logger.d("Fetch reservation URL: $url");
@@ -296,10 +296,10 @@ class BooksRepository {
   Future<bool> cancelReservation(String uid, BuildContext context) async {
     try {
       if (kDebugMode) {
-        logger.d("Canceling reservation with URL: ${BookEndPoints.cancelReservation}/$uid");
+        logger.d("Canceling reservation with URL: ${BookEndPoints.cancelReservation}/my/$uid");
       }
       final dynamic response = await _apiService
-          .getDeleteApiResponse("${BookEndPoints.cancelReservation}/$uid");
+          .getDeleteApiResponse("${BookEndPoints.cancelReservation}/my/$uid");
 
       if (response == null) {
         logger.w("Server did not respond for cancel reservation UID: $uid");

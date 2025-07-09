@@ -7,7 +7,7 @@ class BookEndPoints{
   static var reserveUrl="${BaseUrl.baseUrl}/circulation/reservations";
   static var renewalUrl="${BaseUrl.baseUrl}/circulation/renewals";
   static var rateUrl="${BaseUrl.baseUrl}/ratings";
-  static var cancelReservation="${BaseUrl.baseUrl}/circulation/reservations/cancel";
+  static var cancelReservation="${BaseUrl.baseUrl}/circulation/reservations";
 
   // my books
   static var myBooks="${BaseUrl.baseUrl}/me/book-status";

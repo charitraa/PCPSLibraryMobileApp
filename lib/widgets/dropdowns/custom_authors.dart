@@ -32,6 +32,7 @@ class _SearchableAuthorDropdownState extends State<SearchableAuthorDropdown> {
 
   Future<void> fetch() async {
     try {
+      setState(() => isLoad = true);
       await Provider.of<AttrAuthorViewModel>(context, listen: false)
           .fetchAuthorsList(context);
     } catch (e) {
@@ -54,9 +55,9 @@ class _SearchableAuthorDropdownState extends State<SearchableAuthorDropdown> {
     fetch();
     _searchController.addListener(() async {
       final searchText = _searchController.text;
-      final genreViewModel = Provider.of<AttrAuthorViewModel>(context, listen: false);
-      genreViewModel.setFilter(searchText, context);
-      await genreViewModel.fetchAuthorsList(context);
+      final authorViewModel = Provider.of<AttrAuthorViewModel>(context, listen: false);
+      authorViewModel.setFilter(searchText, context);
+      await authorViewModel.fetchAuthorsList(context);
       setState(() {
         _isDropdownVisible = searchText.isNotEmpty;
         if (searchText.isEmpty && selectedAuthor == null) {
@@ -129,10 +130,16 @@ class _SearchableAuthorDropdownState extends State<SearchableAuthorDropdown> {
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
                     icon: const Icon(Icons.clear),
-                    onPressed: () async{
+                    onPressed: () {
                       _searchController.clear();
+                      setState(() {
+                        _isDropdownVisible = false;
+                        selectedAuthor = null;
+                      });
                       Provider.of<BooksViewModel>(context, listen: false)
                           .setBookAuthor('', context);
+                      widget.controller?.clear();
+                      widget.onChanged(null);
                     },
                   )
                       : null,
@@ -145,7 +152,8 @@ class _SearchableAuthorDropdownState extends State<SearchableAuthorDropdown> {
               Container(
                 width: containerWidth,
                 constraints: BoxConstraints(
-                  maxHeight: constraints.maxHeight * 0.4,
+                  maxHeight: constraints.maxHeight * 0.4, // Limit height to 40% of available space
+                  minHeight: 50.0, // Ensure minimum height for visibility
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(color: AppColors.primary, width: 1.5),
@@ -159,28 +167,33 @@ class _SearchableAuthorDropdownState extends State<SearchableAuthorDropdown> {
                   padding: EdgeInsets.all(8.0),
                   child: Text('No authors available'),
                 )
-                    : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: authors.length,
-                  itemBuilder: (context, index) {
-                    final author = authors[index];
-                    return ListTile(
-                      title: Text(
-                        author.fullName ?? '',
-                        style: TextStyle(fontSize: 14 * fontScale),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          selectedAuthor = author.authorId;
-                          _isDropdownVisible = false;
-                          _searchController.text = author.fullName ?? '';
-                          _searchFocusNode.unfocus();
-                        });
-                        widget.controller?.text = author.authorId ?? '';
-                        widget.onChanged(author.authorId);
-                      },
-                    );
-                  },
+                    : Scrollbar(
+                  // Add Scrollbar for visual feedback
+                  thumbVisibility: true, // Show scrollbar thumb
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(), // Smooth scrolling
+                    itemCount: authors.length,
+                    itemBuilder: (context, index) {
+                      final author = authors[index];
+                      return ListTile(
+                        title: Text(
+                          author.fullName ?? '',
+                          style: TextStyle(fontSize: 14 * fontScale),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            selectedAuthor = author.authorId;
+                            _isDropdownVisible = false;
+                            _searchController.text = author.fullName ?? '';
+                            _searchFocusNode.unfocus();
+                          });
+                          widget.controller?.text = author.authorId ?? '';
+                          widget.onChanged(author.authorId);
+                        },
+                      );
+                    },
+                  ),
                 ),
               ),
             if (isLoad && _isDropdownVisible)

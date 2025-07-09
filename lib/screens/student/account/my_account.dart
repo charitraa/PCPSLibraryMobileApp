@@ -92,7 +92,7 @@ class _ProfileState extends State<Profile> {
                             child: ClipOval(
                               child: user.data?.profilePicUrl != null||user.data?.profilePicUrl!=''
                                   ? Image.network(
-                                      "${BaseUrl.imageDisplay}/${user.data?.profilePicUrl}",
+                                      "${user.data?.profilePicUrl}",
                                       width: 120,
                                       height: 120,
                                       fit: BoxFit.cover,

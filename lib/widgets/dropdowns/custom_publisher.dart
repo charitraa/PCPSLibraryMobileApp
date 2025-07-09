@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/view_model/attributes/attr_publisher_view_model.dart';
 import 'package:provider/provider.dart';
-
 import '../../resource/colors.dart';
 import '../../view_model/books/book_view_model.dart';
 
@@ -33,6 +32,7 @@ class _SearchablePublisherDropdownState extends State<SearchablePublisherDropdow
 
   Future<void> fetch() async {
     try {
+      setState(() => isLoad = true);
       await Provider.of<AttrPublisherViewModel>(context, listen: false)
           .fetchPublishersList(context);
     } catch (e) {
@@ -58,9 +58,7 @@ class _SearchablePublisherDropdownState extends State<SearchablePublisherDropdow
       setState(() {
         _isDropdownVisible = searchText.isNotEmpty;
         if (searchText.isEmpty && selectedPublisher == null) {
-          if (widget.controller != null) {
-            widget.controller!.clear();
-          }
+          widget.controller?.clear();
           widget.onChanged(null);
         }
       });
@@ -128,18 +126,16 @@ class _SearchablePublisherDropdownState extends State<SearchablePublisherDropdow
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
                     icon: const Icon(Icons.clear),
-                    onPressed: () async {
+                    onPressed: () {
                       _searchController.clear();
-                      Provider.of<BooksViewModel>(context, listen: false)
-                          .setPublisher('', context);
                       setState(() {
                         selectedPublisher = null;
-                        _isDropdownVisible = true;
+                        _isDropdownVisible = false;
                         _searchFocusNode.unfocus();
                       });
-                      if (widget.controller != null) {
-                        widget.controller!.clear();
-                      }
+                      Provider.of<BooksViewModel>(context, listen: false)
+                          .setPublisher('', context);
+                      widget.controller?.clear();
                       widget.onChanged(null);
                     },
                   )
@@ -153,7 +149,8 @@ class _SearchablePublisherDropdownState extends State<SearchablePublisherDropdow
               Container(
                 width: containerWidth,
                 constraints: BoxConstraints(
-                  maxHeight: constraints.maxHeight * 0.4,
+                  maxHeight: constraints.maxHeight * 0.4, // Limit height to 40% of available space
+                  minHeight: 50.0, // Ensure minimum height for visibility
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(color: AppColors.primary, width: 1.5),
@@ -167,30 +164,32 @@ class _SearchablePublisherDropdownState extends State<SearchablePublisherDropdow
                   padding: EdgeInsets.all(8.0),
                   child: Text('No publishers available'),
                 )
-                    : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: publishers.length,
-                  itemBuilder: (context, index) {
-                    final publisher = publishers[index];
-                    return ListTile(
-                      title: Text(
-                        publisher.publisherName ?? '',
-                        style: TextStyle(fontSize: 14 * fontScale),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          selectedPublisher = publisher.publisherId;
-                          _isDropdownVisible = false;
-                          _searchController.text = publisher.publisherName ?? '';
-                          _searchFocusNode.unfocus();
-                        });
-                        if (widget.controller != null) {
-                          widget.controller!.text = publisher.publisherId!;
-                        }
-                        widget.onChanged(publisher.publisherId);
-                      },
-                    );
-                  },
+                    : Scrollbar(
+                  thumbVisibility: true, // Show scrollbar thumb
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(), // Smooth scrolling
+                    itemCount: publishers.length,
+                    itemBuilder: (context, index) {
+                      final publisher = publishers[index];
+                      return ListTile(
+                        title: Text(
+                          publisher.publisherName ?? '',
+                          style: TextStyle(fontSize: 14 * fontScale),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            selectedPublisher = publisher.publisherId;
+                            _isDropdownVisible = false;
+                            _searchController.text = publisher.publisherName ?? '';
+                            _searchFocusNode.unfocus();
+                          });
+                          widget.controller?.text = publisher.publisherId ?? '';
+                          widget.onChanged(publisher.publisherId);
+                        },
+                      );
+                    },
+                  ),
                 ),
               ),
             if (isLoad && _isDropdownVisible)

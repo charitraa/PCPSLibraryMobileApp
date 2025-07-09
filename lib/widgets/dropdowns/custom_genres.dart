@@ -32,6 +32,7 @@ class _SearchableGenreDropdownState extends State<SearchableGenreDropdown> {
 
   Future<void> fetch() async {
     try {
+      setState(() => isLoad = true);
       await Provider.of<AttrGenreViewModel>(context, listen: false)
           .fetchGenresList(context);
     } catch (e) {
@@ -134,10 +135,16 @@ class _SearchableGenreDropdownState extends State<SearchableGenreDropdown> {
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
                     icon: const Icon(Icons.clear),
-                    onPressed: () async{
+                    onPressed: () {
                       _searchController.clear();
+                      setState(() {
+                        _isDropdownVisible = false;
+                        selectedGenre = null;
+                      });
                       Provider.of<BooksViewModel>(context, listen: false)
                           .setBookGenreGrp('', context);
+                      widget.controller?.clear();
+                      widget.onChanged(null);
                     },
                   )
                       : null,
@@ -150,7 +157,8 @@ class _SearchableGenreDropdownState extends State<SearchableGenreDropdown> {
               Container(
                 width: containerWidth,
                 constraints: BoxConstraints(
-                  maxHeight: constraints.maxHeight * 0.4,
+                  maxHeight: constraints.maxHeight * 0.4, // Limit height to 40% of available space
+                  minHeight: 50.0, // Ensure minimum height for visibility
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(color: AppColors.primary, width: 1.5),
@@ -164,28 +172,32 @@ class _SearchableGenreDropdownState extends State<SearchableGenreDropdown> {
                   padding: EdgeInsets.all(8.0),
                   child: Text('No genres available'),
                 )
-                    : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: genres.length,
-                  itemBuilder: (context, index) {
-                    final genre = genres[index];
-                    return ListTile(
-                      title: Text(
-                        genre.genre ?? '',
-                        style: TextStyle(fontSize: 14 * fontScale),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          selectedGenre = genre.genreId;
-                          _isDropdownVisible = false;
-                          _searchController.text = genre.genre ?? '';
-                          _searchFocusNode.unfocus();
-                        });
-                        widget.controller?.text = genre.genreId ?? '';
-                        widget.onChanged(genre.genreId);
-                      },
-                    );
-                  },
+                    : Scrollbar(
+                  thumbVisibility: true, // Show scrollbar thumb
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(), // Smooth scrolling
+                    itemCount: genres.length,
+                    itemBuilder: (context, index) {
+                      final genre = genres[index];
+                      return ListTile(
+                        title: Text(
+                          genre.genre ?? '',
+                          style: TextStyle(fontSize: 14 * fontScale),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            selectedGenre = genre.genreId;
+                            _isDropdownVisible = false;
+                            _searchController.text = genre.genre ?? '';
+                            _searchFocusNode.unfocus();
+                          });
+                          widget.controller?.text = genre.genreId ?? '';
+                          widget.onChanged(genre.genreId);
+                        },
+                      );
+                    },
+                  ),
                 ),
               ),
             if (isLoad && _isDropdownVisible)

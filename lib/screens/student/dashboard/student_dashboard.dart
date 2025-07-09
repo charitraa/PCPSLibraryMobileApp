@@ -331,30 +331,51 @@ class _StudentDashboardState extends State<StudentDashboard> {
         }
 
         String name = getFirstWord(user.data!.fullName ?? '');
-        String image = user.data?.profilePicUrl != null
-            ? "${BaseUrl.imageDisplay}/${user.data?.profilePicUrl}"
-            : '';
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Colors.grey[300],
-                  child: ClipOval(
-                    child: Image.network(
-                      image,
-                      width: 36,
-                      height: 36,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return _buildImageSkeleton();
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.error, size: 24);
-                      },
+                InkWell(
+                  onTap: (){
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const StudentNavBar(index:4),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.easeInOut;
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.grey[300],
+                    child: ClipOval(
+                      child: Image.network(
+                        user.data?.profilePicUrl??'',
+                        width: 36,
+                        height: 36,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return _buildImageSkeleton();
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.error, size: 24);
+                        },
+                      ),
                     ),
                   ),
                 ),
