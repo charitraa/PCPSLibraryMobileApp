@@ -52,8 +52,8 @@ class BookRequestViewModel with ChangeNotifier {
     try {
       _currentPage = 1;
       _requestList.clear();
-      final Map<String, dynamic> response = await _requestsRepo.fetchBooksRequest(
-          _filter, 1, _limit, context);
+      final Map<String, dynamic> response =
+          await _requestsRepo.fetchBooksRequest(_filter, 1, _limit, context);
 
       _requestList.addAll(response['requests']);
       if (response['next'] != null) {
@@ -71,9 +71,10 @@ class BookRequestViewModel with ChangeNotifier {
 
   Future<void> loadMore(BuildContext context) async {
     try {
-      _logger.i('Loading more requests: page=$_currentPage, limit=$_limit, filter=$_filter');
-      final Map<String, dynamic> response = await _requestsRepo.fetchBooksRequest(
-          _filter, _currentPage, _limit, context);
+      _logger.i(
+          'Loading more requests: page=$_currentPage, limit=$_limit, filter=$_filter');
+      final Map<String, dynamic> response = await _requestsRepo
+          .fetchBooksRequest(_filter, _currentPage, _limit, context);
       if (response['next'] != null) {
         _logger.d('Next page available: ${response['next']}');
         _requestList.addAll(response['requests']);
@@ -92,8 +93,12 @@ class BookRequestViewModel with ChangeNotifier {
       final user = await _requestsRepo.postRequests(body, context);
       if (user) {
         _logger.i('Book request posted successfully');
-        Utils.flushBarSuccessMessage('You have successfully requested!!', context);
+        Utils.flushBarSuccessMessage(
+            'You have successfully requested!!', context);
+        await fetchRequests(context); // 👈 Add this line
+        return true;
       }
+
       return user;
     } catch (e) {
       _logger.e('Error posting request: $e');
@@ -107,7 +112,8 @@ class BookRequestViewModel with ChangeNotifier {
       final user = await _requestsRepo.delete(uid, context);
       if (user) {
         _logger.i('Book request deleted successfully');
-        Utils.flushBarSuccessMessage('You have deleted on this request!!', context);
+        Utils.flushBarSuccessMessage(
+            'You have deleted on this request!!', context);
       }
       return user;
     } catch (e) {
@@ -122,7 +128,8 @@ class BookRequestViewModel with ChangeNotifier {
       final user = await _requestsRepo.update(uid, body, context);
       if (user) {
         _logger.i('Book request updated successfully');
-        Utils.flushBarSuccessMessage('You have updated your request!!', context);
+        Utils.flushBarSuccessMessage(
+            'You have updated your request!!', context);
       }
       return user;
     } catch (e) {

@@ -41,14 +41,14 @@ class _StudentDashboardState extends State<StudentDashboard> {
 
   Future<void> _fetchData() async {
     final paymentViewModel =
-    Provider.of<PaymentViewModel>(context, listen: false);
+        Provider.of<PaymentViewModel>(context, listen: false);
     final dueViewModel = Provider.of<MyDueViewModel>(context, listen: false);
     final booksViewModel =
-    Provider.of<MyBooksViewModel>(context, listen: false);
+        Provider.of<MyBooksViewModel>(context, listen: false);
     final reservationViewModel =
-    Provider.of<ReservationViewModel>(context, listen: false);
+        Provider.of<ReservationViewModel>(context, listen: false);
     final notificationViewModel =
-    Provider.of<NotificationViewModel>(context, listen: false);
+        Provider.of<NotificationViewModel>(context, listen: false);
     setState(() => _isLoading = true);
     try {
       if (paymentViewModel.paymentList.isEmpty) {
@@ -151,7 +151,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(width: 100, height: 14, color: Colors.white),
+                          Container(
+                              width: 100, height: 14, color: Colors.white),
                           const SizedBox(height: 6),
                           Container(width: 60, height: 12, color: Colors.white),
                         ],
@@ -191,7 +192,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[400]!, width: 0.5),
+                            border: Border.all(
+                                color: Colors.grey[400]!, width: 0.5),
                           ),
                         ),
                       ),
@@ -302,7 +304,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[400]!, width: 0.5),
+                            border: Border.all(
+                                color: Colors.grey[400]!, width: 0.5),
                           ),
                         ),
                       ),
@@ -338,11 +341,11 @@ class _StudentDashboardState extends State<StudentDashboard> {
             Row(
               children: [
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     Navigator.of(context).push(
                       PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) =>
-                            const StudentNavBar(index:4),
+                            const StudentNavBar(index: 4),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           const begin = Offset(1.0, 0.0);
@@ -364,7 +367,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     backgroundColor: Colors.grey[300],
                     child: ClipOval(
                       child: Image.network(
-                        user.data?.profilePicUrl??'',
+                        user.data?.profilePicUrl ?? '',
                         width: 36,
                         height: 36,
                         fit: BoxFit.cover,
@@ -493,24 +496,23 @@ class _StudentDashboardState extends State<StudentDashboard> {
           Row(
             children: [
               CircleAvatar(
-                radius: 18,
-                backgroundColor: Colors.grey[300],
-                child: ClipOval(
-                  child: Image.network(
-                    '',
-                    width: 36,
-                    height: 36,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return _buildImageSkeleton();
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.error, size: 24);
-                    },
-                  ),
-                )
-              ),
+                  radius: 18,
+                  backgroundColor: Colors.grey[300],
+                  child: ClipOval(
+                    child: Image.network(
+                      '',
+                      width: 36,
+                      height: 36,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return _buildImageSkeleton();
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.error, size: 24);
+                      },
+                    ),
+                  )),
               const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -596,7 +598,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
                             height: 95,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [Colors.red.shade600, Colors.red.shade400],
+                                colors: [
+                                  Colors.red.shade600,
+                                  Colors.red.shade400
+                                ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
@@ -614,10 +619,12 @@ class _StudentDashboardState extends State<StudentDashboard> {
                               padding: const EdgeInsets.all(12.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Flexible(
                                         child: Text(
@@ -686,7 +693,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
@@ -714,10 +721,15 @@ class _StudentDashboardState extends State<StudentDashboard> {
                   ],
                 ),
                 const Divider(),
-                _buildDetailRow('Type', due.penaltyType == 'PropertyDamage' ? 'Property Damage' : due.penaltyType ?? 'Unknown'),
+                _buildDetailRow(
+                    'Type',
+                    due.penaltyType == 'PropertyDamage'
+                        ? 'Property Damage'
+                        : due.penaltyType ?? 'Unknown'),
                 _buildDetailRow('Amount', 'Rs. ${due.amount}'),
                 _buildDetailRow('Status', due.status ?? 'N/A'),
-                _buildDetailRow('Description', due.description ?? 'No description'),
+                _buildDetailRow(
+                    'Description', due.description ?? 'No description'),
               ],
             ),
           ),
@@ -976,9 +988,39 @@ class _StudentDashboardState extends State<StudentDashboard> {
         final reservations = value.reservationList;
         final confirmReservation = value.confirmReservation;
         if (reservations.isEmpty && confirmReservation.isEmpty) {
-          return SizedBox(
-            height: 60,
-            child: _buildNoDataCard(size, 'No Books Currently Reading'),
+          return Column(
+            children: [
+              SizedBox(
+                height: 60,
+                child: _buildNoDataCard(size, 'No Books Currently Reading'),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.center,
+                child: _buildFilterButton(
+                  'View all Reservations',
+                  () => Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const Wishlist(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOut;
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
           );
         }
         if (reservations.isEmpty) {
@@ -1078,10 +1120,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
             ),
             _buildFilterButton(
               'View All',
-                  () => Navigator.of(context).push(
+              () => Navigator.of(context).push(
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
-                  const Payment(),
+                      const Payment(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     const begin = Offset(1.0, 0.0);
@@ -1105,7 +1147,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
           height: 120,
           child: Consumer<PaymentViewModel>(
             builder: (context, value, child) {
-              final payments = value.paymentList.take(2).toList(); // Limit to 2 items
+              final payments =
+                  value.paymentList.take(2).toList(); // Limit to 2 items
               if (payments.isEmpty) {
                 return _buildNoDataCard(size, 'No Payment History');
               }

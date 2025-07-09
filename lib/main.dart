@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/model/due_model.dart';
 import 'package:library_management_sys/resource/routes.dart';
 import 'package:library_management_sys/resource/routes_name.dart';
-import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
 import 'package:library_management_sys/view_model/attributes/attr_author_view_model.dart';
 import 'package:library_management_sys/view_model/attributes/attr_genre_view_model.dart';
 import 'package:library_management_sys/view_model/attributes/attr_publisher_view_model.dart';
@@ -45,7 +43,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => OnlineBooksViewModel()),
         ChangeNotifierProvider(create: (_) => BookRequestViewModel()),
         ChangeNotifierProvider(create: (_) => MyDueViewModel()),
-        ChangeNotifierProvider(create: (_) => NotificationViewModel(),
+        ChangeNotifierProvider(
+          create: (_) => NotificationViewModel(),
         ),
       ],
       child: Builder(

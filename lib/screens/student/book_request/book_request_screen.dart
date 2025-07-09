@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:library_management_sys/screens/student/book_request/book_request_widget.dart';
-import 'package:library_management_sys/screens/student/book_request/edit_blood_request.dart';
+import 'package:library_management_sys/screens/student/book_request/edit_book_request.dart';
 import 'package:library_management_sys/screens/student/book_request/request_book.dart';
 import 'package:library_management_sys/screens/student/my_wishlist/wishlist_skeleton.dart';
 import 'package:library_management_sys/utils/utils.dart';
 import 'package:library_management_sys/view_model/book_requests/request_view_model.dart';
+import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:provider/provider.dart';
 import '../../../resource/colors.dart';
 
@@ -33,7 +34,8 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
   }
 
   void fetchData() async {
-    await Provider.of<BookRequestViewModel>(context, listen: false).fetchRequests(context);
+    await Provider.of<BookRequestViewModel>(context, listen: false)
+        .fetchRequests(context);
     setState(() {
       _canLoadMore = true;
     });
@@ -41,7 +43,7 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
 
   void _scrollListener() {
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 50 &&
+            _scrollController.position.maxScrollExtent - 50 &&
         !_scrollController.position.outOfRange) {
       _loadMore();
     }
@@ -61,7 +63,8 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
     });
 
     try {
-      final viewModel = Provider.of<BookRequestViewModel>(context, listen: false);
+      final viewModel =
+          Provider.of<BookRequestViewModel>(context, listen: false);
       final previousLength = viewModel.requestsList.length;
       await viewModel.loadMore(context);
       if (!mounted) return;
@@ -131,7 +134,8 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
                   context: context,
                   isScrollControlled: true,
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
                   ),
                   builder: (context) => const BookRequestBottomSheet(),
                 ),
@@ -193,15 +197,20 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    buildFilterButton("All", () => setState(() => _selectedTabIndex = 0), 0),
+                    buildFilterButton(
+                        "All", () => setState(() => _selectedTabIndex = 0), 0),
                     const SizedBox(width: 8),
-                    buildFilterButton("Accepted", () => setState(() => _selectedTabIndex = 1), 1),
+                    buildFilterButton("Accepted",
+                        () => setState(() => _selectedTabIndex = 1), 1),
                     const SizedBox(width: 8),
-                    buildFilterButton("Pending", () => setState(() => _selectedTabIndex = 2), 2),
+                    buildFilterButton("Pending",
+                        () => setState(() => _selectedTabIndex = 2), 2),
                     const SizedBox(width: 8),
-                    buildFilterButton("Resolved", () => setState(() => _selectedTabIndex = 3), 3),
+                    buildFilterButton("Resolved",
+                        () => setState(() => _selectedTabIndex = 3), 3),
                     const SizedBox(width: 8),
-                    buildFilterButton("Rejected", () => setState(() => _selectedTabIndex = 4), 4),
+                    buildFilterButton("Rejected",
+                        () => setState(() => _selectedTabIndex = 4), 4),
                   ],
                 ),
               ),
@@ -243,7 +252,8 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
                       );
                     }
 
-                    final filteredRequests = viewModel.requestsList.where((request) {
+                    final filteredRequests =
+                        viewModel.requestsList.where((request) {
                       switch (_selectedTabIndex) {
                         case 1:
                           return request.status == "Accepted";
@@ -259,14 +269,12 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
                     }).toList();
 
                     if (filteredRequests.isEmpty) {
-                      return
-                        Column(
-                          children: [
-                            _buildNoDataCard(
-                                size, 'No requests match the selected filter..')
-                          ],
-                        );
-
+                      return Column(
+                        children: [
+                          _buildNoDataCard(
+                              size, 'No requests match the selected filter..')
+                        ],
+                      );
                     }
 
                     return ListView.builder(
@@ -285,9 +293,10 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
                         final reservationData = filteredRequests[index];
                         return BookRequestWidget(
                           reservationData: reservationData,
-                          onDelete: () =>
-                              _handleDelete(context, viewModel, reservationData.bookRequestId ?? ''),
-                          onEdit: () => _handleEdit(context, viewModel, reservationData),
+                          onDelete: () => _handleDelete(context, viewModel,
+                              reservationData.bookRequestId ?? ''),
+                          onEdit: () =>
+                              _handleEdit(context, viewModel, reservationData),
                         );
                       },
                     );
@@ -301,22 +310,16 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
     );
   }
 
-  void _handleDelete(BuildContext context, BookRequestViewModel viewModel, String bookRequestId) async {
-    final confirm = await showDialog<bool>(
+  void _handleDelete(BuildContext context, BookRequestViewModel viewModel,
+      String bookRequestId) async {
+    final bool? confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm Delete'),
-        content: const Text('Are you sure you want to delete this book request?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
+      builder: (context) => Alert(
+        icon: Icons.book,
+        iconColor: AppColors.primary,
+        title: 'Book Request',
+        content: 'Do you want to delete this book request?',
+        buttonText: 'Delete',
       ),
     );
 
@@ -324,12 +327,16 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
       final check = await viewModel.delete(bookRequestId, context);
       if (!context.mounted) return;
       if (check) {
-        Utils.flushBarSuccessMessage('Book Request Deleted Successfully!', context);
+        Utils.flushBarSuccessMessage(
+            'Book Request Deleted Successfully!', context);
+        await Provider.of<BookRequestViewModel>(context, listen: false)
+            .fetchRequests(context);
       }
     }
   }
 
-  void _handleEdit(BuildContext context, BookRequestViewModel viewModel, dynamic reservationData) {
+  void _handleEdit(BuildContext context, BookRequestViewModel viewModel,
+      dynamic reservationData) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -338,11 +345,12 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
       ),
       builder: (context) => EditBookRequestBottomSheet(
         reservationData: reservationData,
-        onSuccess: () async{
+        onSuccess: () async {
           if (context.mounted) {
-            Utils.flushBarSuccessMessage('Book Request Updated Successfully!', context);
-            await Provider.of<BookRequestViewModel>(context, listen: false).fetchRequests(context);
-
+            Utils.flushBarSuccessMessage(
+                'Book Request Updated Successfully!', context);
+            await Provider.of<BookRequestViewModel>(context, listen: false)
+                .fetchRequests(context);
           }
         },
       ),
@@ -355,7 +363,8 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: _selectedTabIndex == tabIndex ? AppColors.primary : Colors.white,
+          color:
+              _selectedTabIndex == tabIndex ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(5),
           border: Border.all(color: AppColors.primary),
         ),
@@ -370,6 +379,7 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
       ),
     );
   }
+
   Widget _buildNoDataCard(Size size, String message) {
     return Container(
       width: size.width * 0.9,
@@ -380,11 +390,15 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
         border: Border.all(color: Colors.grey[400]!, width: 0.5),
       ),
       alignment: Alignment.center,
-      child:  Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.disabled_visible_rounded,),
-          const SizedBox(height: 5,),
+          const Icon(
+            Icons.disabled_visible_rounded,
+          ),
+          const SizedBox(
+            height: 5,
+          ),
           Text(
             message,
             textAlign: TextAlign.center,
@@ -398,5 +412,4 @@ class _BookRequestScreenState extends State<BookRequestScreen> {
       ),
     );
   }
-
 }

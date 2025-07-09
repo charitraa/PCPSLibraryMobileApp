@@ -5,6 +5,7 @@ import 'package:library_management_sys/repository/auth_repository.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/utils/utils.dart';
 import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
+import 'package:library_management_sys/widgets/no_internet_wrapper.dart';
 import 'package:logger/logger.dart';
 
 import '../data/response/api_response.dart';
@@ -52,14 +53,16 @@ class AuthViewModel with ChangeNotifier {
         Navigator.of(context).push(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-            const StudentNavBar(index: 2),
+                const NoInternetWrapper(
+              child: StudentNavBar(index: 2),
+            ),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               const begin = Offset(1.0, 0.0);
               const end = Offset.zero;
               const curve = Curves.easeInOut;
-              var tween = Tween(begin: begin, end: end)
-                  .chain(CurveTween(curve: curve));
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
               var offsetAnimation = animation.drive(tween);
               return SlideTransition(
                 position: offsetAnimation,
@@ -70,11 +73,9 @@ class AuthViewModel with ChangeNotifier {
         );
       } else {
         _logger.w('Login response data is null');
-
       }
     } catch (error) {
       _logger.e('Login error: $error');
-
     } finally {
       setLoading(false);
     }
@@ -90,12 +91,14 @@ class AuthViewModel with ChangeNotifier {
         setUser(ApiResponse.completed(user));
       } else {
         _logger.w('getUser returned null');
-        Utils.flushBarErrorMessage('Failed to fetch user: No user data', context);
+        Utils.flushBarErrorMessage(
+            'Failed to fetch user: No user data', context);
         setUser(ApiResponse.error('No user data'));
       }
     } catch (e) {
       _logger.e('getUser error: $e');
-      if (e.toString().contains('Unauthorized') || e.toString().contains('401')) {
+      if (e.toString().contains('Unauthorized') ||
+          e.toString().contains('401')) {
         Navigator.pushReplacementNamed(context, RoutesName.login);
       }
       setUser(ApiResponse.error(e.toString()));
@@ -123,7 +126,6 @@ class AuthViewModel with ChangeNotifier {
       }
     } catch (e) {
       _logger.e('Logout error: $e');
-
     } finally {
       setLoading(false);
     }

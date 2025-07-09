@@ -4,6 +4,7 @@ import 'package:library_management_sys/screens/auth/flashing_page.dart';
 import 'package:library_management_sys/screens/auth/login_page.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/screens/unauthorised_page.dart';
+import 'package:library_management_sys/widgets/no_internet_wrapper.dart';
 
 import '../screens/student/in_app_notification/in_app_notification.dart';
 
@@ -22,10 +23,12 @@ class Routes {
             builder: (BuildContext context) => const Loginpage());
       case RoutesName.student:
         return MaterialPageRoute(
-            builder: (BuildContext context) => const StudentNavBar(index:2,));
+            builder: (BuildContext context) => const NoInternetWrapper(
+                  child: StudentNavBar(index: 0),
+                ));
       case RoutesName.notification:
         return MaterialPageRoute(
-            builder: (BuildContext context) =>  NotificationPage());
+            builder: (BuildContext context) => NotificationPage());
       default:
         return MaterialPageRoute(
             builder: (BuildContext context) => const Flashingpage());

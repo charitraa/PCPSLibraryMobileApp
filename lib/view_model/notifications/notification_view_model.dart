@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/utils/utils.dart';
 import 'package:logger/logger.dart';
 
 import '../../data/response/api_response.dart';
@@ -31,14 +32,15 @@ class NotificationViewModel with ChangeNotifier {
       _limit = 1;
       _notificationList.clear();
       final Map<String, dynamic> response =
-      await _notificationRepo.getNotification(context, _limit, 10);
+          await _notificationRepo.getNotification(context, _limit, 10);
       _notificationList.addAll(response['notifications']);
       if (response['next'] != null) {
         _limit++;
       }
       Future.microtask(() => notifyListeners());
     } catch (error, stackTrace) {
-      _logger.e("Error fetching notifications", error: error, stackTrace: stackTrace);
+      _logger.e("Error fetching notifications",
+          error: error, stackTrace: stackTrace);
     } finally {
       setLoading(false);
     }
@@ -47,7 +49,7 @@ class NotificationViewModel with ChangeNotifier {
   Future<void> loadMoreNotifications(BuildContext context) async {
     try {
       final Map<String, dynamic> response =
-      await _notificationRepo.getNotification(context, _limit, 10);
+          await _notificationRepo.getNotification(context, _limit, 10);
       if (_limit != null) {
         print("${response['next']} = $_limit");
         _notificationList.addAll(response['notifications']);
@@ -55,7 +57,8 @@ class NotificationViewModel with ChangeNotifier {
       }
       Future.microtask(() => notifyListeners());
     } catch (error, stackTrace) {
-      _logger.e("Error loading more notifications", error: error, stackTrace: stackTrace);
+      _logger.e("Error loading more notifications",
+          error: error, stackTrace: stackTrace);
     }
   }
 
@@ -65,11 +68,13 @@ class NotificationViewModel with ChangeNotifier {
     try {
       await _notificationRepo.markNotification(context);
       _notificationList.clear();
+      _isLoading = false;
       await fetchNotifications(context);
       Future.microtask(() => notifyListeners());
       return true;
-    } catch (error, stackTrace) {
-      _logger.e("Error marking notifications as read", error: error, stackTrace: stackTrace);
+    } catch (error) {
+      Utils.flushBarErrorMessage(
+          "Error marking notifications as read: $error", context);
       return false;
     } finally {
       setLoading(false);

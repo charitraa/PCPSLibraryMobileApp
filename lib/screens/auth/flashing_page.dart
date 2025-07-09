@@ -5,8 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/response/status.dart';
 import '../../resource/routes_name.dart';
-import '../../view_model/shared_pref_view_model.dart';
 import '../introduction_screen/introduction_screen.dart';
+
 class Flashingpage extends StatefulWidget {
   const Flashingpage({super.key});
 
@@ -46,13 +46,13 @@ class _FlashingpageState extends State<Flashingpage> {
       Navigator.of(context).push(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-          const MyIntroductionScreen(),
+              const MyIntroductionScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;
             const curve = Curves.easeInOut;
             var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
             var offsetAnimation = animation.drive(tween);
             return SlideTransition(
               position: offsetAnimation,
@@ -64,7 +64,8 @@ class _FlashingpageState extends State<Flashingpage> {
       return;
     }
     if (session != null) {
-      final userDataViewModel = Provider.of<AuthViewModel>(context, listen: false);
+      final userDataViewModel =
+          Provider.of<AuthViewModel>(context, listen: false);
       await userDataViewModel.getUser(context);
       final user = userDataViewModel.currentUser;
       if (userDataViewModel.userData.status == Status.ERROR || user == null) {
@@ -92,8 +93,10 @@ class _FlashingpageState extends State<Flashingpage> {
       Navigator.pushReplacementNamed(context, route);
     });
   }
+
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: const Color(0xFF393A8F),
       body: SafeArea(
@@ -103,9 +106,9 @@ class _FlashingpageState extends State<Flashingpage> {
             children: [
               const Spacer(),
               Image.asset(
-                'assets/images/liblogo.png',
-                width: 273,
-                height: 273,
+                'assets/images/pcpsNewLogo.png',
+                width: size.width * 1,
+                height: size.height * 0.5,
               ),
               const SizedBox(height: 10),
               const Spacer(),
@@ -120,15 +123,12 @@ class _FlashingpageState extends State<Flashingpage> {
                       letterSpacing: 1.5,
                     ),
                   ),
-
                   Container(
-                    width: 180,
+                    width: 200,
                     padding: const EdgeInsets.all(5),
                     height: 60,
                     decoration: BoxDecoration(
-
                       borderRadius: BorderRadius.circular(8),
-
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),

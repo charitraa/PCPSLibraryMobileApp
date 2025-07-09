@@ -4,14 +4,12 @@ import 'package:library_management_sys/screens/student/browse_books/std_browse.d
 import 'package:library_management_sys/screens/student/dashboard/student_dashboard.dart';
 import 'package:library_management_sys/screens/student/e-books.dart';
 import 'package:library_management_sys/screens/student/my_books/my_books.dart';
-import 'package:library_management_sys/screens/student/my_wishlist/std_wishlist.dart';
-import 'package:library_management_sys/screens/unauthorised_page.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
 class StudentNavBar extends StatefulWidget {
-  final int? index,reqIndex;
-  const StudentNavBar({super.key, this.index=0, this.reqIndex=0});
+  final int? index, reqIndex;
+  const StudentNavBar({super.key, this.index = 0, this.reqIndex = 0});
 
   @override
   State<StudentNavBar> createState() => _StudentNavBarState();
@@ -23,21 +21,22 @@ class _StudentNavBarState extends State<StudentNavBar> {
   late PageController _pageController;
   late List<Widget> screenList;
   void getIndividualData() async {
-    await Provider.of<AuthViewModel>(context, listen: false)
-        .getUser( context);
-
+    await Provider.of<AuthViewModel>(context, listen: false).getUser(context);
   }
+
   @override
   void initState() {
     super.initState();
     getIndividualData();
-     _currentIndex = widget.index ?? 0;
+    _currentIndex = widget.index ?? 0;
     index = widget.reqIndex ?? 0;
     _pageController = PageController(initialPage: _currentIndex);
     screenList = [
       const StudentDashboard(),
       const Ebooks(),
-      StudentBrowseBooks(reqIndex: index,),
+      StudentBrowseBooks(
+        reqIndex: index,
+      ),
       const MyBooks(),
       const Profile(),
     ];
@@ -121,7 +120,8 @@ class _StudentNavBarState extends State<StudentNavBar> {
         children: [
           Icon(
             icon,
-            color: _currentIndex == index ? const Color(0xff393A8F) : Colors.grey,
+            color:
+                _currentIndex == index ? const Color(0xff393A8F) : Colors.grey,
           ),
           Text(name, style: const TextStyle(fontSize: 10)),
         ],

@@ -48,12 +48,12 @@ class _NotificationPageState extends State<NotificationPage> {
       setState(() => isLoad = false);
     }
   }
+
   Future<void> fetch() async {
-
-      await Provider.of<NotificationViewModel>(context, listen: false)
-          .fetchNotifications(context);
-
+    await Provider.of<NotificationViewModel>(context, listen: false)
+        .fetchNotifications(context);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,7 +128,7 @@ class _NotificationPageState extends State<NotificationPage> {
                             child: const Text(
                               "Mark as read",
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
+                                  TextStyle(color: Colors.white, fontSize: 14),
                             ),
                           ),
                         )
@@ -160,15 +160,18 @@ class _NotificationPageState extends State<NotificationPage> {
                             itemCount: viewModel.notificationList.length,
                             itemBuilder: (context, index) {
                               final notify = viewModel.notificationList[index];
-                              print(notify.icon);
-                              String image = notify.icon != null
-                                  ?   "https://pcpslibrary.mssn.org.np${notify.icon ?? ''}"
-                                  : "";
-                              print(image);
+                              String image = notify.icon != null &&
+                                      notify.icon == "PENALTY"
+                                  ? "assets/images/alarm.png"
+                                  : notify.icon != null
+                                      ? "${BaseUrl.imageDisplay}/${notify.icon ?? ''}"
+                                      : '"assets/images/alarm.png"';
+
                               return NotificationItem(
                                   image: image,
                                   title: notify.title ?? '',
                                   subtitle: notify.body,
+                                  isRead: notify.read ?? false,
                                   time: notify.createdAt != null
                                       ? formatDate(notify.createdAt.toString())
                                       : '');

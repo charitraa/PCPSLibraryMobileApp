@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/resource/colors.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -73,7 +75,7 @@ class RepliesWidget extends StatelessWidget {
                           children: [
                             ...List.generate(
                               rating!.toInt(),
-                                  (index) => const Icon(
+                              (index) => const Icon(
                                 Icons.star,
                                 color: Colors.amber,
                                 size: 14,
@@ -114,7 +116,8 @@ class RepliesWidget extends StatelessWidget {
                     builder: (context, viewModel, child) {
                       final user = viewModel.currentUser;
                       final logger = Logger();
-                      logger.d("Comparing UIDs: widget.uid=$uid, userId=${user?.data?.userId}");
+                      logger.d(
+                          "Comparing UIDs: widget.uid=$uid, userId=${user?.data?.userId}");
                       if (user?.data?.userId == uid) {
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -142,24 +145,53 @@ class RepliesWidget extends StatelessWidget {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      title: const Text('Confirm Delete'),
+                                      backgroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      title: Row(
+                                        children: [
+                                          Icon(Icons.delete,
+                                              color: AppColors.primary),
+                                          const SizedBox(width: 10),
+                                          const Text('Confirm Delete'),
+                                        ],
+                                      ),
                                       content: const Text(
-                                          'Are you sure you want to delete this reply?'),
+                                        'Are you sure you want to delete this reply?',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      actionsPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 10),
                                       actions: [
-                                        TextButton(
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: AppColors.primary,
+                                            foregroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                          ),
                                           onPressed: () =>
-                                              Navigator.of(context).pop(),
+                                              Navigator.of(context).pop(false),
                                           child: const Text('Cancel'),
                                         ),
-                                        TextButton(
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: AppColors.primary,
+                                            foregroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                          ),
                                           onPressed: () {
                                             onDelete?.call();
                                             Navigator.of(context).pop();
                                           },
-                                          child: const Text(
-                                            'Delete',
-                                            style: TextStyle(color: Colors.red),
-                                          ),
+                                          child: Text('Delete'),
                                         ),
                                       ],
                                     );
@@ -196,7 +228,7 @@ class RepliesWidget extends StatelessWidget {
                 radius: 18,
                 backgroundColor: Colors.grey[300],
                 child: ClipOval(
-                  child:Image.network(
+                  child: Image.network(
                     image,
                     width: 40,
                     height: 40,
@@ -209,7 +241,8 @@ class RepliesWidget extends StatelessWidget {
                         highlightColor: Colors.grey[100]!,
                       );
                     },
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.error, size: 24),
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.error, size: 24),
                   ),
                 ),
               ),

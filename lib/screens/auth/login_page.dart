@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/resource/routes_name.dart';
-import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
 import 'package:library_management_sys/widgets/form_widget/custom_button.dart';
 import 'package:library_management_sys/widgets/form_widget/custom_label_password.dart';
@@ -43,16 +41,17 @@ class _LoginpageState extends State<Loginpage> {
                     child: Column(
                       children: [
                         CustomLabelTextfield(
-                            hintText: "StudentID",
-                            onChanged: (value) {
-                              setState(() {
-                                username = value;
-                              });
-                            },
-                            outlinedColor: Colors.black,
-                            focusedColor: AppColors.primary,
-                            width: size.width,
-                            text: "StudentID"),
+                          hintText: "College ID",
+                          onChanged: (value) {
+                            setState(() {
+                              username = value;
+                            });
+                          },
+                          outlinedColor: Colors.black,
+                          focusedColor: AppColors.primary,
+                          width: size.width,
+                          text: "College ID",
+                        ),
                         const SizedBox(
                           height: 16,
                         ),
@@ -126,7 +125,6 @@ class _LoginpageState extends State<Loginpage> {
                               });
                               return Utils.flushBarErrorMessage(
                                   "Student ID is required", context);
-
                             }
                             if (password.isEmpty || password == '') {
                               setState(() {

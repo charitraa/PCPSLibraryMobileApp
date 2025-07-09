@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:library_management_sys/constant/base_url.dart';
 import 'package:library_management_sys/resource/colors.dart';
 import 'package:library_management_sys/view_model/books/online_books_view_model.dart';
+import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:library_management_sys/widgets/book/book_skeleton.dart';
 import 'package:library_management_sys/widgets/book/online_book_wid.dart';
 import 'package:library_management_sys/widgets/custom_search.dart';
@@ -35,11 +36,13 @@ class _EbooksState extends State<Ebooks> {
   }
 
   void _scrollListener() {
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _loadMore();
     }
-    if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
+    if (_scrollController.offset <=
+            _scrollController.position.minScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {
         message = "Reached the top";
@@ -66,7 +69,8 @@ class _EbooksState extends State<Ebooks> {
   }
 
   Future<void> _fetchBooks() async {
-    final booksViewModel = Provider.of<OnlineBooksViewModel>(context, listen: false);
+    final booksViewModel =
+        Provider.of<OnlineBooksViewModel>(context, listen: false);
     await booksViewModel.fetchBooksList(context);
   }
 
@@ -99,14 +103,15 @@ class _EbooksState extends State<Ebooks> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ExploreHeader(text: 'E-Books',),
+              const ExploreHeader(
+                text: 'E-Books',
+              ),
               const SizedBox(height: 5),
               Text(
                 'Explore online books to read anytime, anywhere',
@@ -115,9 +120,10 @@ class _EbooksState extends State<Ebooks> {
               const SizedBox(height: 10),
               Consumer<OnlineBooksViewModel>(
                 builder: (context, viewModel, child) {
-                  _searchController.text = viewModel.searchValue; // Sync with view model
+                  _searchController.text =
+                      viewModel.searchValue; // Sync with view model
                   return CustomSearch(
-                    onReset: (){
+                    onReset: () {
                       viewModel.resetBookList(context);
                     },
                     controller: _searchController,
@@ -126,9 +132,7 @@ class _EbooksState extends State<Ebooks> {
                     focusedColor: AppColors.primary,
                     height: 50,
                     width: double.infinity,
-                    onChanged: (value) {
-
-                    },
+                    onChanged: (value) {},
                     onTap: () {
                       viewModel.setFilter(_searchController.text, context);
                     },
@@ -152,12 +156,14 @@ class _EbooksState extends State<Ebooks> {
                         }
 
                         if (books.isEmpty) {
-                          return _buildNoDataCard(size,'Oops! No online books have been added yet!');
+                          return _buildNoDataCard(size,
+                              'Oops! No online books have been added yet!');
                         }
 
                         return GridView.builder(
                           padding: const EdgeInsets.only(bottom: 18),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 15,
@@ -180,10 +186,23 @@ class _EbooksState extends State<Ebooks> {
                             }
                             return OnlineBookWid(
                               bookImage:
-                              "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
+                                  "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
                               title: book.title ?? '',
-                              onTap: () {
-                                _launchBookUrl(book.resourceUrl); // Launch book URL
+                              onTap: () async {
+                                final bool? confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => Alert(
+                                    icon: Icons.book_online,
+                                    iconColor: AppColors.primary,
+                                    title: 'E-Book',
+                                    content:
+                                        'Do you want to redirect to this book?',
+                                    buttonText: 'Yes, Redirect',
+                                  ),
+                                );
+                                if (confirm != true) return;
+                                _launchBookUrl(
+                                    book.resourceUrl); // Launch book URL
                               },
                             );
                           },
@@ -215,6 +234,7 @@ class _EbooksState extends State<Ebooks> {
       ),
     );
   }
+
   Widget _buildNoDataCard(Size size, String message) {
     return Container(
       width: size.width * 0.9,
@@ -225,11 +245,15 @@ class _EbooksState extends State<Ebooks> {
         border: Border.all(color: Colors.grey[400]!, width: 0.5),
       ),
       alignment: Alignment.center,
-      child:  Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.disabled_visible_rounded,),
-          const SizedBox(height: 5,),
+          const Icon(
+            Icons.disabled_visible_rounded,
+          ),
+          const SizedBox(
+            height: 5,
+          ),
           Text(
             message,
             textAlign: TextAlign.center,
@@ -243,5 +267,4 @@ class _EbooksState extends State<Ebooks> {
       ),
     );
   }
-
 }
