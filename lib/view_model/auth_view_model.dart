@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:library_management_sys/model/current_user_model.dart';
 import 'package:library_management_sys/repository/auth_repository.dart';
+import 'package:library_management_sys/screens/auth/login_page.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/utils/utils.dart';
 import 'package:library_management_sys/view_model/shared_pref_view_model.dart';
@@ -50,7 +51,7 @@ class AuthViewModel with ChangeNotifier {
         Utils.flushBarSuccessMessage("User logged in successfully!", context);
         final String role = response.data!.roleId ?? "Unknown";
         UserModel user = UserModel(cardId: response.data!.cardId);
-        Navigator.of(context).push(
+        Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
                 const NoInternetWrapper(
@@ -70,6 +71,7 @@ class AuthViewModel with ChangeNotifier {
               );
             },
           ),
+          (route) => false, // Remove all previous routes
         );
       } else {
         _logger.w('Login response data is null');
@@ -118,7 +120,26 @@ class AuthViewModel with ChangeNotifier {
         _logger.d('Logout successful');
         Utils.flushBarSuccessMessage("User logged out successfully!", context);
         await UserViewModel().remove();
-        Navigator.pushReplacementNamed(context, RoutesName.login);
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const Loginpage(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.easeInOut;
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+              return SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              );
+            },
+          ),
+          (route) => false, // Remove all previous routes
+        );
       } else {
         _logger.w('Logout failed: ${response.message}');
         Utils.flushBarErrorMessage(

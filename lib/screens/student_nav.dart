@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/resource/colors.dart';
 import 'package:library_management_sys/screens/student/account/my_account.dart';
 import 'package:library_management_sys/screens/student/browse_books/std_browse.dart';
 import 'package:library_management_sys/screens/student/dashboard/student_dashboard.dart';
 import 'package:library_management_sys/screens/student/e-books.dart';
 import 'package:library_management_sys/screens/student/my_books/my_books.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:provider/provider.dart';
 
 class StudentNavBar extends StatefulWidget {
@@ -45,69 +47,84 @@ class _StudentNavBarState extends State<StudentNavBar> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        children: screenList,
-      ),
-      bottomNavigationBar: Container(
-        width: size.width,
-        height: 80,
-        color: Colors.transparent,
-        child: Stack(
-          children: [
-            CustomPaint(
-              size: Size(size.width, 80),
-              painter: BNBCustomPainter(),
-            ),
-            Center(
-              heightFactor: 0.5,
-              child: Container(
-                height: 60,
-                width: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xff393A8F),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 4,
-                      spreadRadius: 2,
-                      offset: const Offset(0, 2),
+    return WillPopScope(
+      onWillPop: () async {
+        final shouldExit = await showDialog<bool>(
+          context: context,
+          builder: (context) => Alert(
+            icon: Icons.exit_to_app,
+            iconColor: AppColors.primary,
+            title: 'Exit App',
+            content: 'Are you sure you want to exit the app?',
+            buttonText: 'Yes',
+          ),
+        );
+        return shouldExit ?? false;
+      },
+      child: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          children: screenList,
+        ),
+        bottomNavigationBar: Container(
+          width: size.width,
+          height: 80,
+          color: Colors.transparent,
+          child: Stack(
+            children: [
+              CustomPaint(
+                size: Size(size.width, 80),
+                painter: BNBCustomPainter(),
+              ),
+              Center(
+                heightFactor: 0.5,
+                child: Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xff393A8F),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 4,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.menu_book_sharp,
+                      color: Colors.white,
                     ),
+                    onPressed: () {
+                      _navigateToPage(2);
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: size.width,
+                height: 80,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildNavItem(Icons.dashboard, 'Hub', 0),
+                    _buildNavItem(Icons.book, 'E-books', 1),
+                    const SizedBox(width: 48), // Space for the FAB
+                    _buildNavItem(Icons.bookmark_remove_sharp, 'My Books', 3),
+                    _buildNavItem(Icons.settings, 'Setting', 4),
                   ],
                 ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.menu_book_sharp,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    _navigateToPage(2);
-                  },
-                ),
               ),
-            ),
-            SizedBox(
-              width: size.width,
-              height: 80,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildNavItem(Icons.dashboard, 'Hub', 0),
-                  _buildNavItem(Icons.book, 'E-books', 1),
-                  const SizedBox(width: 48), // Space for the FAB
-                  _buildNavItem(Icons.bookmark_remove_sharp, 'My Books', 3),
-                  _buildNavItem(Icons.settings, 'Setting', 4),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

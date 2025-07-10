@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/resource/colors.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:library_management_sys/widgets/form_widget/custom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -29,7 +31,6 @@ class _ProfileState extends State<Profile> {
           style: TextStyle(fontFamily: 'poppins-black', color: Colors.black),
         ),
         automaticallyImplyLeading: false,
-
         actions: const [
           Image(
             image: AssetImage('assets/images/pcpsLogo.png'),
@@ -91,9 +92,9 @@ class _ProfileState extends State<Profile> {
                             radius: 60,
                             backgroundColor: Colors.transparent,
                             child: ClipOval(
-                              child: user.data?.profilePicUrl != null||user.data?.profilePicUrl!=''
-                                  ? Image.network(
-                                      "${user.data?.profilePicUrl}",
+                              child: user.data?.profilePicUrl != null ||
+                                      user.data?.profilePicUrl != ''
+                                  ? Image.network("${user.data?.profilePicUrl}",
                                       width: 120,
                                       height: 120,
                                       fit: BoxFit.cover,
@@ -304,11 +305,25 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 CustomButton(
-                    text: 'Logout',
-                    onPressed: () async {
+                  text: 'Logout',
+                  onPressed: () async {
+                    final shouldLogout = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => Alert(
+                        icon: Icons.logout,
+                        iconColor: AppColors.primary,
+                        title: 'Logout',
+                        content: 'Are you sure you want to logout?',
+                        buttonText: 'Yes',
+                      ),
+                    );
+                    if (shouldLogout == true) {
+                      // Proceed with logout if user confirms
                       await Provider.of<AuthViewModel>(context, listen: false)
                           .logout(context);
-                    }),
+                    }
+                  },
+                ),
                 const SizedBox(
                   height: 8,
                 )
