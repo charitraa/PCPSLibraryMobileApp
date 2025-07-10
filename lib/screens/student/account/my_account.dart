@@ -28,6 +28,8 @@ class _ProfileState extends State<Profile> {
           "Profile",
           style: TextStyle(fontFamily: 'poppins-black', color: Colors.black),
         ),
+        automaticallyImplyLeading: false,
+
         actions: const [
           Image(
             image: AssetImage('assets/images/pcpsLogo.png'),
