@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../../resource/colors.dart';
 
 class NotificationItem extends StatelessWidget {
   final String image;
@@ -37,20 +40,50 @@ class NotificationItem extends StatelessWidget {
               leading: CircleAvatar(
                 radius: 25,
                 backgroundColor: Colors.grey[300],
-                child: ClipOval(
-                  child: Image.network(
-                    image,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return const Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.error, size: 24),
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundColor: Colors.transparent,
+                  child: ClipOval(
+                    child: image != null||image!=''
+                        ? Image.network(
+                        image,
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                        loadingBuilder:
+                            (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child;
+                          }
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              width: 60,
+                              height: 60,
+                              color: Colors.grey[300],
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error,
+                            stackTrace) =>
+                            CircleAvatar(
+                              radius: 60,
+                              backgroundColor: AppColors.primary,
+                              child: const Center(
+                                child: Icon(
+                                  Icons.notifications,
+                                  size: 35,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ))
+                        : Image.asset(
+                      'assets/images/pcps.jpg',
+                      width: 140,
+                      height: 140,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
