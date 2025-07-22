@@ -148,6 +148,33 @@ class _LoginpageState extends State<Loginpage> {
                       ],
                     ),
                   ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Column(
+                children: [
+                  Text(
+                    '© 2025 PCPS. All Rights Reserved.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontFamily: 'poppins',
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Designed, Built & Maintained by PCPS R&D',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontFamily: 'poppins',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
           ],
         ),
       ),

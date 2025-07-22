@@ -307,7 +307,7 @@ class _BookInfoState extends State<BookInfo> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     ...List.generate(
-                                      user.score?.score ?? user.score!.score!,
+                                      (user.score?.score ?? user.score!.score!).toInt(),
                                       (index) => const Icon(Icons.star,
                                           color: Colors.amber, size: 16),
                                     ),
@@ -839,8 +839,7 @@ class _BookInfoState extends State<BookInfo> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         ...List.generate(
-                                          user.score?.score ??
-                                              user.score!.score!,
+                                          (user.score?.score ?? user.score!.score!).toInt(),
                                           (index) => const Icon(Icons.star,
                                               color: Colors.amber, size: 16),
                                         ),

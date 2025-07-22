@@ -232,7 +232,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
             Consumer<BooksViewModel>(
               builder: (context, viewModel, child) {
                 final TextEditingController _controller =
-                TextEditingController(text: viewModel.searchValue);
+                    TextEditingController(text: viewModel.searchValue);
 
                 return CustomSearch(
                   controller: _controller,
@@ -245,12 +245,12 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                     viewModel.setFilter(value, context, debounce: true);
                   },
                   onTap: () {
-                    viewModel.setFilter(_controller.text, context, debounce: false);
+                    viewModel.setFilter(_controller.text, context,
+                        debounce: false);
                   },
                   onReset: () {
                     viewModel.resetBookList(context);
                   },
-
                 );
               },
             ),
@@ -337,8 +337,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                       BookInfo(
                                           uid: book.bookInfoId ?? '',
                                           score: book.score != null
-                                              ? (book.score?.score as int)
-                                                  .toDouble()
+                                              ? (book.score?.score)
                                               : 0,
                                           genre: genres ?? '',
                                           isbn: isbn ?? '',
