@@ -44,12 +44,12 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
 
   void _scrollListener() {
     if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+        _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _loadMore();
     }
     if (_scrollController.offset <=
-            _scrollController.position.minScrollExtent &&
+        _scrollController.position.minScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {
         message = "Reached the top";
@@ -232,7 +232,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
             Consumer<BooksViewModel>(
               builder: (context, viewModel, child) {
                 final TextEditingController _controller =
-                    TextEditingController(text: viewModel.searchValue);
+                TextEditingController(text: viewModel.searchValue);
 
                 return CustomSearch(
                   controller: _controller,
@@ -294,66 +294,76 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                           if (index == books.length) {
                             return _buildLoadMoreSkeleton();
                           }
+
                           final book = books[index];
+
+                          // Authors
                           String authors = "By ";
-                          List<String> authorNames =
-                              book.bookAuthors!.map((bookAuthor) {
-                            return bookAuthor.author!.fullName ?? '';
-                          }).toList();
+                          List<String> authorNames = book.bookAuthors!
+                              .map((bookAuthor) => bookAuthor.author?.fullName ?? '')
+                              .toList();
                           authors += authorNames.join(", ");
 
+                          // Genres
                           String genres = "";
-                          List<String>? genresMap =
-                              book.bookGenres?.map((bookGenres) {
-                            return bookGenres.genre!.genre ?? '';
-                          }).toList();
-                          genres += genresMap!.join(", ");
+                          List<String> genreNames = book.bookGenres!
+                              .map((bookGenre) => bookGenre.genre?.genre ?? '')
+                              .toList();
+                          genres = genreNames.join(", ");
 
+                          // ISBNs
                           String isbn = "";
-                          List<String> isbnMap = book.isbns!.map((isbn) {
-                            return isbn.isbn ?? '';
-                          }).toList();
-                          isbn += isbnMap.join(", ");
+                          List<String> isbnList = book.isbns!
+                              .map((isbnItem) => isbnItem.isbn ?? '')
+                              .toList();
+                          isbn = isbnList.join(", ");
+
+                          // Profile Image
                           String? profileImageUrl;
                           try {
                             profileImageUrl = book.bookImages!
                                 .firstWhere((img) => img.isProfile == true)
                                 .imageUrl;
                           } catch (e) {
-                            profileImageUrl = '';
+                            profileImageUrl = null;
                           }
+
+                          // Final image to show
+                          String imageUrl = '';
+                          if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
+                            imageUrl = "${BaseUrl.imageDisplay}/$profileImageUrl";
+                          } else if (book.bookImages != null &&
+                              book.bookImages!.isNotEmpty) {
+                            imageUrl = "${BaseUrl.imageDisplay}/${book.bookImages![0].imageUrl}";
+                          }
+
                           return BookWidget(
-                            bookImage:
-                                "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
+                            bookImage: imageUrl,
                             title: book.title ?? '',
-                            author:
-                                "By ${book.bookAuthors![0].author?.fullName}" ??
-                                    '',
+                            author: authors,
                             onTap: () {
                               Navigator.of(context).push(
                                 PageRouteBuilder(
-                                  pageBuilder: (context, animation,
-                                          secondaryAnimation) =>
+                                  pageBuilder: (context, animation, secondaryAnimation) =>
                                       BookInfo(
-                                          uid: book.bookInfoId ?? '',
-                                          score: book.score != null
-                                              ? (book.score?.score)
-                                              : 0,
-                                          genre: genres ?? '',
-                                          isbn: isbn ?? '',
-                                          image:
-                                              "${BaseUrl.imageDisplay}/${profileImageUrl ?? ''}",
-                                          author: authors,
-                                          books: book),
+                                        uid: book.bookInfoId ?? '',
+                                        score: book.score != null
+                                            ? (book.score?.score )
+                                            : 0,
+                                        genre: genres,
+                                        isbn: isbn,
+                                        image: imageUrl,
+                                        author: authors,
+                                        books: book,
+                                      ),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
                                     const begin = Offset(1.0, 0.0);
                                     const end = Offset.zero;
                                     const curve = Curves.easeInOut;
-                                    var tween = Tween(begin: begin, end: end)
-                                        .chain(CurveTween(curve: curve));
-                                    var offsetAnimation =
-                                        animation.drive(tween);
+                                    var tween =
+                                    Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                    var offsetAnimation = animation.drive(tween);
                                     return SlideTransition(
                                       position: offsetAnimation,
                                       child: child,
@@ -370,6 +380,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                 },
               ),
             ),
+
           ]),
         ),
       ),

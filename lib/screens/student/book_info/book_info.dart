@@ -9,6 +9,7 @@ import 'package:library_management_sys/screens/student/book_info/review.dart';
 import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/view_model/books/book_view_model.dart';
 import 'package:library_management_sys/view_model/books/comment_view_model.dart';
+import 'package:library_management_sys/view_model/reservations/reservation_view_model.dart';
 import 'package:library_management_sys/widgets/Dialog/alert.dart';
 import 'package:library_management_sys/widgets/book/book_info_column.dart';
 import 'package:library_management_sys/widgets/book/book_info_row.dart';
@@ -191,8 +192,8 @@ class _BookInfoState extends State<BookInfo> {
                         await Future.wait([
                           Provider.of<BooksViewModel>(context, listen: false)
                               .getIndividualBooks(widget.uid, context),
-                          Provider.of<BooksViewModel>(context, listen: false)
-                              .fetchBooksList(context),
+                          Provider.of<ReservationViewModel>(context, listen: false)
+                              .fetchReservation(context),
                         ]);
                         Navigator.push(
                           context,
