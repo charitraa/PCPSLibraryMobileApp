@@ -178,14 +178,18 @@ class Score {
   Score.fromJson(Map<String, dynamic> json) {
     bookRatingScoreId = json['bookRatingScoreId'];
     bookInfoId = json['bookInfoId'];
-    score = json['score'];
+    // Force convert to double even if it's int
+    var scoreValue = json['score'];
+    score = scoreValue != null
+        ? (scoreValue is int ? scoreValue.toDouble() : scoreValue)
+        : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['bookRatingScoreId'] = this.bookRatingScoreId;
-    data['bookInfoId'] = this.bookInfoId;
-    data['score'] = this.score;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['bookRatingScoreId'] = bookRatingScoreId;
+    data['bookInfoId'] = bookInfoId;
+    data['score'] = score;
     return data;
   }
 }
