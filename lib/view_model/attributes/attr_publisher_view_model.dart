@@ -3,7 +3,6 @@ import 'package:library_management_sys/model/publisher_model.dart';
 import 'package:logger/logger.dart';
 import '../../data/response/api_response.dart';
 import '../../repository/attributes_repository.dart';
-import '../../utils/utils.dart';
 
 class AttrPublisherViewModel with ChangeNotifier {
   final List<Publisher> _publisherList = [];

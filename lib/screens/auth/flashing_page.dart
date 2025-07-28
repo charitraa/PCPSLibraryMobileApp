@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:library_management_sys/screens/auth/login_page.dart';
+import 'package:library_management_sys/screens/student_nav.dart';
 import 'package:library_management_sys/view_model/auth_view_model.dart';
+import 'package:library_management_sys/widgets/no_internet_wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,7 +46,7 @@ class _FlashingpageState extends State<Flashingpage> {
       await prefs.setBool('hasSeenIntro', false);
     }
     if (hasSeenIntro == false) {
-      Navigator.of(context).push(
+      Navigator.of(context).pushAndRemoveUntil(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
               const MyIntroductionScreen(),
@@ -60,6 +63,7 @@ class _FlashingpageState extends State<Flashingpage> {
             );
           },
         ),
+        (route) => false,
       );
       return;
     }
@@ -69,9 +73,50 @@ class _FlashingpageState extends State<Flashingpage> {
       await userDataViewModel.getUser(context);
       final user = userDataViewModel.currentUser;
       if (userDataViewModel.userData.status == Status.ERROR || user == null) {
-        _navigateTo(RoutesName.login);
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const Loginpage(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.easeInOut;
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+              return SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              );
+            },
+          ),
+          (route) => false, // Remove all previous routes
+        );
       } else {
-        _navigateTo(RoutesName.student);
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const NoInternetWrapper(
+                    child: StudentNavBar(
+              index: 0,
+            )),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.easeInOut;
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+              return SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              );
+            },
+          ),
+          (route) => false, // Remove all previous routes
+        );
       }
     } else {
       _navigateTo(RoutesName.login);
