@@ -9,7 +9,7 @@ import '../../../resource/colors.dart';
 import '../../../view_model/books/book_view_model.dart';
 
 class AddReview extends StatefulWidget {
-  final String uid,name;
+  final String uid, name;
   const AddReview({super.key, required this.uid, required this.name});
 
   @override
@@ -44,8 +44,8 @@ class _AddReviewState extends State<AddReview> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24.0, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 5),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -62,12 +62,12 @@ class _AddReviewState extends State<AddReview> {
                     Center(
                       child: RatingBar.builder(
                         initialRating: _rating,
-                        minRating: 1,
+                        minRating: 0, // ✅ Allow half-star properly
                         direction: Axis.horizontal,
                         allowHalfRating: true,
                         itemCount: 5,
                         itemPadding:
-                            const EdgeInsets.symmetric(horizontal: 4.0),
+                        const EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) => const Icon(
                           Icons.star,
                           color: Colors.amber,
@@ -76,7 +76,15 @@ class _AddReviewState extends State<AddReview> {
                           setState(() {
                             _rating = rating;
                           });
+                          print("Selected rating: $_rating"); // ✅ Debug log
                         },
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'You rated: $_rating',
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -84,37 +92,41 @@ class _AddReviewState extends State<AddReview> {
                       child: CustomButton(
                         onPressed: () async {
                           setState(() {
-                            isLoading=true;
+                            isLoading = true;
                           });
+
                           if (_rating == 0.0) {
                             Utils.flushBarErrorMessage(
                                 'Please provide a rating.', context);
                             setState(() {
-                              isLoading=false;
+                              isLoading = false;
                             });
                             return;
-                          } else {
-                            final check = await Provider.of<BooksViewModel>(
-                                    context,
-                                    listen: false)
-                                .rateBook(
-                                    widget.uid, _rating.toString(), context);
-
-                            if (check) {
-                              await Provider.of<BooksViewModel>(context,
-                                      listen: false)
-                                  .getIndividualBooks(widget.uid, context);
-                              Provider.of<BooksViewModel>(context,
-                                  listen: false)
-                                  .setFilter(widget.name, context);
-                              await Provider.of<BooksViewModel>(context,
-                                      listen: false)
-                                  .fetchBooksList(context);
-                            }
-                            setState(() {
-                              isLoading=false;
-                            });
                           }
+
+                          final ratingValue =
+                          _rating.toStringAsFixed(1); // ✅ e.g. "4.5"
+                          print('Submitting rating: $ratingValue'); // ✅ Debug
+
+                          final check = await Provider.of<BooksViewModel>(
+                              context,
+                              listen: false)
+                              .rateBook(widget.uid, ratingValue, context);
+
+                          if (check) {
+                            await Provider.of<BooksViewModel>(context,
+                                listen: false)
+                                .getIndividualBooks(
+                                widget.uid, context);
+
+                            await Provider.of<BooksViewModel>(context,
+                                listen: false)
+                                .fetchBooksList(context);
+                          }
+
+                          setState(() {
+                            isLoading = false;
+                          });
                         },
                         text: 'Submit Review',
                       ),

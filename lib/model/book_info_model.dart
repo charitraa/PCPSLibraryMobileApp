@@ -28,31 +28,31 @@ class BookInfoModel {
 
   BookInfoModel(
       {this.bookInfoId,
-        this.callNumber,
-        this.title,
-        this.subTitle,
-        this.editionStatement,
-        this.numberOfPages,
-        this.publicationYear,
-        this.seriesStatement,
-        this.addedDate,
-        this.createdAt,
-        this.updatedAt,
-        this.publisherId,
-        this.publisher,
-        this.score,
-        this.bookImages,
-        this.bookKeywords,
-        this.bookGenres,
-        this.bookAuthors,
-        this.isbns,
-        this.books,
-        this.ratings,
-        this.onlineBooks,
-        this.total,
-        this.available,
-        this.issued,
-        this.reference});
+      this.callNumber,
+      this.title,
+      this.subTitle,
+      this.editionStatement,
+      this.numberOfPages,
+      this.publicationYear,
+      this.seriesStatement,
+      this.addedDate,
+      this.createdAt,
+      this.updatedAt,
+      this.publisherId,
+      this.publisher,
+      this.score,
+      this.bookImages,
+      this.bookKeywords,
+      this.bookGenres,
+      this.bookAuthors,
+      this.isbns,
+      this.books,
+      this.ratings,
+      this.onlineBooks,
+      this.total,
+      this.available,
+      this.issued,
+      this.reference});
 
   BookInfoModel.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -184,13 +184,13 @@ class Publisher {
   String? createdAt;
   String? updatedAt;
 
-  Publisher(
-      {this.publisherId,
-        this.publisherName,
-        this.address,
-        this.createdAt,
-        this.updatedAt,
-      });
+  Publisher({
+    this.publisherId,
+    this.publisherName,
+    this.address,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Publisher.fromJson(Map<String, dynamic> json) {
     publisherId = json['publisherId'];
@@ -214,24 +214,26 @@ class Publisher {
 class Score {
   String? bookRatingScoreId;
   String? bookInfoId;
-  int? score;
+  double? score;
   String? createdAt;
   String? updatedAt;
 
-  Score(
-      {this.bookRatingScoreId,
-        this.bookInfoId,
-        this.score,
-        this.createdAt,
-        this.updatedAt,
-});
+  Score({
+    this.bookRatingScoreId,
+    this.bookInfoId,
+    this.score,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Score.fromJson(Map<String, dynamic> json) {
     bookRatingScoreId = json['bookRatingScoreId'];
     bookInfoId = json['bookInfoId'];
-    score = json['score'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
+    // Force convert to double even if it's i0nt
+    var scoreValue = json['score'];
+    score = scoreValue != null
+        ? (scoreValue is int ? scoreValue.toDouble() : scoreValue)
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -253,14 +255,14 @@ class BookImages {
   String? createdAt;
   String? updatedAt;
 
-  BookImages(
-      {this.bookImageId,
-        this.bookInfoId,
-        this.imageUrl,
-        this.isProfile,
-        this.createdAt,
-        this.updatedAt,
-        });
+  BookImages({
+    this.bookImageId,
+    this.bookInfoId,
+    this.imageUrl,
+    this.isProfile,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   BookImages.fromJson(Map<String, dynamic> json) {
     bookImageId = json['bookImageId'];
@@ -292,10 +294,10 @@ class BookKeywords {
 
   BookKeywords(
       {this.bookInfoId,
-        this.keywordId,
-        this.createdAt,
-        this.updatedAt,
-        this.keyword});
+      this.keywordId,
+      this.createdAt,
+      this.updatedAt,
+      this.keyword});
 
   BookKeywords.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -303,7 +305,7 @@ class BookKeywords {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     keyword =
-    json['keyword'] != null ? new Keyword.fromJson(json['keyword']) : null;
+        json['keyword'] != null ? new Keyword.fromJson(json['keyword']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -325,12 +327,12 @@ class Keyword {
   String? createdAt;
   String? updatedAt;
 
-  Keyword(
-      {this.keywordId,
-        this.keyword,
-        this.createdAt,
-        this.updatedAt,
-      });
+  Keyword({
+    this.keywordId,
+    this.keyword,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Keyword.fromJson(Map<String, dynamic> json) {
     keywordId = json['keywordId'];
@@ -358,10 +360,10 @@ class BookGenres {
 
   BookGenres(
       {this.bookInfoId,
-        this.genreId,
-        this.createdAt,
-        this.updatedAt,
-        this.genre});
+      this.genreId,
+      this.createdAt,
+      this.updatedAt,
+      this.genre});
 
   BookGenres.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -391,12 +393,12 @@ class Genre {
   String? createdAt;
   String? updatedAt;
 
-  Genre(
-      {this.genreId,
-        this.genre,
-        this.createdAt,
-        this.updatedAt,
-    });
+  Genre({
+    this.genreId,
+    this.genre,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Genre.fromJson(Map<String, dynamic> json) {
     genreId = json['genreId'];
@@ -424,10 +426,10 @@ class BookAuthors {
 
   BookAuthors(
       {this.bookInfoId,
-        this.authorId,
-        this.createdAt,
-        this.updatedAt,
-        this.author});
+      this.authorId,
+      this.createdAt,
+      this.updatedAt,
+      this.author});
 
   BookAuthors.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -435,7 +437,7 @@ class BookAuthors {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     author =
-    json['author'] != null ? new Author.fromJson(json['author']) : null;
+        json['author'] != null ? new Author.fromJson(json['author']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -459,13 +461,13 @@ class Author {
   String? createdAt;
   String? updatedAt;
 
-  Author(
-      {this.authorId,
-        this.title,
-        this.fullName,
-        this.createdAt,
-        this.updatedAt,
-       });
+  Author({
+    this.authorId,
+    this.title,
+    this.fullName,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Author.fromJson(Map<String, dynamic> json) {
     authorId = json['authorId'];
@@ -493,13 +495,13 @@ class Isbns {
   String? createdAt;
   String? updatedAt;
 
-  Isbns(
-      {this.isbnId,
-        this.isbn,
-        this.bookInfoId,
-        this.createdAt,
-        this.updatedAt,
-});
+  Isbns({
+    this.isbnId,
+    this.isbn,
+    this.bookInfoId,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Isbns.fromJson(Map<String, dynamic> json) {
     isbnId = json['isbnId'];
@@ -530,16 +532,16 @@ class Books {
   String? createdAt;
   String? updatedAt;
 
-  Books(
-      {this.bookId,
-        this.barcode,
-        this.status,
-        this.damagedOn,
-        this.isReference,
-        this.bookInfoId,
-        this.createdAt,
-        this.updatedAt,
-   });
+  Books({
+    this.bookId,
+    this.barcode,
+    this.status,
+    this.damagedOn,
+    this.isReference,
+    this.bookInfoId,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Books.fromJson(Map<String, dynamic> json) {
     bookId = json['bookId'];
@@ -573,13 +575,13 @@ class Ratings {
   String? createdAt;
   String? updatedAt;
 
-  Ratings(
-      {this.bookInfoId,
-        this.userId,
-        this.rating,
-        this.createdAt,
-        this.updatedAt,
-    });
+  Ratings({
+    this.bookInfoId,
+    this.userId,
+    this.rating,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Ratings.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -587,7 +589,6 @@ class Ratings {
     rating = json['rating'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-
   }
 
   Map<String, dynamic> toJson() {
@@ -613,18 +614,18 @@ class OnlineBooks {
   String? createdAt;
   String? updatedAt;
 
-  OnlineBooks(
-      {this.onlineBookId,
-        this.purchaseUrl,
-        this.resourceUrl,
-        this.fileUrl,
-        this.title,
-        this.coverPhoto,
-        this.bookInfoId,
-        this.type,
-        this.createdAt,
-        this.updatedAt,
-      });
+  OnlineBooks({
+    this.onlineBookId,
+    this.purchaseUrl,
+    this.resourceUrl,
+    this.fileUrl,
+    this.title,
+    this.coverPhoto,
+    this.bookInfoId,
+    this.type,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   OnlineBooks.fromJson(Map<String, dynamic> json) {
     onlineBookId = json['onlineBookId'];

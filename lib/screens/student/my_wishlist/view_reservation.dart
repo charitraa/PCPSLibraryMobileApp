@@ -332,7 +332,8 @@ class _ViewReservationState extends State<ViewReservation> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     ...List.generate(
-                                      user.score?.score ?? user.score!.score!,
+                                      (user.score?.score ?? user.score!.score!)
+                                          .toInt(),
                                       (index) => const Icon(Icons.star,
                                           color: Colors.amber, size: 16),
                                     ),
@@ -888,8 +889,9 @@ class _ViewReservationState extends State<ViewReservation> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         ...List.generate(
-                                          user.score?.score ??
-                                              user.score!.score!,
+                                          (user.score?.score ??
+                                                  user.score!.score!)
+                                              .toInt(),
                                           (index) => const Icon(Icons.star,
                                               color: Colors.amber, size: 16),
                                         ),

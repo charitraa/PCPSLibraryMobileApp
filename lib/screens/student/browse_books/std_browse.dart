@@ -44,12 +44,12 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
 
   void _scrollListener() {
     if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+        _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _loadMore();
     }
     if (_scrollController.offset <=
-            _scrollController.position.minScrollExtent &&
+        _scrollController.position.minScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {
         message = "Reached the top";
@@ -348,7 +348,7 @@ class _BrowseBooksState extends State<StudentBrowseBooks> {
                                       BookInfo(
                                         uid: book.bookInfoId ?? '',
                                         score: book.score != null
-                                            ? (book.score?.score as int).toDouble()
+                                            ? (book.score?.score )
                                             : 0,
                                         genre: genres,
                                         isbn: isbn,

@@ -12,7 +12,6 @@ import 'package:logger/logger.dart';
 import '../data/response/api_response.dart';
 import '../data/response/status.dart';
 import '../model/user_model.dart';
-import '../resource/routes_name.dart';
 
 class AuthViewModel with ChangeNotifier {
   final AuthRepository _myrepo = AuthRepository();
@@ -101,7 +100,26 @@ class AuthViewModel with ChangeNotifier {
       _logger.e('getUser error: $e');
       if (e.toString().contains('Unauthorized') ||
           e.toString().contains('401')) {
-        Navigator.pushReplacementNamed(context, RoutesName.login);
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const Loginpage(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.easeInOut;
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+              return SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              );
+            },
+          ),
+          (route) => false, // Remove all previous routes
+        );
       }
       setUser(ApiResponse.error(e.toString()));
     } finally {
@@ -120,6 +138,7 @@ class AuthViewModel with ChangeNotifier {
         _logger.d('Logout successful');
         Utils.flushBarSuccessMessage("User logged out successfully!", context);
         await UserViewModel().remove();
+
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>

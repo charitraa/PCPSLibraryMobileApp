@@ -1,11 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:library_management_sys/model/books_model.dart';
 import 'package:library_management_sys/repository/books_repository.dart';
 import 'package:logger/logger.dart';
-import '../../data/response/api_response.dart';
 import '../../model/book_info_model.dart';
-import '../../utils/utils.dart';
 
 class OnlineBooksViewModel with ChangeNotifier {
   final List<OnlineBooks> _booksList = [];

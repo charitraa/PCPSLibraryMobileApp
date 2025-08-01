@@ -21,24 +21,24 @@ class BooksModel {
 
   BooksModel(
       {this.bookInfoId,
-        this.callNumber,
-        this.title,
-        this.subTitle,
-        this.editionStatement,
-        this.numberOfPages,
-        this.publicationYear,
-        this.seriesStatement,
-        this.addedDate,
-        this.createdAt,
-        this.publisherId,
-        this.publisher,
-        this.score,
-        this.bookImages,
-        this.bookKeywords,
-        this.bookGenres,
-        this.bookAuthors,
-        this.isbns,
-        this.books});
+      this.callNumber,
+      this.title,
+      this.subTitle,
+      this.editionStatement,
+      this.numberOfPages,
+      this.publicationYear,
+      this.seriesStatement,
+      this.addedDate,
+      this.createdAt,
+      this.publisherId,
+      this.publisher,
+      this.score,
+      this.bookImages,
+      this.bookKeywords,
+      this.bookGenres,
+      this.bookAuthors,
+      this.isbns,
+      this.books});
 
   BooksModel.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -144,10 +144,10 @@ class Publisher {
 
   Publisher(
       {this.publisherId,
-        this.publisherName,
-        this.address,
-        this.createdAt,
-        this.updatedAt});
+      this.publisherName,
+      this.address,
+      this.createdAt,
+      this.updatedAt});
 
   Publisher.fromJson(Map<String, dynamic> json) {
     publisherId = json['publisherId'];
@@ -171,21 +171,25 @@ class Publisher {
 class Score {
   String? bookRatingScoreId;
   String? bookInfoId;
-  int? score;
+  double? score;
 
   Score({this.bookRatingScoreId, this.bookInfoId, this.score});
 
   Score.fromJson(Map<String, dynamic> json) {
     bookRatingScoreId = json['bookRatingScoreId'];
     bookInfoId = json['bookInfoId'];
-    score = json['score'];
+    // Force convert to double even if it's int
+    var scoreValue = json['score'];
+    score = scoreValue != null
+        ? (scoreValue is int ? scoreValue.toDouble() : scoreValue)
+        : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['bookRatingScoreId'] = this.bookRatingScoreId;
-    data['bookInfoId'] = this.bookInfoId;
-    data['score'] = this.score;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['bookRatingScoreId'] = bookRatingScoreId;
+    data['bookInfoId'] = bookInfoId;
+    data['score'] = score;
     return data;
   }
 }
@@ -200,11 +204,11 @@ class BookImages {
 
   BookImages(
       {this.bookImageId,
-        this.bookInfoId,
-        this.imageUrl,
-        this.isProfile,
-        this.createdAt,
-        this.updatedAt});
+      this.bookInfoId,
+      this.imageUrl,
+      this.isProfile,
+      this.createdAt,
+      this.updatedAt});
 
   BookImages.fromJson(Map<String, dynamic> json) {
     bookImageId = json['bookImageId'];
@@ -236,10 +240,10 @@ class BookKeywords {
 
   BookKeywords(
       {this.bookInfoId,
-        this.keywordId,
-        this.createdAt,
-        this.updatedAt,
-        this.keyword});
+      this.keywordId,
+      this.createdAt,
+      this.updatedAt,
+      this.keyword});
 
   BookKeywords.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -247,7 +251,7 @@ class BookKeywords {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     keyword =
-    json['keyword'] != null ? new Keyword.fromJson(json['keyword']) : null;
+        json['keyword'] != null ? new Keyword.fromJson(json['keyword']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -297,10 +301,10 @@ class BookGenres {
 
   BookGenres(
       {this.bookInfoId,
-        this.genreId,
-        this.createdAt,
-        this.updatedAt,
-        this.genre});
+      this.genreId,
+      this.createdAt,
+      this.updatedAt,
+      this.genre});
 
   BookGenres.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -357,10 +361,10 @@ class BookAuthors {
 
   BookAuthors(
       {this.bookInfoId,
-        this.authorId,
-        this.createdAt,
-        this.updatedAt,
-        this.author});
+      this.authorId,
+      this.createdAt,
+      this.updatedAt,
+      this.author});
 
   BookAuthors.fromJson(Map<String, dynamic> json) {
     bookInfoId = json['bookInfoId'];
@@ -368,7 +372,7 @@ class BookAuthors {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     author =
-    json['author'] != null ? new Author.fromJson(json['author']) : null;
+        json['author'] != null ? new Author.fromJson(json['author']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -393,10 +397,10 @@ class Author {
 
   Author(
       {this.authorId,
-        this.title,
-        this.fullName,
-        this.createdAt,
-        this.updatedAt});
+      this.title,
+      this.fullName,
+      this.createdAt,
+      this.updatedAt});
 
   Author.fromJson(Map<String, dynamic> json) {
     authorId = json['authorId'];
@@ -426,10 +430,10 @@ class Isbns {
 
   Isbns(
       {this.isbnId,
-        this.isbn,
-        this.bookInfoId,
-        this.createdAt,
-        this.updatedAt});
+      this.isbn,
+      this.bookInfoId,
+      this.createdAt,
+      this.updatedAt});
 
   Isbns.fromJson(Map<String, dynamic> json) {
     isbnId = json['isbnId'];
@@ -461,12 +465,12 @@ class Books {
 
   Books(
       {this.bookId,
-        this.barcode,
-        this.status,
-        this.damagedOn,
-        this.isReference,
-        this.bookInfoId,
-        this.createdAt});
+      this.barcode,
+      this.status,
+      this.damagedOn,
+      this.isReference,
+      this.bookInfoId,
+      this.createdAt});
 
   Books.fromJson(Map<String, dynamic> json) {
     bookId = json['bookId'];

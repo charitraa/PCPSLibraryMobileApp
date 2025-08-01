@@ -31,123 +31,149 @@ class _LoginpageState extends State<Loginpage> {
         child: Column(
           children: [
             CustomBanner(text1: text1, text2: text2),
-            isLoading
-                ? const Center(
-                    child: LinearProgressIndicator(),
+            if (isLoading) ...[
+              const Center(
+                child: LinearProgressIndicator(),
+              )
+            ],
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20),
+              child: Column(
+                children: [
+                  CustomLabelTextfield(
+                    hintText: "College ID",
+                    onChanged: (value) {
+                      setState(() {
+                        username = value;
+                      });
+                    },
+                    outlinedColor: Colors.black,
+                    focusedColor: AppColors.primary,
+                    width: size.width,
+                    text: "College ID",
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  PasswordTextfield(
+                      onChanged: (value) {
+                        setState(() {
+                          password = value;
+                        });
+                      },
+                      obscureText: true,
+                      hintText: "Password",
+                      outlinedColor: Colors.black,
+                      focusedColor: AppColors.primary,
+                      width: size.width,
+                      text: "Password"),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.end,
+                  //   children: [
+                  //     InkWell(
+                  //       onTap: () {
+                  //         Navigator.of(context).push(
+                  //           PageRouteBuilder(
+                  //             pageBuilder: (context, animation,
+                  //                     secondaryAnimation) =>
+                  //                 const StudentNavBar(),
+                  //             transitionsBuilder: (context, animation,
+                  //                 secondaryAnimation, child) {
+                  //               const begin = Offset(1.0, 0.0);
+                  //               const end = Offset.zero;
+                  //               const curve = Curves.easeInOut;
+                  //               var tween = Tween(begin: begin, end: end)
+                  //                   .chain(CurveTween(curve: curve));
+                  //               var offsetAnimation =
+                  //                   animation.drive(tween);
+                  //               return SlideTransition(
+                  //                 position: offsetAnimation,
+                  //                 child: child,
+                  //               );
+                  //             },
+                  //           ),
+                  //         );
+                  //       },
+                  //       child: const Text(
+                  //         'Forgot Password?',
+                  //         style: TextStyle(
+                  //           color: Colors.black,
+                  //           fontFamily: 'poppins',
+                  //           fontSize: 14,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     const SizedBox(
+                  //       width: 15,
+                  //     )
+                  //   ],
+                  // ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  CustomButton(
+                    onPressed: () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      if (username.isEmpty || username == '') {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        return Utils.flushBarErrorMessage(
+                            "Student ID is required", context);
+                      }
+                      if (password.isEmpty || password == '') {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        return Utils.flushBarErrorMessage(
+                            "Student ID is required", context);
+                      }
+                      await Provider.of<AuthViewModel>(context, listen: false)
+                          .login({"cardId": username, "password": password},
+                              context);
+                      setState(() {
+                        isLoading = false;
+                      });
+                    },
+                    buttonColor: AppColors.primary,
+                    text: 'Login',
                   )
-                : Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 25.0, vertical: 20),
-                    child: Column(
-                      children: [
-                        CustomLabelTextfield(
-                          hintText: "College ID",
-                          onChanged: (value) {
-                            setState(() {
-                              username = value;
-                            });
-                          },
-                          outlinedColor: Colors.black,
-                          focusedColor: AppColors.primary,
-                          width: size.width,
-                          text: "College ID",
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        PasswordTextfield(
-                            onChanged: (value) {
-                              setState(() {
-                                password = value;
-                              });
-                            },
-                            obscureText: true,
-                            hintText: "Password",
-                            outlinedColor: Colors.black,
-                            focusedColor: AppColors.primary,
-                            width: size.width,
-                            text: "Password"),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.end,
-                        //   children: [
-                        //     InkWell(
-                        //       onTap: () {
-                        //         Navigator.of(context).push(
-                        //           PageRouteBuilder(
-                        //             pageBuilder: (context, animation,
-                        //                     secondaryAnimation) =>
-                        //                 const StudentNavBar(),
-                        //             transitionsBuilder: (context, animation,
-                        //                 secondaryAnimation, child) {
-                        //               const begin = Offset(1.0, 0.0);
-                        //               const end = Offset.zero;
-                        //               const curve = Curves.easeInOut;
-                        //               var tween = Tween(begin: begin, end: end)
-                        //                   .chain(CurveTween(curve: curve));
-                        //               var offsetAnimation =
-                        //                   animation.drive(tween);
-                        //               return SlideTransition(
-                        //                 position: offsetAnimation,
-                        //                 child: child,
-                        //               );
-                        //             },
-                        //           ),
-                        //         );
-                        //       },
-                        //       child: const Text(
-                        //         'Forgot Password?',
-                        //         style: TextStyle(
-                        //           color: Colors.black,
-                        //           fontFamily: 'poppins',
-                        //           fontSize: 14,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //     const SizedBox(
-                        //       width: 15,
-                        //     )
-                        //   ],
-                        // ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        CustomButton(
-                          onPressed: () async {
-                            setState(() {
-                              isLoading = true;
-                            });
-                            if (username.isEmpty || username == '') {
-                              setState(() {
-                                isLoading = false;
-                              });
-                              return Utils.flushBarErrorMessage(
-                                  "Student ID is required", context);
-                            }
-                            if (password.isEmpty || password == '') {
-                              setState(() {
-                                isLoading = false;
-                              });
-                              return Utils.flushBarErrorMessage(
-                                  "Student ID is required", context);
-                            }
-                            await Provider.of<AuthViewModel>(context,
-                                    listen: false)
-                                .login(
-                                    {"cardId": username, "password": password},
-                                    context);
-                            setState(() {
-                              isLoading = false;
-                            });
-                          },
-                          buttonColor: AppColors.primary,
-                          text: 'Login',
-                        )
-                      ],
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Column(
+                children: [
+                  Text(
+                    '© 2025 PCPS. All Rights Reserved.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontFamily: 'poppins',
                     ),
                   ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Designed, Built & Maintained by PCPS R&D',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontFamily: 'poppins',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
           ],
         ),
       ),
